@@ -1,0 +1,1383 @@
+<title>EDITICARUS PRO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: casca fixa (topo + trilha de boards) sobre um canvas infinito com pan/zoom,
+   painel de detalhe deslizante. Tudo derivado dos tokens abaixo. */
+:root{
+  --bg:#0C0E12; --grid:#171B22; --surface:#13171D; --surface-2:#1A1F27; --surface-3:#222832;
+  --line:#272E39; --line-strong:#3A4451;
+  --fg:#E9ECF1; --fg-2:#A8B1BF; --fg-3:#6E7889;
+  --accent:#F2A33C; --accent-soft:#3A2B16;
+  --l-shell:#5AA9F0; --l-core:#F2A33C; --l-render:#2FC4B2; --l-ai:#A98BF5;
+  --l-cat:#58C97A; --l-ent:#F0665A; --l-infra:#8B93A3; --l-user:#E8C84A;
+  --ok:#58C97A; --warn:#E0A32E; --danger:#F0665A;
+  --shadow:0 10px 30px rgba(0,0,0,.45); --shadow-sm:0 2px 10px rgba(0,0,0,.3);
+  --radius:10px;
+  --ff-d:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --ff-m:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+  --bg:#F3F4F7; --grid:#E3E6EC; --surface:#FFFFFF; --surface-2:#F7F8FA; --surface-3:#EDEFF4;
+  --line:#DDE1E9; --line-strong:#BFC6D2;
+  --fg:#14181F; --fg-2:#4D5666; --fg-3:#7E8798;
+  --accent:#B86C0A; --accent-soft:#FBEFDC;
+  --l-shell:#2A7FC9; --l-core:#B86C0A; --l-render:#108275; --l-ai:#6F4CD0;
+  --l-cat:#2A8F4C; --l-ent:#C93B2E; --l-infra:#5F6878; --l-user:#9A7D0A;
+  --ok:#2A8F4C; --warn:#9A6B08; --danger:#C93B2E;
+  --shadow:0 10px 28px rgba(20,24,31,.12); --shadow-sm:0 1px 6px rgba(20,24,31,.1);
+  color-scheme:light;
+}}
+:root[data-theme="light"]{
+  --bg:#F3F4F7; --grid:#E3E6EC; --surface:#FFFFFF; --surface-2:#F7F8FA; --surface-3:#EDEFF4;
+  --line:#DDE1E9; --line-strong:#BFC6D2;
+  --fg:#14181F; --fg-2:#4D5666; --fg-3:#7E8798;
+  --accent:#B86C0A; --accent-soft:#FBEFDC;
+  --l-shell:#2A7FC9; --l-core:#B86C0A; --l-render:#108275; --l-ai:#6F4CD0;
+  --l-cat:#2A8F4C; --l-ent:#C93B2E; --l-infra:#5F6878; --l-user:#9A7D0A;
+  --ok:#2A8F4C; --warn:#9A6B08; --danger:#C93B2E;
+  --shadow:0 10px 28px rgba(20,24,31,.12); --shadow-sm:0 1px 6px rgba(20,24,31,.1);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--ff-d);overflow:hidden;
+  -webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* ---------- casca ---------- */
+#app{display:flex;flex-direction:column;height:100%}
+#top{display:flex;align-items:center;gap:14px;padding:10px 16px;
+  padding-top:calc(10px + env(safe-area-inset-top,0px));
+  background:var(--surface);border-bottom:1px solid var(--line);z-index:30;flex:0 0 auto}
+.brand{display:flex;align-items:baseline;gap:9px;min-width:0}
+.brand b{font-size:15px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
+.brand b i{font-style:normal;color:var(--accent)}
+.brand span{font-family:var(--ff-m);font-size:10.5px;color:var(--fg-3);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+#top .sp{flex:1}
+.tbtn{padding:6px 11px;border:1px solid var(--line);border-radius:7px;background:var(--surface-2);
+  font-size:12px;font-weight:500;color:var(--fg-2);white-space:nowrap}
+.tbtn:hover{border-color:var(--line-strong);color:var(--fg)}
+.zoomwrap{display:flex;align-items:center;gap:1px;border:1px solid var(--line);border-radius:7px;
+  overflow:hidden;background:var(--surface-2)}
+.zoomwrap button{padding:6px 10px;font-size:13px;color:var(--fg-2);line-height:1}
+.zoomwrap button:hover{background:var(--surface-3);color:var(--fg)}
+.zoomwrap span{font-family:var(--ff-m);font-size:10.5px;color:var(--fg-3);padding:0 8px;
+  min-width:46px;text-align:center;font-variant-numeric:tabular-nums}
+
+/* ---------- trilha de boards ---------- */
+#rail{display:flex;gap:6px;padding:8px 16px;background:var(--surface);
+  border-bottom:1px solid var(--line);overflow-x:auto;z-index:25;flex:0 0 auto;
+  scrollbar-width:thin}
+#rail::-webkit-scrollbar{height:5px}
+#rail::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:3px}
+.rb{display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:7px;
+  border:1px solid transparent;white-space:nowrap;font-size:12px;font-weight:500;color:var(--fg-3)}
+.rb:hover{background:var(--surface-2);color:var(--fg-2)}
+.rb[aria-current="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--fg)}
+.rb em{font-family:var(--ff-m);font-style:normal;font-size:10px;color:var(--fg-3);
+  font-variant-numeric:tabular-nums}
+.rb[aria-current="true"] em{color:var(--accent)}
+
+/* ---------- viewport ---------- */
+#stage{position:relative;flex:1;overflow:hidden;min-height:0;
+  background-color:var(--bg);
+  background-image:radial-gradient(circle,var(--grid) 1.1px,transparent 1.1px);
+  background-size:26px 26px;cursor:grab;touch-action:none}
+#stage.drag{cursor:grabbing}
+#world{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform}
+#edges{position:absolute;top:0;left:0;overflow:visible;pointer-events:none}
+
+/* ---------- cabeçalho do board ---------- */
+.bhead{position:absolute;max-width:620px}
+.bhead h2{margin:0 0 7px;font-size:27px;font-weight:800;letter-spacing:-.6px;text-wrap:balance}
+.bhead p{margin:0;font-size:13.5px;line-height:1.6;color:var(--fg-2)}
+.bhead .kick{display:inline-block;font-family:var(--ff-m);font-size:10px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:9px}
+
+/* ---------- grupos (camadas) ---------- */
+.grp{position:absolute;border:1px dashed var(--line-strong);border-radius:14px;
+  background:color-mix(in srgb,var(--surface) 45%,transparent)}
+.grp>b{position:absolute;top:-9px;left:16px;padding:1px 9px;background:var(--bg);
+  font-family:var(--ff-m);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--gc,var(--fg-3));font-weight:700}
+.grp>i{position:absolute;top:14px;right:16px;font-style:normal;font-size:11px;color:var(--fg-3);
+  max-width:46%;text-align:right;line-height:1.45}
+
+/* ---------- nós ---------- */
+.n{position:absolute;background:var(--surface);border:1px solid var(--line);
+  border-left:3px solid var(--c,var(--line-strong));border-radius:var(--radius);
+  padding:11px 13px;box-shadow:var(--shadow-sm);cursor:pointer;text-align:left;
+  display:flex;flex-direction:column;gap:4px;transition:transform .12s,box-shadow .12s,border-color .12s}
+.n:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--line-strong)}
+.n.on{border-color:var(--c,var(--accent));box-shadow:0 0 0 2px color-mix(in srgb,var(--c,var(--accent)) 35%,transparent),var(--shadow)}
+.n b{font-size:13px;font-weight:650;letter-spacing:-.15px;line-height:1.3}
+.n small{font-size:11px;color:var(--fg-2);line-height:1.45;display:block}
+.n .tag{font-family:var(--ff-m);font-size:9px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--c,var(--fg-3));font-weight:700}
+.n.dec{border-radius:var(--radius);border-left-width:1px;border-style:solid;
+  background:linear-gradient(var(--surface),var(--surface)) padding-box,var(--surface);
+  border-color:var(--c,var(--accent));align-items:center;justify-content:center;text-align:center}
+.n.dec b{font-size:12px}
+.n.sm{padding:9px 11px}
+.n.sm b{font-size:12px}
+.n.term{border-radius:999px;align-items:center;justify-content:center;text-align:center;
+  border-left-width:1px;border-color:var(--c)}
+.n.ghost{background:var(--surface-2);border-style:dashed;box-shadow:none;opacity:.9}
+
+/* ---------- notas ---------- */
+.note{position:absolute;background:var(--surface-2);border:1px solid var(--line);
+  border-top:2px solid var(--c,var(--accent));border-radius:8px;padding:11px 13px;
+  font-size:11.5px;line-height:1.55;color:var(--fg-2)}
+.note b{display:block;color:var(--fg);font-size:11.5px;margin-bottom:5px;font-weight:650}
+.note code{font-family:var(--ff-m);font-size:10.5px;background:var(--surface-3);
+  padding:1px 4px;border-radius:3px;color:var(--fg)}
+.note ul{margin:5px 0 0;padding-left:16px}
+.note li{margin-bottom:3px}
+
+/* ---------- tabelas no canvas ---------- */
+.tbl{position:absolute;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm)}
+.tbl table{border-collapse:collapse;width:100%;font-size:11.5px}
+.tbl caption{text-align:left;padding:10px 13px 9px;font-weight:700;font-size:12.5px;
+  background:var(--surface-2);border-bottom:1px solid var(--line)}
+.tbl th{text-align:left;padding:7px 13px;font-family:var(--ff-m);font-size:9.5px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--fg-3);font-weight:700;
+  border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tbl td{padding:7px 13px;border-bottom:1px solid var(--line);color:var(--fg-2);
+  vertical-align:top;line-height:1.45}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td:first-child{color:var(--fg);font-weight:550}
+.tbl code{font-family:var(--ff-m);font-size:10px;background:var(--surface-3);padding:1px 4px;
+  border-radius:3px;color:var(--fg)}
+.tbl .num{font-variant-numeric:tabular-nums;font-family:var(--ff-m);font-size:11px}
+.pill{display:inline-block;padding:1px 7px;border-radius:999px;font-size:9.5px;font-weight:700;
+  font-family:var(--ff-m);letter-spacing:.05em;text-transform:uppercase}
+.pill.ok{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.pill.wa{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.pill.da{background:color-mix(in srgb,var(--danger) 18%,transparent);color:var(--danger)}
+
+/* ---------- rótulos de aresta ---------- */
+.elab{position:absolute;transform:translate(-50%,-50%);background:var(--bg);
+  padding:1px 7px;border-radius:5px;font-family:var(--ff-m);font-size:9.5px;
+  color:var(--fg-3);white-space:nowrap;border:1px solid var(--line);pointer-events:none}
+.elab.hi{color:var(--accent);border-color:var(--accent)}
+
+/* ---------- painel de detalhe ---------- */
+#panel{position:absolute;top:0;right:0;bottom:0;width:min(400px,92vw);background:var(--surface);
+  border-left:1px solid var(--line);box-shadow:var(--shadow);z-index:40;
+  transform:translateX(101%);transition:transform .22s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;overflow:hidden}
+#panel.open{transform:none}
+#ph{padding:16px 18px 13px;border-bottom:1px solid var(--line);flex:0 0 auto}
+#ph .row{display:flex;align-items:flex-start;gap:12px}
+#ph h3{margin:5px 0 0;font-size:18px;font-weight:750;letter-spacing:-.35px;line-height:1.25;flex:1;min-width:0}
+#ph .lay{display:inline-block;font-family:var(--ff-m);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;font-weight:700;color:var(--c,var(--accent))}
+#pclose{font-size:19px;line-height:1;color:var(--fg-3);padding:3px 6px;flex:0 0 auto}
+#pclose:hover{color:var(--fg)}
+#pb{padding:16px 18px 32px;overflow-y:auto;flex:1;min-height:0}
+#pb section{margin-bottom:17px}
+#pb h4{margin:0 0 6px;font-family:var(--ff-m);font-size:9.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--fg-3);font-weight:700}
+#pb p{margin:0;font-size:13px;line-height:1.62;color:var(--fg-2)}
+#pb p+p{margin-top:8px}
+#pb strong{color:var(--fg);font-weight:600}
+#pb code{font-family:var(--ff-m);font-size:11.5px;background:var(--surface-3);padding:1.5px 5px;
+  border-radius:4px;color:var(--fg)}
+#pb ul{margin:0;padding-left:17px}
+#pb li{font-size:12.5px;line-height:1.6;color:var(--fg-2);margin-bottom:5px}
+#pb .fail{border-left:2px solid var(--danger);padding-left:12px}
+#pb .chips{display:flex;flex-wrap:wrap;gap:5px}
+#pb .chip{font-family:var(--ff-m);font-size:10px;padding:3px 8px;border-radius:5px;
+  background:var(--surface-3);color:var(--fg-2);border:1px solid var(--line)}
+
+/* ---------- legenda ---------- */
+#legend{position:absolute;left:14px;bottom:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  background:color-mix(in srgb,var(--surface) 94%,transparent);border:1px solid var(--line);
+  border-radius:9px;padding:10px 12px;z-index:20;backdrop-filter:blur(6px);max-width:min(340px,calc(100vw - 28px))}
+#legend b{display:block;font-family:var(--ff-m);font-size:9px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--fg-3);margin-bottom:7px;font-weight:700}
+#legend .ls{display:flex;flex-wrap:wrap;gap:4px 12px}
+#legend span{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--fg-2)}
+#legend i{width:9px;height:9px;border-radius:2.5px;flex:0 0 auto}
+#legend .hint{margin-top:8px;padding-top:7px;border-top:1px solid var(--line);
+  font-size:10px;color:var(--fg-3);line-height:1.5}
+#legend .hint kbd{font-family:var(--ff-m);font-size:9.5px;background:var(--surface-3);
+  padding:1px 4px;border-radius:3px;border:1px solid var(--line)}
+
+@media (max-width:760px){
+  #top{padding:9px 14px;padding-top:calc(9px + env(safe-area-inset-top,0px));gap:10px}
+  .brand span{display:none}
+  .tbtn.hide-s{display:none}
+  #rail{padding:7px 14px}
+  .bhead h2{font-size:22px}
+  #panel{width:100%;top:auto;height:76%;border-left:none;border-top:1px solid var(--line);
+    border-radius:16px 16px 0 0;transform:translateY(101%)}
+  #panel.open{transform:none}
+  #legend{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div id="app">
+  <header id="top">
+    <div class="brand">
+      <b>EDIT<i>ICARUS</i> PRO</b>
+      <span>fluxo e arquitetura · v0.1</span>
+    </div>
+    <div class="sp"></div>
+    <button class="tbtn hide-s" id="btheme">tema</button>
+    <button class="tbtn" id="bfit">enquadrar</button>
+    <div class="zoomwrap">
+      <button id="bzo" aria-label="Diminuir zoom">&minus;</button>
+      <span id="zlvl">100%</span>
+      <button id="bzi" aria-label="Aumentar zoom">+</button>
+    </div>
+  </header>
+  <nav id="rail" aria-label="Quadros"></nav>
+  <div id="stage">
+    <div id="world">
+      <svg id="edges" aria-hidden="true"></svg>
+    </div>
+    <aside id="legend">
+      <b>Camadas</b>
+      <div class="ls" id="lkeys"></div>
+      <div class="hint">Arraste para mover. <kbd>Ctrl</kbd>+scroll ou pinça para zoom. Clique num bloco para abrir o detalhe.</div>
+    </aside>
+    <aside id="panel" aria-hidden="true">
+      <div id="ph">
+        <div class="row">
+          <div style="flex:1;min-width:0">
+            <span class="lay" id="player"></span>
+            <h3 id="ptitle"></h3>
+          </div>
+          <button id="pclose" aria-label="Fechar detalhe">&times;</button>
+        </div>
+      </div>
+      <div id="pb"></div>
+    </aside>
+  </div>
+</div>
+<script>
+/* ===========================================================================
+   DADOS DOS QUADROS
+   n: nós | g: grupos (camadas) | e: arestas | t: tabelas | k: notas
+   d: detalhe do nó -> q (o que é) p (por que) te (tecnologia) f (se cair)
+   =========================================================================== */
+const L = {
+  shell:'Casca de UI', core:'Núcleo de edição', render:'Motor de render', ai:'Inteligência',
+  cat:'Catálogo', ent:'Acesso e cobrança', infra:'Plataforma', user:'Usuário'
+};
+
+const BOARDS = [
+{
+id:'principio', nome:'Princípio', num:'01',
+head:{x:0,y:0,w:700,kick:'O achado que define a arquitetura',
+  t:'O valor não estava no código',
+  p:'A engenharia reversa do CapCut 9.5.0.4050 respondeu uma pergunta de negócio junto com a técnica. Reconstruir o cliente não entregaria o produto, porque o produto está no catálogo de servidor, nos modelos treinados e na CDN. Esse quadro define o que vale copiar da estrutura e o que precisa ser invertido.'},
+g:[
+ {x:0,y:430,w:620,h:580,t:'Copiar: a estrutura',c:'core',i:'Padrões provados em produção por um app com centenas de milhões de usuários.'},
+ {x:660,y:430,w:620,h:580,t:'Inverter: a economia',c:'ent',i:'Decisões que resolvem o problema da ByteDance e criariam o seu.'}
+],
+n:[
+ {id:'p1',x:0,y:190,w:700,h:170,l:'core',t:'A condição comercial é dado de servidor, nunca código de cliente',
+  s:'O campo is_vip chega serializado dentro de business_info.json_str, por item. O cliente resolve a condição e obedece. Trocar o flag localmente não libera nada, porque exportação e consumo de crédito são revalidados no servidor.',
+  d:{q:'O achado central do documento. A decisão "este material é Pro" não existe no binário: ela é calculada em runtime a partir de metadados que o servidor envia item a item. O Ghidra confirmou pelo lado negativo: zero strings de gating no EffectPlatform.dll.',
+     p:'Isso separa a política comercial do ciclo de release. Muda preço, muda pacote, muda promoção, tudo sem publicar versão nova. É o mesmo princípio que vale para um produto de um desenvolvedor só, por outro motivo: você não tem banda para fazer release toda vez que mudar de ideia sobre o modelo.',
+     te:'Fonte: static/js/publish-text-effect.3a6eb5bb.js linha 1, colunas 2284 a 2288. O REA marcou is_vip como unknown-coverage, prova estática de que o valor vem de fora.',
+     f:'Se o resolvedor de entitlement cai, a regra é cache válido vale (fail-open por janela curta) e conta nova sem cache fica no plano gratuito (fail-closed). Nunca o contrário.',
+     k:['business_info.json_str','is_vip','commercial_strategy','paid_strategy_list']}},
+
+ {id:'c1',x:30,y:490,w:560,h:86,l:'core',t:'Núcleo de render separado da UI',
+  s:'VECreator.dll faz composição e render. A casca só pede.',
+  d:{q:'262 MB de motor nativo que não conhece botão. A UI envia comandos, o motor devolve frames.',
+     p:'Permite trocar a casca (Qt, web, mobile) sem tocar no motor, e testar o motor sem abrir janela. No EDITICARUS esse mesmo corte vira a diferença entre ter três apps ou ter um núcleo com três cascas.',
+     te:'No nosso caso: núcleo em TypeScript puro, zero DOM, zero React. Roda em Node, em Worker, em React Native.',
+     f:'Nenhum ponto de falha novo: é uma fronteira de código, não um processo de rede.',
+     k:['separação de camadas','testabilidade']}},
+ {id:'c2',x:30,y:586,w:560,h:86,l:'cat',t:'Material descrito por metadados',
+  s:'Um efeito novo é um JSON, não um deploy.',
+  d:{q:'Cada efeito, som, fonte ou template carrega sua própria descrição estruturada. O cliente lê o descritor e sabe renderizar.',
+     p:'Catálogo cresce sem release do app. Para você, sozinho, isso é a diferença entre "publicar 20 efeitos leva uma tarde" e "leva uma sprint".',
+     te:'Schema versionado com validação no build. Um efeito é: metadados + shader + parâmetros + preview. Sem campo de cobrança no descritor (ver quadro Acesso).',
+     f:'Descritor inválido ou versão desconhecida: o item some da vitrine em vez de quebrar a tela. Falha silenciosa por item, nunca por catálogo.',
+     k:['schema versionado','extensibilidade']}},
+ {id:'c3',x:30,y:682,w:560,h:86,l:'shell',t:'Uma janela, troca de cena',
+  s:'MainWindow.qml é único. SceneManager substitui o conteúdo.',
+  d:{q:'O CapCut não tem pilha de telas nem janela por seção. Tem uma janela e quatro cenas (Home 400 referências, Editor 715, Biz 855, Tool 41). A cena de edição escolhe entre sete layouts.',
+     p:'Os "modos" (corte rápido, shorts por IA, tradução, vídeo de marketing) não são produtos separados: são layouts alternativos da mesma cena, operando o mesmo documento. Isso evita duplicar estado e evita sincronizar telas.',
+     te:'EditorLayout, RCEditorLayout, AiShortsEditorLayout, AiTranslateEditorLayout, MarketingVideoEditorLayout, CaptionTemplateCreatorEditorLayout, TemplatePublishLayout.',
+     f:'Cena que falha ao montar cai para a cena Home com o projeto salvo intacto, nunca para tela branca.',
+     k:['SceneManager','7 layouts','estado único']}},
+ {id:'c4',x:30,y:778,w:560,h:86,l:'shell',t:'Rota é dado, não código',
+  s:'lynx_config.json guarda 22 rotas. A string videofusion:// não existe em nenhum binário.',
+  d:{q:'A tabela de rotas vive em arquivo no disco, não compilada. A URL carrega até o tamanho da janela (window_width, window_height), então abrir e dimensionar a tela é uma operação só.',
+     p:'Mesmo padrão do gating: comportamento é dado. Dá para mudar navegação, deeplink e tamanho de painel sem build.',
+     te:'Deeplink externo: capcut://com.ies.videocut/<módulo>/<rota>. Pontos de entrada de recurso usam uganchor/anchor_point com featureEntry para atribuição.',
+     f:'Rota desconhecida cai numa tela de fallback nomeada, não em erro. Config corrompida usa a tabela embarcada como padrão.',
+     k:['lynx_config.json','deeplink','featureEntry']}},
+ {id:'c5',x:30,y:874,w:560,h:86,l:'ent',t:'O bloqueio é renderizado como efeito',
+  s:'Resources/areaLocked/AmazingFeature/ é uma cena completa, com scripts Lua.',
+  d:{q:'O overlay que aparece sobre o preview quando um recurso Pro é usado sem assinatura não é um aviso: é um efeito de vídeo com main.scene, content.json e LuaRTTI.MarkGen.lua.',
+     p:'O usuário vê o resultado com a marca, entende o valor e decide. É demonstração, não bloqueio seco. Vale copiar o conceito mesmo com economia invertida: o que for pago no EDITICARUS deve ser experimentável com marca, nunca escondido.',
+     te:'No nosso caso: shader de marca d água aplicado na cadeia de preview, removido no export quando o entitlement confirma.',
+     f:'Se o shader de marca falha, o export server side bloqueia por segurança. Marca ausente nunca pode virar export limpo.',
+     k:['areaLocked','prova antes da compra']}},
+
+ {id:'x1',x:690,y:490,w:560,h:86,l:'ent',t:'Catálogo 100% remoto',
+  s:'O app inteiro tem 3 arquivos de áudio. Nenhuma biblioteca embarcada.',
+  d:{q:'export_success.mp3, export_failed.mp3 e empty_audio2s.mp3. Isso é tudo. Nada de música, nada de efeito sonoro, nada de catálogo no disco.',
+     p:'Faz sentido para a ByteDance: CDN é barata na escala deles e o catálogo é o produto. Para você é o oposto. Sem rede o app vira uma casca, e a conta de CDN chega antes da receita.',
+     te:'Decisão EDITICARUS: pack base embarcado que cobre o caso completo offline (cortar, legendar, remover fundo, exportar). Packs extras sob demanda, com cache local.',
+     f:'CDN fora do ar: a vitrine mostra estado offline e o pack base continua funcionando. O usuário termina o vídeo.',
+     k:['local first','custo de CDN']}},
+ {id:'x2',x:690,y:586,w:560,h:86,l:'ent',t:'Créditos de IA por operação',
+  s:'Segundo eixo de cobrança além da assinatura. Cota mensal que não estorna.',
+  d:{q:'pc_aigc_credit_consume_purchase, pc_aigc_credit_bar e a família m10n (abreviação de monetization) nas traduções pt BR provam o modelo: ser Pro dá cota, não uso ilimitado. E "as imagens não serão geradas, os créditos ainda serão consumidos".',
+     p:'Isso existe porque a IA do CapCut roda em servidor e tem custo marginal real. Se a sua IA roda no device, o custo marginal é zero e cobrar crédito seria inventar uma fricção que você não precisa ter. Crédito gera ansiedade de uso, ticket de suporte e abandono.',
+     te:'Cotas distintas por camada: pc_aigc_credit_vip_bar e pc_aigc_credit_svip_bar, coerente com ["Pro","Svip"] no JS.',
+     f:'Não aplicável: a decisão é não construir esse eixo no lançamento.',
+     k:['m10n','cota mensal','sem estorno']}},
+ {id:'x3',x:690,y:682,w:560,h:86,l:'infra',t:'Monolito de 262 MB',
+  s:'O Ghidra não concluiu a análise nem em 40 minutos.',
+  d:{q:'Duas tentativas: 330s e 2.400.000ms, as duas retornaram provider_timeout. A função de gating nativa nunca foi extraída.',
+     p:'Isso é sintoma de acoplamento acumulado por anos e centenas de engenheiros, não de potência. Reproduzir essa forma com uma pessoa é garantir que em seis meses você não consegue mais mudar nada.',
+     te:'Decisão EDITICARUS: núcleo pequeno e fronteiras explícitas. Motor de render, núcleo de edição e casca trocáveis independentemente. Teto de complexidade como critério de arquitetura, não como aspiração.',
+     f:'Não aplicável.',
+     k:['acoplamento','teto de manutenção']}},
+ {id:'x4',x:690,y:778,w:560,h:86,l:'shell',t:'Três pilhas de UI no mesmo app',
+  s:'Qt 6 nativo, CEF/Chromium embutido e Lynx da ByteDance convivendo.',
+  d:{q:'Qt para a janela e a timeline, CEF para loja e conta, Lynx para painéis atualizáveis sem update do app. Há um gerenciador de popup que fala as três línguas: NativePopupWindow, H5PopupWindow, LynxPopupWindow, NotificationPopupWindow.',
+     p:'Resolve o problema deles: times gigantes, ciclos de release longos, necessidade de mudar painel sem passar por loja de app. Cria o seu: três vezes a superfície de bug, três modelos de estado, três perfis de performance. Para uma pessoa é inviável.',
+     te:'Decisão EDITICARUS: uma pilha só (React) em web e desktop. React Native no mobile compartilha o núcleo e os tokens, não a timeline.',
+     f:'Não aplicável.',
+     k:['Qt','CEF','Lynx','JSBridge']}},
+
+ {id:'inv',x:0,y:1060,w:1280,h:150,l:'accent',t:'A inversão: o que roda no device é grátis e ilimitado, o que custa servidor é pago e explícito',
+  s:'O CapCut cobra pelo que é barato para ele (catálogo em CDN) e dá de graça o que é caro (render na máquina do usuário). Isso faz sentido na escala da ByteDance. Na sua, inverta. Matting, legendas, denoise e interpolação rodam com ONNX Runtime no device: custo marginal zero, sem cota, sem crédito, sem fila. O servidor entra só onde o device não dá conta, e aí o preço é visível antes do clique.',
+  d:{q:'A tese comercial do EDITICARUS, derivada direto da engenharia reversa. O documento já mapeou os equivalentes abertos: RMBG-2.0 e BiRefNet para matting, Whisper para legendas, Real-ESRGAN para upscale, RNNoise para ruído (que é literalmente o que o CapCut usa, rnnoise_v2.0.model), RIFE para interpolação.',
+     p:'Isso dá uma frase de posicionamento que o CapCut não pode copiar sem destruir a própria receita: "sem crédito, sem cota, sem upload do seu material". É defensável porque é estrutural, não é promoção.',
+     te:'ONNX Runtime Web com execution provider WebGPU no navegador e no Tauri. ONNX Runtime nativo no mobile. Os modelos descem uma vez e ficam no cache.',
+     f:'Device fraco demais para o modelo: o roteador de IA oferece a execução em servidor com o custo na tela. Degradação explícita, nunca silenciosa.',
+     k:['custo marginal zero','ONNX Runtime','posicionamento']}}
+],
+e:[
+ {f:'p1',t:'c1',k:'d'},{f:'p1',t:'x1',k:'d'},
+ {f:'c5',t:'inv',l:'prova antes da compra'},{f:'x2',t:'inv',l:'inverte o eixo'}
+],
+k:[
+ {x:0,y:1250,w:620,c:'core',b:'Separar o que é fato do que é inferência',
+  h:'<b>Fato:</b> tudo que está em <code>business_info.json_str</code>, nos 743 caminhos <code>qrc:</code>, nas 22 rotas do Lynx e nas chaves de tradução. Foi lido no disco.<br><br><b>Inferência:</b> a lógica nativa de decisão. O <code>VECreator.dll</code> nunca foi descompilado. A convergência entre JS e as 1674 ocorrências de <code>vip</code> sustenta a leitura, não prova.<br><br><b>Desconhecido:</b> o payload real de entitlement, como a validação acontece no export, e a evolução do modelo entre as 6 versões instaladas.'},
+ {x:660,y:1250,w:620,c:'ent',b:'O que isso significa para o seu caixa',
+  h:'A arquitetura local first não é só uma escolha técnica. Ela decide a sua estrutura de custo: <b>servidor opcional significa que 1 usuário e 1.000 usuários custam quase o mesmo</b>. Sem isso, cada usuário gratuito queima dinheiro seu antes de você ter validado que alguém paga. Veja o quadro <b>Carga e custo</b> para os números.'}
+],
+t:[]
+},
+
+/* ======================= 02 ARQUITETURA ======================= */
+{
+id:'arquitetura', nome:'Arquitetura', num:'02',
+head:{x:0,y:0,w:760,kick:'Sete camadas, uma fronteira que importa',
+  t:'Arquitetura em camadas',
+  p:'A linha que separa a camada 4 da camada 5 é a decisão mais importante do sistema. Tudo acima dela roda sem internet. Tudo abaixo é opcional, assíncrono e substituível. Clique em qualquer bloco para ver o que é, por que existe e o que acontece se ele cair.'},
+g:[
+ {x:0,y:200,w:1420,h:170,t:'L0 · Casca de UI',c:'shell',i:'Troca de cena, não pilha de telas.'},
+ {x:0,y:410,w:1420,h:170,t:'L1 · Núcleo de edição',c:'core',i:'TypeScript puro. Zero DOM, zero framework.'},
+ {x:0,y:620,w:1420,h:170,t:'L2 · Motor de render',c:'render',i:'GPU primeiro, WASM como rede de segurança.'},
+ {x:0,y:830,w:1420,h:170,t:'L3 · Inteligência',c:'ai',i:'On device por padrão. Servidor por exceção.'},
+ {x:0,y:1040,w:1420,h:170,t:'L4 · Catálogo de material',c:'cat',i:'Pack base embarcado. Extras sob demanda.'},
+ {x:0,y:1300,w:1420,h:170,t:'L5 · Acesso e cobrança',c:'ent',i:'A política comercial vive aqui, nunca acima.'},
+ {x:0,y:1510,w:1420,h:170,t:'L6 · Plataforma',c:'infra',i:'Tudo aqui pode cair sem parar a edição.'}
+],
+n:[
+ {id:'s1',x:24,y:250,w:255,h:100,l:'shell',t:'Casca Web',s:'React 18 + Vite. A base de código principal.',
+  d:{q:'A aplicação que roda no navegador e que o Tauri empacota no desktop. Mesmo código, dois alvos.',p:'Escrever duas vezes web e desktop é o erro mais caro que um time de uma pessoa pode cometer. O Tauri embrulha a mesma build.',te:'React 18, Vite, Tailwind, Radix via shadcn/ui. Roteamento por tabela em JSON, seguindo o padrão do Lynx.',f:'Falha de carga de chunk: retry com backoff e, após 3 tentativas, oferta de recarregar mantendo o autosave.',k:['React','Vite','shadcn/ui']}},
+ {id:'s2',x:303,y:250,w:255,h:100,l:'shell',t:'Casca Desktop',s:'Tauri v2. Embrulha a build web, bundle 20x a 50x menor que Electron.',
+  d:{q:'O mesmo app web rodando numa janela nativa, com acesso a sistema de arquivos, FFmpeg nativo e GPU sem as restrições do navegador.',p:'Desktop é onde um editor de vídeo é usado de verdade para trabalho pago. É também onde você entrega export sem limite de memória de aba.',te:'Tauri v2. Bundles típicos de 2,5 a 10 MB contra 80 a 200 MB do Electron, e RAM em repouso na faixa de 40 a 80 MB contra 150 a 400 MB. O custo é WebView por sistema operacional, então o QA de render multiplica por 3.',f:'WebView do sistema desatualizado sem WebGPU: cai para WebGL2 e avisa o usuário uma vez, com link de atualização.',k:['Tauri v2','FFmpeg sidecar','WebView por SO']}},
+ {id:'s3',x:582,y:250,w:255,h:100,l:'shell',t:'Casca Mobile',s:'Expo + React Native + NativeWind. Compartilha núcleo e tokens, não a timeline.',
+  d:{q:'App iOS e Android. Reaproveita 100% do núcleo de edição e dos tokens de design, cerca de 40% da UI.',p:'A timeline touch é outro produto: gesto, alvo de toque, zoom por pinça e precisão de trim não têm nada a ver com mouse. Fingir que compartilha gera uma UI ruim nas duas pontas.',te:'Expo, React Native, NativeWind para falar a mesma linguagem de tokens do Tailwind. ONNX Runtime nativo para IA.',f:'Sem suporte a codec por hardware: render em resolução menor com aviso, nunca falha silenciosa.',k:['Expo','NativeWind','ONNX nativo']}},
+ {id:'s4',x:861,y:250,w:255,h:100,l:'shell',t:'SceneManager',s:'Uma janela. Sete layouts do mesmo editor.',
+  d:{q:'Copiado direto do CapCut. Não existe pilha de navegação: existe uma superfície e uma cena ativa.',p:'Modos (corte rápido, shorts, legenda, publicação) operam o mesmo documento. Sem duplicar estado, sem sincronizar telas, sem bug de "voltar".',te:'Cena = layout + painéis ativos + ferramentas visíveis. O documento não sabe qual layout está aberto.',f:'Cena que não monta cai para Home com o projeto salvo. Nunca tela branca.',k:['cena','layout','documento único']}},
+ {id:'s5',x:1140,y:250,w:255,h:100,l:'shell',t:'Tabela de rotas',s:'JSON versionado. Navegação muda sem build.',
+  d:{q:'Rotas, deeplinks e tamanho de painel declarados em dado, lendo a lição do lynx_config.json.',p:'Permite testar ordem de passos, abrir o app direto num recurso e medir atribuição por featureEntry, sem publicar versão.',te:'Schema validado no build. Fallback para a tabela embarcada se a remota falhar ou for inválida.',f:'Rota desconhecida leva a uma tela de fallback nomeada com link para Home.',k:['rota como dado','deeplink']}},
+
+ {id:'k1',x:24,y:460,w:255,h:100,l:'core',t:'Documento do projeto',s:'EDL em JSON. A fonte única de verdade.',
+  d:{q:'Edit Decision List: a descrição completa do vídeo (tracks, clipes, cortes, efeitos, keyframes) sem conter um byte de mídia.',p:'Separar descrição de mídia é o que permite: projeto de 40 KB, undo barato, sync rápido, colaboração futura e render em qualquer máquina. É o mesmo princípio do business_info.json do CapCut aplicado ao projeto inteiro.',te:'JSON versionado com migrações. Mídia referenciada por hash de conteúdo mais caminho, então mover arquivo não quebra o projeto.',f:'Documento corrompido: restaura do último snapshot íntegro. Snapshots a cada 30 operações mais 1 por minuto.',k:['EDL','hash de conteúdo','migração de schema']}},
+ {id:'k2',x:303,y:460,w:255,h:100,l:'core',t:'Barramento de comandos',s:'Toda mudança é um comando. Undo e redo saem de graça.',
+  d:{q:'Nada muda o documento diretamente. Tudo passa por um comando nomeado, reversível e serializável.',p:'Undo confiável é requisito não negociável num editor. Fazer isso por diff de estado é lento e cheio de bug; por comando é determinístico. E o log de comandos vira telemetria de uso real sem instrumentar nada a mais.',te:'Command pattern com apply/revert. Coalescência por janela de tempo para arrastar e redimensionar (um drag vira 1 comando, não 200).',f:'Comando que falha no apply não entra no histórico e dispara toast com o motivo. Documento nunca fica em estado parcial.',k:['undo/redo','coalescência','telemetria]']}},
+ {id:'k3',x:582,y:460,w:255,h:100,l:'core',t:'Motor de timeline',s:'Tracks, clipes, transições, keyframes. Puro cálculo.',
+  d:{q:'Resolve qual frame de qual clipe, com quais efeitos, toca em cada instante. Sem desenhar nada.',p:'É a parte mais difícil e mais valiosa do produto. Mantida sem DOM, dá para testar com assert em milissegundos e reusar inteira no mobile.',te:'Estruturas imutáveis com cópia estrutural. Resolução por intervalo com índice, não varredura linear: 1.000 clipes precisam responder em menos de 1 ms.',f:'Erro de resolução num clipe: o clipe renderiza preto com marcador de erro visível. O resto da timeline continua.',k:['imutável','índice por intervalo','sem DOM']}},
+ {id:'k4',x:861,y:460,w:255,h:100,l:'core',t:'Autosave e recuperação',s:'Crash não pode custar trabalho.',
+  d:{q:'Persistência contínua do documento e do histórico de comandos em disco local.',p:'Um editor que perde trabalho perde o usuário na primeira vez. Isso vale mais que qualquer recurso de IA do roadmap.',te:'Escrita atômica (arquivo temporário mais rename). IndexedDB na web, sistema de arquivos no desktop e mobile. Snapshot mais log de comandos desde o snapshot.',f:'Disco cheio: para de gravar, avisa com clareza e mantém o documento em memória. Nunca grava pela metade.',k:['escrita atômica','snapshot + log']}},
+ {id:'k5',x:1140,y:460,w:255,h:100,l:'core',t:'Registro de efeitos',s:'Efeito é um descritor, não um if no código.',
+  d:{q:'Tabela que mapeia tipo de efeito para shader, parâmetros, faixas e preview. Lida do catálogo.',p:'Adicionar efeito vira publicar JSON mais shader. Sem recompilar, sem release, sem tocar no núcleo.',te:'Validação de schema na carga. Shader compilado sob demanda com cache por hash.',f:'Shader que não compila: o efeito some da vitrine e um evento sobe para a telemetria. O projeto que já usava renderiza sem o efeito, com aviso.',k:['registro','WGSL/GLSL','cache por hash']}},
+
+ {id:'r1',x:24,y:670,w:255,h:100,l:'render',t:'Compositor de preview',s:'WebGPU. Alvo de 60fps na timeline.',
+  d:{q:'Monta cada frame: decodifica, aplica efeitos em cadeia, compõe camadas, desenha no canvas.',p:'Scrub na timeline não pode ter loading. É a interação mais frequente do produto e é onde a qualidade percebida é decidida.',te:'WebGPU com fallback WebGL2. Cadeia de efeitos como passes de shader, sem round trip CPU entre passes.',f:'Perda de contexto de GPU: recria o dispositivo e redesenha a partir do documento. O usuário vê um piscar, não perde estado.',k:['WebGPU','60fps','passes de shader']}},
+ {id:'r2',x:303,y:670,w:255,h:100,l:'render',t:'Cache de frames',s:'Três níveis. Scrub sem espera.',
+  d:{q:'Memória (frames decodificados recentes), disco (proxies em resolução menor) e preview de efeito (resultado já composto).',p:'O que separa um editor usável de um travado. Decodificar sob demanda a cada movimento do cursor é inviável em qualquer hardware.',te:'LRU com orçamento de memória explícito. Proxy em 540p gerado no import, em worker, sem bloquear a UI.',f:'Cache frio: a timeline mostra miniatura de menor qualidade enquanto preenche. Nunca bloqueia o cursor.',k:['LRU','proxy 540p','worker']}},
+ {id:'r3',x:582,y:670,w:255,h:100,l:'render',t:'Decoder',s:'WebCodecs primeiro, FFmpeg WASM depois.',
+  d:{q:'Transforma bytes de arquivo em frames. WebCodecs usa o decodificador de hardware do sistema.',p:'A diferença de performance entre hardware e WASM é de uma ordem de grandeza. Mas o WebCodecs ainda é Working Draft do W3C e não é Baseline, com cobertura desigual fora de Chrome e Edge, então o fallback não é opcional.',te:'WebCodecs para H.264, H.265, VP9 e AV1. FFmpeg WASM para ProRes, DNxHR e formatos que o navegador recusa. No Tauri, FFmpeg nativo como sidecar cobre tudo.',f:'Codec não suportado: oferece transcodificar no import, uma vez, com barra de progresso. Nunca falha sem saída.',k:['WebCodecs','ffmpeg.wasm','sidecar nativo']}},
+ {id:'r4',x:861,y:670,w:255,h:100,l:'render',t:'Encoder e export',s:'Export local é o caminho padrão.',
+  d:{q:'Captura frames direto do canvas da GPU e codifica. No desktop, entrega para o FFmpeg nativo.',p:'Export no device significa custo zero de servidor, nenhum upload, nenhuma fila, nenhuma espera de rede. É o eixo inteiro da economia invertida.',te:'VideoEncoder do WebCodecs na web. FFmpeg nativo via sidecar no Tauri. Mux em MP4 ou MOV. Job em background com notificação do sistema.',f:'Encoder falha no meio: salva o parcial, mantém o job retomável e mostra o que já foi renderizado.',k:['export local','sem upload','retomável']}},
+ {id:'r5',x:1140,y:670,w:255,h:100,l:'render',t:'Grafo de áudio',s:'WebAudio mais RNNoise. Waveform no import.',
+  d:{q:'Mixagem, ganho, fade, ducking automático e redução de ruído.',p:'Áudio ruim derruba um vídeo mais rápido que imagem ruim. E o RNNoise é exatamente o modelo que o CapCut usa (rnnoise_v2.0.model), então a paridade de qualidade é um fato verificado, não uma aposta.',te:'WebAudio API, AudioWorklet para processamento em tempo real. RNNoise via WASM. Waveform calculada no import, em worker, e cacheada.',f:'AudioWorklet indisponível: processamento só no export, com preview sem o efeito e aviso explícito.',k:['RNNoise','AudioWorklet','ducking']}},
+
+ {id:'a0',x:24,y:880,w:255,h:100,l:'ai',t:'Roteador de IA',s:'Decide: device ou servidor. É onde a economia é aplicada.',
+  d:{q:'Antes de qualquer operação de IA, mede o device (memória, GPU, suporte a WebGPU) e o tamanho do trabalho, e escolhe onde executar.',p:'É o componente que torna a promessa "sem crédito" sustentável. Sem ele, ou você roda tudo no servidor e queima dinheiro, ou roda tudo no device e falha nos aparelhos fracos.',te:'Heurística: memória disponível, presença de WebGPU, duração do clipe, resolução. Resultado da medição fica em cache por sessão.',f:'Em dúvida, roda no device em resolução menor. Servidor só com consentimento explícito e preço na tela.',k:['on device por padrão','consentimento explícito']}},
+ {id:'a1',x:303,y:880,w:255,h:100,l:'ai',t:'ONNX Runtime',s:'WebGPU no navegador e no Tauri. Nativo no mobile.',
+  d:{q:'O runtime que executa todos os modelos. Um só, para todos os recursos de IA.',p:'Um runtime único significa um formato de modelo, um pipeline de carga, um cache e um lugar para otimizar. Alternativa seria uma biblioteca por recurso, que é insustentável sozinho.',te:'ONNX Runtime Web com execution provider WebGPU, fallback WASM SIMD. Modelos quantizados em int8 onde a qualidade permite.',f:'Modelo que não carrega: o recurso aparece desabilitado com motivo, não some sem explicação.',k:['ONNX','WebGPU EP','int8']}},
+ {id:'a2',x:582,y:880,w:255,h:100,l:'ai',t:'Remover fundo',s:'RMBG-2.0 ou BiRefNet. Qualidade comparável ou superior.',
+  d:{q:'Segmentação de pessoa e objeto por frame, com refinamento temporal para evitar tremulação entre frames.',p:'O documento aponta este como um dos dois recursos que mais doem no paywall do CapCut e com melhor implementação aberta. É o MVP.',te:'RMBG-2.0 ou BiRefNet em ONNX. Máscara em resolução menor com upscale guiado pela imagem original. Suavização temporal na timeline.',f:'Memória insuficiente: processa em resolução menor, avisa a perda de qualidade e oferece o caminho servidor.',k:['RMBG-2.0','BiRefNet','coerência temporal']}},
+ {id:'a3',x:861,y:880,w:255,h:100,l:'ai',t:'Legendas automáticas',s:'Whisper mais VAD. O outro recurso do MVP.',
+  d:{q:'Transcrição com marcação de tempo por palavra, detecção de silêncio e geração de blocos de legenda editáveis na timeline.',p:'O VAD entrega de brinde o recurso de remover pausas, que é edição de timeline, não IA. Dois recursos pelo preço de um modelo.',te:'faster-whisper ou whisper.cpp em ONNX, modelo small ou medium conforme o device. VAD Silero. Legenda vira track editável, não imagem queimada.',f:'Áudio inaudível ou idioma não suportado: devolve o que conseguiu com marcação de baixa confiança, nunca texto inventado.',k:['Whisper','VAD','track editável']}},
+ {id:'a4',x:1140,y:880,w:255,h:100,l:'ai',t:'Upscale, interpolação, voz',s:'Real-ESRGAN, RIFE, Piper. Fase 2.',
+  d:{q:'Super resolução, interpolação de quadros para câmera lenta e síntese de voz.',p:'São os recursos com melhor relação entre impressão causada e esforço, mas nenhum deles resolve uma dor diária. Entram depois que os dois primeiros provarem que alguém usa o produto.',te:'Real-ESRGAN, RIFE (que o CapCut também usa, em models/interpolation) e Piper ou XTTS para TTS.',f:'Upscale 4K no device é o caso típico de roteamento para servidor, com preço na tela antes do clique.',k:['Real-ESRGAN','RIFE','fase 2']}},
+
+ {id:'ct1',x:24,y:1090,w:255,h:100,l:'cat',t:'Schema de descritor',s:'Sem campo de cobrança. Essa é a diferença.',
+  d:{q:'O contrato que descreve um efeito, fonte, som, LUT ou template. Copia a forma do business_info.json do CapCut e remove o que lá existe para cobrar.',p:'O descritor diz o que o material é e como renderizar. Se ele é pago, quem decide é a camada 5, por conta, em runtime. Material e política não podem viver no mesmo objeto, senão mudar preço vira migração de catálogo.',te:'JSON Schema versionado. Campos: id, tipo, parâmetros, preview, shader, licença da fonte, autor.',f:'Descritor inválido: item some da vitrine, evento sobe para telemetria. Nunca quebra a lista.',k:['sem campo de preço','licença explícita']}},
+ {id:'ct2',x:303,y:1090,w:255,h:100,l:'cat',t:'Pack base embarcado',s:'O caso completo funciona sem internet.',
+  d:{q:'Conjunto mínimo que cobre importar, cortar, legendar, remover fundo, ajustar cor, mixar áudio e exportar. Vai no instalador.',p:'É a contrapartida direta dos 3 arquivos de áudio do CapCut. Aqui, o app sem rede continua sendo um editor. Isso é argumento de venda e é seguro operacional ao mesmo tempo.',te:'Orçamento: até 80 MB no desktop, até 40 MB no mobile. Fontes e sons só com licença aberta (Freesound, Pixabay), com a licença registrada no descritor.',f:'Não falha: é local.',k:['offline','licença aberta','80 MB']}},
+ {id:'ct3',x:582,y:1090,w:255,h:100,l:'cat',t:'Gerenciador de packs',s:'Baixa, verifica, cacheia, expira.',
+  d:{q:'Download sob demanda com verificação de integridade, cache local e política de expiração.',p:'O usuário baixa o que usa. Não paga banda nem disco pelo que não usa.',te:'Verificação por hash. Cache LRU com teto configurável. Download retomável.',f:'Download interrompido: retoma de onde parou. Hash divergente: descarta e tenta outra origem.',k:['hash','retomável','LRU']}},
+ {id:'ct4',x:861,y:1090,w:255,h:100,l:'cat',t:'API de catálogo',s:'Lotes de 50, como o mget_item.',
+  d:{q:'Lista a vitrine e devolve metadados em lote. Mesma forma dos endpoints do CapCut, que são um bom desenho.',p:'Lote de 50 evita N+1 e mantém a vitrine responsiva com paginação por cursor.',te:'POST /v1/catalog/list e POST /v1/catalog/mget. Cursor, não offset. Cache HTTP com ETag.',f:'API fora do ar: vitrine mostra o cache local mais estado offline. Pack base intacto.',k:['lote de 50','cursor','ETag']}},
+ {id:'ct5',x:1140,y:1090,w:255,h:100,l:'cat',t:'CDN de assets',s:'URL assinada e curta para material pago.',
+  d:{q:'Entrega os bytes dos packs. Objeto imutável com cache longo.',p:'Asset imutável endereçado por hash pode ter cache eterno, o que derruba a conta de banda. Material pago usa URL assinada de validade curta.',te:'Cloudflare R2 mais CDN. Egress zero no R2 é o que torna isso viável com orçamento pequeno.',f:'CDN fora: a vitrine marca itens como indisponíveis. O editor continua.',k:['R2','imutável','URL assinada']}},
+
+ {id:'en1',x:24,y:1350,w:255,h:100,l:'ent',t:'Autenticação',s:'OAuth2 Authorization Code com PKCE.',
+  d:{q:'Login com e-mail, Google e Apple. Nunca password grant, nunca implicit flow.',p:'PKCE é obrigatório em cliente público (desktop, mobile, SPA) porque não há como guardar segredo de cliente nesses alvos.',te:'Authorization Code + PKCE. Access token JWT de 15 minutos. Refresh token rotativo com detecção de reuso.',f:'Auth indisponível: token em cache vale por até 7 dias offline. Login novo espera.',k:['PKCE','JWT 15min','refresh rotativo']}},
+ {id:'en2',x:303,y:1350,w:255,h:100,l:'ent',t:'Cofre de token',s:'Keychain do sistema. Nunca localStorage.',
+  d:{q:'Onde o refresh token mora em cada plataforma.',p:'Token em localStorage é roubado por qualquer XSS. Essa é a falha de segurança mais comum em app web e a mais barata de evitar.',te:'Web: refresh em cookie HttpOnly SameSite=Strict, access só em memória. Desktop: Tauri Stronghold ou keychain do SO. Mobile: Keychain iOS e Keystore Android.',f:'Cofre inacessível: sessão vira somente memória e expira ao fechar, com aviso.',k:['HttpOnly','Stronghold','Keystore']}},
+ {id:'en3',x:582,y:1350,w:255,h:100,l:'ent',t:'Resolvedor de entitlement',s:'A decisão comercial. Por item, no servidor.',
+  d:{q:'Dada uma conta e uma lista de itens, devolve o que ela pode usar. A lição central do CapCut, aplicada.',p:'O cliente nunca decide. Trocar o flag localmente não libera nada porque o export server side e a publicação revalidam.',te:'Resposta com TTL curto. Cache no cliente respeitando o TTL. Revalidação obrigatória no momento do export pago.',f:'Fora do ar: cache dentro do TTL vale (fail-open curto). Sem cache, plano gratuito (fail-closed). Nunca o contrário.',k:['por item','TTL','revalidação no export']}},
+ {id:'en4',x:861,y:1350,w:255,h:100,l:'ent',t:'Normalizador',s:'A UI lê um booleano. Nunca a estratégia crua.',
+  d:{q:'Converte a resposta de entitlement, qualquer que seja a forma, num único campo que a interface consome.',p:'Copiado literalmente do CapCut: business_info.json = { is_vip: isVip }. A UI nunca vê paid_strategy_list nem subscribe_package. Isso permite trocar o modelo comercial inteiro sem tocar em um componente de tela.',te:'Uma função pura, testada, com compatibilidade retroativa explícita para formatos antigos.',f:'Formato desconhecido: assume o plano gratuito e registra o evento. Falha segura.',k:['um booleano','função pura','retrocompatível']}},
+ {id:'en5',x:1140,y:1350,w:255,h:100,l:'ent',t:'Cobrança',s:'Stripe ou Pagar.me. Webhook como fonte de verdade.',
+  d:{q:'Assinatura e compra avulsa. O estado do pagamento vem por webhook, não por retorno de tela.',p:'Confiar no redirect de sucesso é como confiar no cliente para decidir o preço. O usuário fecha a aba, a rede cai, e o estado diverge.',te:'Webhook com verificação de assinatura, processamento idempotente e fila de retry. Reconciliação diária.',f:'Webhook perdido: a reconciliação diária corrige. Usuário nunca fica pagando sem acesso.',k:['webhook','idempotente','reconciliação']}},
+
+ {id:'i1',x:24,y:1560,w:255,h:100,l:'infra',t:'API Gateway',s:'Entrada única. Rate limit e autenticação na borda.',
+  d:{q:'Valida o JWT, aplica limite por conta e por IP, roteia.',p:'Centralizar autenticação e limite evita repetir essa lógica em cada serviço, que é onde buracos aparecem.',te:'Limite por conta e por IP, com janela deslizante. Resposta 429 com Retry-After que o cliente respeita.',f:'Gateway fora: o app inteiro entra em modo offline. A edição não para.',k:['rate limit','429','JWT na borda']}},
+ {id:'i2',x:303,y:1560,w:255,h:100,l:'infra',t:'Fila de jobs',s:'Com outbox no cliente. Nada se perde.',
+  d:{q:'Jobs de IA e export server side. O cliente grava a intenção localmente antes de enviar.',p:'O padrão outbox resolve o caso mais comum de perda: o usuário pede, a rede cai, e ninguém sabe se o pedido chegou.',te:'Chave de idempotência por job. Retry com backoff exponencial. Dead letter após 5 tentativas, com o motivo visível para o usuário.',f:'Fila fora: o job fica no outbox local e sobe quando voltar. O usuário vê "aguardando conexão", não erro.',k:['outbox','idempotência','dead letter']}},
+ {id:'i3',x:582,y:1560,w:255,h:100,l:'infra',t:'Workers de GPU',s:'Escala a zero. Só existem quando há fila.',
+  d:{q:'Executam o que o device não dá conta: upscale 4K, modelos grandes, export pesado.',p:'Escala a zero é o que mantém o custo fixo perto de zero enquanto o produto não tem volume. Você paga por segundo de uso, não por máquina parada.',te:'Serverless GPU com cobrança por segundo. Referência de mercado em 2026: A10 na faixa de US$ 1,10/h e H100 perto de US$ 3,95/h em provedor serverless, contra H100 a cerca de US$ 5,49/h em plataforma gerenciada. Verificar na página do fornecedor antes de fechar orçamento.',f:'Sem worker: a fila cresce, o usuário vê a posição e a estimativa. O caminho on device continua liberado.',k:['escala a zero','por segundo','fila visível']}},
+ {id:'i4',x:861,y:1560,w:255,h:100,l:'infra',t:'Object storage',s:'TTL de 24h em tudo que é mídia de job.',
+  d:{q:'Guarda temporariamente o que sobe para processamento no servidor.',p:'Prazo curto e apagamento efetivo é compromisso de privacidade e é o que impede a conta de storage crescer sozinha. Também é o que permite dizer, com honestidade, que o material do usuário não fica com você.',te:'Cloudflare R2 (egress zero) com regra de ciclo de vida de 24h. Apagamento efetivo, não lógico.',f:'Storage fora: jobs server side falham, on device continua. Nenhum dado local é afetado.',k:['TTL 24h','R2','hard delete']}},
+ {id:'i5',x:1140,y:1560,w:255,h:100,l:'infra',t:'Observabilidade',s:'Erro de render precisa ser visível antes do usuário reclamar.',
+  d:{q:'Rastreamento distribuído, erros, métricas de produto e saúde de job.',p:'Sozinho, você não tem equipe de suporte. A única forma de descobrir que um shader quebrou num driver específico é a telemetria.',te:'OpenTelemetry para traces, Sentry para erros com source map. Métricas que importam: fps de preview por device, tempo de export, taxa de falha por codec.',f:'Telemetria fora: o app não é afetado. Eventos ficam num buffer local com teto e são descartados se encher.',k:['OTel','Sentry','buffer com teto']}}
+],
+e:[
+ {f:'s4',t:'k1',l:'opera',k:'d'},{f:'k1',t:'k3',l:'resolve'},{f:'k3',t:'r1',l:'pede frame'},
+ {f:'r1',t:'r2',l:'cache'},{f:'r2',t:'r3',l:'decodifica'},{f:'r1',t:'r4',l:'export'},
+ {f:'a0',t:'a1',l:'device'},{f:'a0',t:'i2',l:'servidor',k:'d'},
+ {f:'ct4',t:'ct3',l:'metadados',k:'d'},{f:'ct3',t:'ct5',l:'bytes',k:'d'},
+ {f:'en3',t:'en4',l:'normaliza'},{f:'en4',t:'s1',l:'1 booleano',k:'d'},
+ {f:'i2',t:'i3',l:'despacha'},{f:'i3',t:'i4',l:'TTL 24h'}
+],
+k:[
+ {x:0,y:1230,w:700,c:'accent',b:'A fronteira que define o produto',
+  h:'Tudo acima desta linha (camadas 0 a 4) <b>funciona sem internet</b>. O usuário importa, corta, legenda, remove fundo, ajusta cor, mixa áudio e exporta com o avião em modo voo.<br><br>Tudo abaixo (camadas 5 e 6) é <b>opcional e assíncrono</b>. Se cair inteiro, o editor continua editando. Essa é a propriedade que separa esta arquitetura da do CapCut, onde a camada de rede é caminho crítico.'},
+ {x:720,y:1230,w:700,c:'ent',b:'Por que a camada 5 fica embaixo e não em cima',
+  h:'A política comercial depende do catálogo e da conta, e <b>nenhuma camada acima dela pode depender dela para funcionar</b>. Invertendo a ordem, qualquer indisponibilidade de cobrança viraria indisponibilidade de edição.<br><br>O contrato é de mão única: a camada 5 <b>enriquece</b> o que a camada 4 já entregou. Ela nunca é pré requisito para abrir, editar ou exportar o que é local.'}
+],
+t:[]
+}
+];
+</script>
+<script>
+/* ======================= 03 JORNADA ======================= */
+BOARDS.push({
+id:'jornada', nome:'Jornada', num:'03',
+head:{x:0,y:0,w:760,kick:'Do arquivo bruto ao vídeo pronto',
+  t:'Fluxo do usuário',
+  p:'Quatro fases. O objetivo principal, importar, cortar, legendar e exportar, precisa caber em cinco interações. O CapCut gasta por volta de doze. A redução não vem de esconder opção, vem de receitas: pipelines nomeados que o usuário dispara de uma vez e ajusta depois.'},
+g:[
+ {x:0,y:180,w:1330,h:195,t:'Fase A · Entrada',c:'user',i:'Nenhuma etapa aqui exige rede.'},
+ {x:0,y:415,w:1330,h:195,t:'Fase B · Preparação',c:'render',i:'Tudo em worker. A UI nunca congela.'},
+ {x:0,y:650,w:1330,h:420,t:'Fase C · Edição',c:'core',i:'Quatro trilhas paralelas sobre o mesmo documento.'},
+ {x:0,y:1110,w:1330,h:330,t:'Fase D · Saída',c:'shell',i:'Assíncrono por padrão. O usuário não espera na tela.'}
+],
+n:[
+ {id:'j1',x:25,y:230,w:230,h:95,l:'user',t:'Abrir o app',s:'Alvo: janela utilizável em menos de 1,5s.',
+  d:{q:'Boot da casca, restauração de sessão em cache e carga do último projeto se existir.',p:'Tempo de abertura é a primeira impressão e é a métrica mais fácil de perder sem notar. O Tauri ajuda aqui (cold start medido na faixa de 380ms contra 1.420ms do Electron em comparativos de 2026), mas o que pesa de verdade é quanto você carrega antes de desenhar.',te:'Carga em duas ondas: casca e último projeto primeiro, catálogo e modelos de IA depois, sob demanda.',f:'Projeto anterior corrompido: abre a Home com aviso e link para o snapshot anterior.',k:['cold start','carga em ondas']}},
+ {id:'j2',x:345,y:230,w:230,h:95,l:'user',t:'Sessão válida?',s:'Decisão. Offline é caminho normal, não exceção.',dec:1,
+  d:{q:'Verifica o token em cache. Não bloqueia a entrada.',p:'O editor inteiro funciona sem conta. Login é exigido só para sincronizar, publicar ou usar servidor. Exigir conta para editar é a forma mais rápida de perder o usuário que baixou para testar.',te:'Token em cache vale até 7 dias offline. Expirado: modo convidado com banner discreto.',f:'Auth fora do ar: entra como convidado. Nenhum bloqueio.',k:['convidado','7 dias offline']}},
+ {id:'j3',x:665,y:230,w:230,h:95,l:'shell',t:'Home e rascunhos',s:'Projetos recentes, templates, receitas.',
+  d:{q:'A cena Home. Lista de projetos com miniatura, duração e data. Atalhos para as receitas.',p:'É aqui que os cliques são economizados. "Legendar um vídeo" começa como receita na Home, não como sequência de menus dentro do editor.',te:'Lista paginada por cursor, miniaturas em cache local. Nenhuma chamada de rede para renderizar a Home.',f:'Índice de projetos ilegível: reconstrói varrendo a pasta de projetos.',k:['receitas','cursor','sem rede']}},
+ {id:'j4',x:985,y:230,w:230,h:95,l:'shell',t:'Novo projeto',s:'Formato e proporção. Dois campos, não um formulário.',
+  d:{q:'Cria o documento vazio com proporção e taxa de quadros.',p:'Pedir mais que isso no início é fricção pura. Resolução de export é decisão do momento do export, não da criação.',te:'Presets: vertical 9:16, quadrado 1:1, horizontal 16:9. A proporção é mutável a qualquer momento sem recriar o projeto.',f:'Falha ao criar arquivo: avisa com o caminho e o motivo do sistema operacional.',k:['2 campos','proporção mutável']}},
+
+ {id:'j5',x:25,y:465,w:230,h:95,l:'render',t:'Importar mídia',s:'Referência, não cópia. Nada sobe para servidor.',
+  d:{q:'O arquivo fica onde está. O projeto guarda caminho mais hash de conteúdo.',p:'Copiar para dentro do projeto duplica dezenas de GB sem motivo. O hash resolve o caso de mover o arquivo: o app reencontra pelo conteúdo.',te:'Drag and drop, seletor de arquivo e pasta observada. Hash incremental calculado em worker.',f:'Arquivo removido depois: o clipe aparece com estado "mídia ausente" e botão de relocalizar. A timeline não quebra.',k:['por referência','hash','relocalizar']}},
+ {id:'j6',x:345,y:465,w:230,h:95,l:'render',t:'Gerar proxy',s:'540p em worker. O usuário já pode editar.',
+  d:{q:'Versão em resolução menor usada para scrub e preview, mais miniaturas da timeline.',p:'Editar 4K direto trava qualquer máquina. O proxy é o que entrega os 60fps. E ele é gerado em segundo plano: o usuário começa a cortar antes de terminar.',te:'Worker dedicado, prioridade abaixo do preview. Proxy em cache de disco com LRU.',f:'Geração falha: edita no original com aviso de performance reduzida. Nunca bloqueia.',k:['540p','worker','LRU']}},
+ {id:'j7',x:665,y:465,w:230,h:95,l:'render',t:'Waveform e cenas',s:'Áudio desenhado, cortes sugeridos.',
+  d:{q:'Calcula a forma de onda e detecta mudanças de cena para sugerir pontos de corte.',p:'Detecção de cena é cálculo barato com ganho alto de tempo. É o tipo de recurso que parece IA e não é.',te:'Waveform por picos em múltiplas resoluções. Detecção de cena por diferença de histograma.',f:'Falha: a track mostra bloco liso sem forma de onda. Edição continua.',k:['picos','histograma']}},
+ {id:'j8',x:985,y:465,w:230,h:95,l:'core',t:'Editor pronto',s:'Documento montado. A partir daqui, zero rede.',
+  d:{q:'A cena de edição com o layout escolhido pela receita ou pelo último uso.',p:'O ponto onde o produto é o produto. Toda interação daqui para frente responde em menos de 16ms ou é um job com estado visível. Não existe meio termo.',te:'Layout restaurado por projeto. Painéis colapsáveis com estado persistido localmente.',f:'Nenhuma: é estado local.',k:['16ms ou job']}},
+
+ {id:'j9',x:25,y:700,w:230,h:95,l:'core',t:'Cortar e arrastar',s:'Síncrono. Nunca pode ter loading.',
+  d:{q:'A interação mais frequente do produto: mover, cortar, esticar, reordenar.',p:'Se isso tiver qualquer latência perceptível, o produto é considerado ruim por inteiro, não importa quantos recursos de IA existam.',te:'Comando coalescido por janela de tempo. Resolução de timeline por índice de intervalo, alvo abaixo de 1ms com 1.000 clipes.',f:'Não aplicável: é cálculo local em memória.',k:['síncrono','coalescência']}},
+ {id:'j10',x:345,y:700,w:230,h:95,l:'cat',t:'Aplicar efeito',s:'Pack local? Aplica. Senão, baixa primeiro.',dec:1,
+  d:{q:'Decisão de catálogo. Se o descritor e o shader já estão em cache, aplicação é instantânea.',p:'A vitrine mostra o que já está local de forma distinta do que precisa baixar. O usuário sabe antes de clicar se vai esperar.',te:'Ícone de download no item remoto. Download sob demanda, retomável, com aplicação otimista assim que o shader chega.',f:'Sem rede: itens remotos aparecem esmaecidos com rótulo "precisa de conexão". O pack base continua inteiro.',k:['local vs remoto','otimista']}},
+ {id:'j11',x:665,y:700,w:230,h:95,l:'ai',t:'Pedir IA',s:'O roteador decide onde executa.',dec:1,
+  d:{q:'Remover fundo, legendar, reduzir ruído, interpolar. O roteador mede o device e escolhe.',p:'A decisão é tomada antes de gastar o tempo do usuário, não no meio. E quando o caminho é servidor, o preço aparece antes do clique de confirmação.',te:'Heurística por memória, GPU e tamanho do trabalho. Resultado em cache por sessão.',f:'Em dúvida, device em resolução menor. Servidor nunca sem consentimento explícito.',k:['roteador','preço antes do clique']}},
+ {id:'j12',x:985,y:700,w:230,h:95,l:'render',t:'Preview',s:'Loop contínuo a 60fps. O coração do produto.',
+  d:{q:'Composição em tempo real do frame atual com todos os efeitos aplicados.',p:'Qualidade percebida mora aqui. Um preview que engasga faz o usuário desconfiar do export, mesmo quando o export está correto.',te:'WebGPU, cadeia de passes sem round trip para CPU, cache de três níveis.',f:'Perda de contexto de GPU: recria e redesenha. Piscar, não perda.',k:['60fps','WebGPU']}},
+
+ {id:'j13',x:25,y:830,w:230,h:95,l:'ai',t:'Executa no device',s:'Sem fila, sem crédito, sem upload.',
+  d:{q:'Caminho padrão. O modelo roda localmente via ONNX Runtime.',p:'Custo marginal zero para você. Privacidade real para o usuário. É a frase de posicionamento inteira.',te:'Progresso por frame ou por bloco. Cancelável a qualquer momento sem deixar resíduo.',f:'Memória insuficiente no meio: cai para resolução menor e avisa, em vez de travar o app.',k:['custo zero','cancelável']}},
+ {id:'j14',x:345,y:830,w:230,h:95,l:'infra',t:'Vai para fila',s:'Só com consentimento. Preço na tela antes.',
+  d:{q:'Caminho de exceção: upscale 4K, modelo grande, device fraco.',p:'O usuário vê o que será enviado, por quanto tempo fica armazenado e quanto custa, antes de confirmar. Essa tela é a diferença entre confiança e desinstalação.',te:'Outbox local, chave de idempotência, upload só do trecho necessário e não do projeto inteiro.',f:'Fila fora: fica no outbox com estado "aguardando conexão". Nada se perde.',k:['consentimento','outbox','trecho']}},
+ {id:'j15',x:665,y:830,w:230,h:95,l:'cat',t:'Baixa o pack',s:'Retomável. Aplicação otimista.',
+  d:{q:'Download do shader e dos assets do item escolhido.',p:'Aplicação otimista: o efeito entra na timeline com placeholder e é substituído quando chega. O usuário continua editando.',te:'Verificação por hash. Retomada de download interrompido.',f:'Hash divergente: descarta, tenta outra origem, e só então avisa.',k:['retomável','otimista']}},
+ {id:'j16',x:985,y:830,w:230,h:95,l:'core',t:'Ajusta e refaz',s:'Undo confiável. O ciclo real da edição.',
+  d:{q:'O loop onde o usuário passa 90% do tempo: aplicar, olhar, desfazer, ajustar.',p:'Undo que falha uma vez destrói a confiança do usuário em experimentar. E experimentar é o que faz ele descobrir o valor do produto.',te:'Histórico por comando, não por diff de estado. Persistido junto com o documento.',f:'Comando que falha não entra no histórico. Documento nunca em estado parcial.',k:['undo por comando']}},
+
+ {id:'j17',x:25,y:1160,w:230,h:95,l:'shell',t:'Exportar',s:'Resolução, formato, destino. Preset primeiro.',
+  d:{q:'A decisão final. Presets por destino (Reels, TikTok, YouTube, arquivo) à frente dos controles avançados.',p:'A maioria dos usuários quer "vertical para Reels", não bitrate. Os controles existem, mas depois do preset.',te:'Presets com resolução, taxa de bits e codec coerentes com cada plataforma.',f:'Destino indisponível: salva local e oferece reenviar depois.',k:['preset por destino']}},
+ {id:'j18',x:345,y:1160,w:230,h:95,l:'render',t:'Local ou servidor?',s:'Decisão. Local é o padrão sempre que couber.',dec:1,
+  d:{q:'Avalia resolução, duração, efeitos pesados e capacidade do device.',p:'Local é grátis para você e mais rápido para ele. O servidor é exceção justificada, nunca conveniência de arquitetura.',te:'Critério declarado: acima de 4K com mais de 3 efeitos de GPU pesados em device sem WebGPU, sugere servidor.',f:'Local falha no meio: salva o parcial e oferece retomar ou mandar para o servidor.',k:['local primeiro','retomável']}},
+ {id:'j19',x:665,y:1160,w:230,h:95,l:'render',t:'Render em background',s:'O usuário continua editando outro projeto.',
+  d:{q:'O export roda em worker ou processo separado, com progresso visível e cancelável.',p:'Prender a tela durante 4 minutos de export é a diferença entre uma ferramenta e um incômodo. Quem edita, edita em lote.',te:'Worker dedicado no web, processo separado no desktop. Notificação do sistema ao terminar.',f:'App fechado no meio: o job é retomável no próximo boot, a partir do último segmento.',k:['background','notificação do SO']}},
+ {id:'j20',x:985,y:1160,w:230,h:95,l:'user',t:'Pronto',s:'Arquivo no disco. Compartilhar é opcional.',
+  d:{q:'Fim do fluxo principal. O arquivo existe, com ou sem conta, com ou sem internet.',p:'Terminar sem depender de nada remoto é a prova da arquitetura. Se isso falhar, a camada errada ficou no caminho crítico.',te:'Notificação com ação direta: abrir pasta, abrir arquivo, compartilhar.',f:'Nenhuma: o arquivo já está no disco.',k:['independente de rede']}}
+],
+e:[
+ {f:'j1',t:'j2'},{f:'j2',t:'j3',l:'sim ou convidado'},{f:'j3',t:'j4'},
+ {f:'j4',t:'j5'},{f:'j5',t:'j6'},{f:'j6',t:'j7'},{f:'j7',t:'j8'},
+ {f:'j8',t:'j9'},{f:'j9',t:'j10'},{f:'j10',t:'j11'},{f:'j11',t:'j12'},
+ {f:'j11',t:'j13',l:'device'},{f:'j11',t:'j14',l:'servidor',k:'d'},
+ {f:'j10',t:'j15',l:'remoto',k:'d'},{f:'j12',t:'j16'},{f:'j16',t:'j9',l:'volta ao loop',k:'d'},
+ {f:'j16',t:'j17'},{f:'j17',t:'j18'},{f:'j18',t:'j19',l:'local'},{f:'j19',t:'j20'}
+],
+k:[
+ {x:0,y:1480,w:648,c:'accent',b:'Receitas: como sair de doze cliques para cinco',
+  h:'Uma receita é um pipeline nomeado disparado da Home. <b>"Legendar e cortar pausas"</b> executa: importar, gerar proxy, transcrever, detectar silêncio, cortar, montar a track de legenda e abrir no layout de legenda. Um clique.<br><br>O usuário ajusta <b>depois</b>, com o resultado na tela. O erro clássico é pedir a configuração antes, quando ele ainda não viu nada e não sabe o que quer.<br><br>É o mesmo conceito dos sete layouts do CapCut, levado um passo adiante: o layout já vem com o trabalho feito.'},
+ {x:682,y:1480,w:648,c:'render',b:'A regra dos 16 milissegundos',
+  h:'Qualquer interação se encaixa em uma de duas caixas, sem terceira opção:<br><br><b>Abaixo de 16ms:</b> cortar, arrastar, scrub, zoom, selecionar, desfazer. Síncrono, sem spinner, sem exceção.<br><br><b>Acima de 2s:</b> vira job com estado visível, cancelável e retomável. Acima de 30s, libera a UI e notifica no fim.<br><br>A faixa entre 16ms e 2s é onde moram os bugs de percepção: rápido demais para justificar spinner, lento demais para parecer instantâneo. Resolva com <b>feedback otimista</b>, aplicando o resultado esperado e corrigindo se falhar.'}
+],
+t:[
+ {x:0,y:1700,w:900,cap:'Cliques até o objetivo principal: vídeo vertical legendado, pronto para publicar',
+  h:['Etapa','CapCut (observado no fluxo)','EDITICARUS com receita'],
+  r:[['Abrir e criar projeto','3','1 (receita na Home)'],
+     ['Importar mídia','2','1 (arrastar)'],
+     ['Gerar legenda','3 (menu, idioma, confirmar)','0 (incluso na receita)'],
+     ['Ajustar estilo da legenda','2','1 (preset)'],
+     ['Exportar','2 a 3 (preset, confirmar, aguardar na tela)','1 (preset, segue em background)'],
+     ['<b>Total</b>','<b>12 a 13</b>','<b>4</b>']]}
+]
+});
+
+/* ======================= 04 DADO ======================= */
+BOARDS.push({
+id:'dado', nome:'Dado', num:'04',
+head:{x:0,y:0,w:780,kick:'Entrada, processamento, armazenamento, descarte',
+  t:'Ciclo de vida do dado',
+  p:'A decisão que governa este quadro é uma só: mídia bruta não sobe por padrão. Isso zera o custo de armazenamento no lançamento, elimina a maior superfície de risco de privacidade e vira argumento comercial. O que sobe, sobe por exceção consentida e morre em 24 horas.'},
+g:[
+ {x:0,y:190,w:1290,h:230,t:'Entra',c:'user',i:'Cinco portas de entrada. Só uma envolve rede.'},
+ {x:0,y:460,w:1290,h:230,t:'Processa',c:'render',i:'Device por padrão. Servidor por exceção consentida.'},
+ {x:0,y:730,w:1290,h:230,t:'Armazena',c:'cat',i:'Local é a fonte de verdade. Nuvem é réplica opcional.'},
+ {x:0,y:1000,w:1290,h:230,t:'Descarta',c:'ent',i:'Prazo declarado para cada classe. Apagamento efetivo.'}
+],
+n:[
+ {id:'d1',x:25,y:245,w:235,h:100,l:'user',t:'Mídia bruta',s:'Vídeo, áudio e imagem do usuário. Fica no disco dele.',
+  d:{q:'O arquivo original. Entra por referência: o projeto guarda caminho mais hash, nunca uma cópia.',p:'Um projeto de 20 minutos em 4K passa de 40 GB. Copiar isso para dentro do app é desperdício de disco; subir é desperdício de banda, de dinheiro e de confiança.',te:'Hash incremental em worker. Relocalização automática por conteúdo se o arquivo mudar de lugar.',f:'Arquivo apagado: clipe em estado "mídia ausente" com botão de relocalizar. O documento permanece íntegro.',k:['por referência','nunca sobe','hash']}},
+ {id:'d2',x:278,y:245,w:235,h:100,l:'core',t:'Ações de edição',s:'Cada clique vira um comando nomeado.',
+  d:{q:'A sequência de comandos que constrói o vídeo. É o dado mais valioso do sistema e o menor.',p:'Dá undo determinístico, serve de telemetria de uso real sem instrumentação extra, e é o que viabilizaria colaboração depois sem reescrever nada.',te:'Comandos serializáveis. Log desde o último snapshot.',f:'Log corrompido: volta ao último snapshot íntegro. Perde minutos, nunca o projeto.',k:['comando','undo','telemetria']}},
+ {id:'d3',x:531,y:245,w:235,h:100,l:'cat',t:'Material de catálogo',s:'Efeitos, fontes, sons, LUTs, templates.',
+  d:{q:'Descritor JSON mais assets. Pack base vem no instalador, extras baixam sob demanda.',p:'Única classe que exige rede, e mesmo assim só para o que está além do pack base.',te:'Imutável e endereçado por hash, então cache pode ser longo.',f:'CDN fora: pack base intacto, extras marcados como indisponíveis.',k:['imutável','pack base']}},
+ {id:'d4',x:784,y:245,w:235,h:100,l:'ent',t:'Conta e cobrança',s:'E-mail, plano, histórico de pagamento.',
+  d:{q:'O mínimo necessário. Sem telefone, sem endereço, sem documento no lançamento.',p:'Cada campo coletado é um campo a proteger, a justificar na LGPD e a apagar quando pedirem. Coletar menos é mais barato e mais seguro.',te:'Postgres. Dado de cartão nunca toca o seu servidor: fica no provedor (Stripe ou Pagar.me).',f:'Banco indisponível: login por token em cache continua. Compra nova espera.',k:['mínimo necessário','LGPD','tokenização']}},
+ {id:'d5',x:1037,y:245,w:235,h:100,l:'infra',t:'Telemetria',s:'Evento anônimo de uso e de erro.',
+  d:{q:'Qual recurso foi usado, quanto tempo levou, em qual device, o que falhou. Sem conteúdo do vídeo, nunca.',p:'Sozinho, sem equipe de suporte, isso é o único jeito de descobrir que um shader quebra num driver específico ou que o export falha num codec.',te:'Opt out visível nas preferências. Identificador de instalação, não de pessoa.',f:'Coletor fora: buffer local com teto. Enche, descarta o mais antigo. Nunca afeta o app.',k:['anônimo','opt out','buffer com teto']}},
+
+ {id:'d6',x:25,y:515,w:235,h:100,l:'render',t:'Decode e proxy',s:'No device. Worker separado.',
+  d:{q:'Gera proxy 540p, miniaturas e waveform. Prioridade abaixo do preview.',p:'É o que entrega os 60fps de scrub. Roda em segundo plano para não atrasar o início da edição.',te:'WebCodecs quando disponível, FFmpeg nativo no desktop. Worker dedicado.',f:'Falha: edita no original com aviso de performance.',k:['worker','540p']}},
+ {id:'d7',x:278,y:515,w:235,h:100,l:'ai',t:'IA on device',s:'ONNX Runtime. Nada sai da máquina.',
+  d:{q:'Matting, transcrição, denoise, interpolação. Modelo baixa uma vez e fica em cache.',p:'Esse é o ponto onde a arquitetura vira posicionamento: "seu material não sai do seu computador" é verdade verificável, não slogan.',te:'ONNX Runtime Web com WebGPU, nativo no mobile. Modelos quantizados.',f:'Memória insuficiente: resolução menor com aviso, ou oferta do caminho servidor.',k:['ONNX','cache de modelo']}},
+ {id:'d8',x:531,y:515,w:235,h:100,l:'infra',t:'IA em servidor',s:'Exceção. Só o trecho necessário sobe.',
+  d:{q:'Upscale 4K, modelo grande, device incapaz. Sobe o trecho, não o projeto.',p:'Enviar o trecho e não o arquivo inteiro reduz upload, custo e exposição ao mesmo tempo. É a diferença entre subir 40 MB e subir 40 GB.',te:'Recorte no device antes do upload. Chave de idempotência. URL assinada de validade curta.',f:'Falha no worker: retry com backoff, depois dead letter com motivo visível ao usuário.',k:['só o trecho','idempotência']}},
+ {id:'d9',x:784,y:515,w:235,h:100,l:'render',t:'Export local',s:'O caminho padrão. Custo de servidor: zero.',
+  d:{q:'Render final no device, com FFmpeg nativo no desktop ou WebCodecs na web.',p:'Cada export local é dinheiro que você não gasta. Na projeção de ano 1, é a diferença entre centenas e milhares de reais por mês.',te:'Job em background, retomável, com notificação do sistema.',f:'Falha no meio: parcial salvo, job retomável, ou oferta de mandar ao servidor.',k:['custo zero','retomável']}},
+ {id:'d10',x:1037,y:515,w:235,h:100,l:'ent',t:'Resolução de acesso',s:'Servidor decide. Cliente obedece.',
+  d:{q:'A lição central do CapCut: o entitlement é calculado no servidor, por item, e normalizado para um booleano antes de chegar na UI.',p:'Permite mudar preço e pacote sem release. E impede que trocar um flag local libere qualquer coisa, porque o export pago revalida.',te:'TTL curto na resposta. Revalidação obrigatória no export server side.',f:'Fora do ar: cache dentro do TTL vale, sem cache cai no gratuito.',k:['por item','TTL','revalida']}},
+
+ {id:'d11',x:25,y:785,w:235,h:100,l:'core',t:'Projeto (EDL)',s:'JSON de dezenas de KB. Local é a verdade.',
+  d:{q:'O documento completo do vídeo, sem mídia. Um projeto de 20 minutos cabe em 40 KB.',p:'Tamanho pequeno é o que permite snapshot frequente, undo barato e sync instantâneo quando ele existir.',te:'Escrita atômica, snapshot a cada 30 comandos mais 1 por minuto. Sync opcional como réplica, nunca como fonte.',f:'Disco cheio: para de gravar, avisa claramente, mantém em memória.',k:['40 KB','atômico','réplica opcional']}},
+ {id:'d12',x:278,y:785,w:235,h:100,l:'render',t:'Cache de mídia',s:'Proxies, miniaturas, waveforms. Descartável.',
+  d:{q:'Tudo que pode ser recalculado a partir do original.',p:'Por ser derivado, pode ser apagado sem perda. Isso resolve o problema de disco crescendo sem controle.',te:'LRU com teto configurável nas preferências. Padrão: 20 GB no desktop, 2 GB no mobile.',f:'Apagado por fora: regenera no próximo uso.',k:['derivado','LRU','teto']}},
+ {id:'d13',x:531,y:785,w:235,h:100,l:'cat',t:'Packs baixados',s:'Imutável, endereçado por hash.',
+  d:{q:'Shaders, fontes, sons e LUTs que o usuário baixou.',p:'Imutabilidade permite cache longo e dispensa invalidação, que é uma das fontes mais comuns de bug sutil.',te:'Cache por hash. Expiração por desuso, não por tempo.',f:'Cache corrompido: hash não bate, baixa de novo.',k:['imutável','hash']}},
+ {id:'d14',x:784,y:785,w:235,h:100,l:'infra',t:'Bucket temporário',s:'Só mídia de job server side. TTL de 24h.',
+  d:{q:'O único lugar onde material do usuário fica em infraestrutura sua, e por tempo curto.',p:'Prazo curto com apagamento efetivo é compromisso de privacidade, controle de custo e redução de risco jurídico, tudo com uma regra só.',te:'Cloudflare R2, egress zero, regra de ciclo de vida de 24h. Apagamento efetivo, não lógico.',f:'Storage fora: jobs server side falham, nada local é afetado.',k:['TTL 24h','R2','hard delete']}},
+ {id:'d15',x:1037,y:785,w:235,h:100,l:'ent',t:'Dados de conta',s:'Postgres. Mínimo, com prazo de exclusão.',
+  d:{q:'Conta, assinatura, histórico de cobrança e consentimentos.',p:'Guardar o mínimo pelo menor tempo possível simplifica LGPD e reduz o estrago de qualquer incidente.',te:'Postgres gerenciado, backup diário com retenção de 30 dias, criptografia em repouso.',f:'Réplica de leitura assume. Escrita entra em modo degradado com fila.',k:['mínimo','backup 30d','LGPD']}},
+
+ {id:'d16',x:25,y:1055,w:235,h:100,l:'ent',t:'Lixeira de projeto',s:'30 dias. Depois, purga efetiva.',
+  d:{q:'Projeto apagado vai para a lixeira local e é removido de fato após 30 dias.',p:'Apagar projeto por engano é comum. Trinta dias cobrem o arrependimento sem virar depósito permanente.',te:'Marcação local mais tarefa de limpeza no boot.',f:'Nenhuma: é local.',k:['30 dias','local']}},
+ {id:'d17',x:278,y:1055,w:235,h:100,l:'render',t:'Cache por desuso',s:'Proxy sem acesso há 7 dias sai.',
+  d:{q:'Limpeza automática por LRU respeitando o teto de disco.',p:'O usuário nunca precisa pensar em espaço. O app se mantém dentro do orçamento que ele definiu.',te:'Varredura no boot e quando o teto é atingido.',f:'Nenhuma: regenerável.',k:['LRU','7 dias']}},
+ {id:'d18',x:531,y:1055,w:235,h:100,l:'infra',t:'Job expirado',s:'24h e apaga. Prazo declarado antes do upload.',
+  d:{q:'Entrada, saída e artefatos intermediários do job server side.',p:'O prazo aparece na tela de consentimento, antes do upload. Prometer e cumprir aqui é o que sustenta a promessa de privacidade do produto inteiro.',te:'Regra de ciclo de vida no bucket, não rotina da aplicação. Menos código, menos chance de esquecer.',f:'Regra falha: alerta de observabilidade. Custo de storage é o sinal.',k:['24h','regra do bucket']}},
+ {id:'d19',x:784,y:1055,w:235,h:100,l:'infra',t:'Telemetria agregada',s:'Bruto 30 dias, agregado 90.',
+  d:{q:'Evento bruto vira série agregada e o bruto é descartado.',p:'Agregado responde quase toda pergunta de produto por uma fração do custo de armazenamento.',te:'Rollup diário. Bruto expira em 30 dias por política de retenção.',f:'Nenhuma: não é caminho crítico.',k:['rollup','30/90 dias']}},
+ {id:'d20',x:1037,y:1055,w:235,h:100,l:'ent',t:'Exclusão de conta',s:'LGPD. Executada em até 30 dias.',
+  d:{q:'Direito de eliminação. Apaga conta, projetos sincronizados e telemetria identificável.',p:'É obrigação legal e é diferencial competitivo quando funciona de verdade e em um clique.',te:'Fluxo autosserviço nas preferências. Dado fiscal de pagamento retido pelo prazo legal, com isso declarado.',f:'Falha parcial: fila de retry com alerta. Nunca marca como concluído sem estar.',k:['LGPD','autosserviço','retenção fiscal']}}
+],
+e:[
+ {f:'d1',t:'d6'},{f:'d2',t:'d11',l:'persiste'},{f:'d3',t:'d13'},{f:'d4',t:'d15'},{f:'d5',t:'d19'},
+ {f:'d6',t:'d12'},{f:'d7',t:'d11',l:'resultado'},{f:'d8',t:'d14'},{f:'d9',t:'d1',l:'arquivo final',k:'d'},
+ {f:'d11',t:'d16'},{f:'d12',t:'d17'},{f:'d14',t:'d18'},{f:'d15',t:'d20'}
+],
+k:[],
+t:[
+ {x:0,y:1290,w:1290,cap:'Matriz completa: onde cada classe de dado vive e quando morre',
+  h:['Classe','Entra por','Processa em','Armazena em','Descarta quando','Sobe para servidor?'],
+  r:[['Mídia bruta','Import local','Device','Disco do usuário','Nunca (é dele)','<span class="pill ok">Não</span>'],
+     ['Proxy e miniatura','Gerado no import','Worker local','Cache local','7 dias sem uso ou teto de disco','<span class="pill ok">Não</span>'],
+     ['Projeto (EDL)','Cada comando','Device','Arquivo local mais réplica opcional','Lixeira 30 dias, depois purga','<span class="pill wa">Opcional</span>'],
+     ['Material de catálogo','Download','Device','Cache por hash','Desuso','<span class="pill ok">Desce apenas</span>'],
+     ['Mídia de job de IA','Upload consentido','GPU worker','Bucket temporário','<b>24h, apagamento efetivo</b>','<span class="pill da">Sim, com consentimento</span>'],
+     ['Conta e cobrança','Cadastro','API','Postgres','Exclusão em até 30 dias (LGPD)','<span class="pill da">Sim</span>'],
+     ['Telemetria','Evento de uso','Coletor','Warehouse','Bruto 30d, agregado 90d','<span class="pill wa">Anônimo, com opt out</span>']]}
+]
+});
+</script>
+<script>
+/* ======================= 05 ESPERA ======================= */
+BOARDS.push({
+id:'espera', nome:'Espera', num:'05',
+head:{x:0,y:0,w:800,kick:'Onde o usuário espera e como ele é avisado',
+  t:'Jobs, loadings e erro',
+  p:'Três perguntas respondidas aqui: onde teremos espera longa, o que acontece na tela enquanto isso, e como uma API que falha avisa sem quebrar nada. A regra que governa tudo: abaixo de 16ms é síncrono, acima de 2s é job com estado, acima de 30s libera a tela e notifica.'},
+g:[
+ {x:0,y:190,w:1340,h:220,t:'Máquina de estados do job',c:'infra',i:'Seis estados. Qualquer job do sistema usa esta máquina.'},
+ {x:0,y:450,w:1340,h:330,t:'Erro de API: três níveis de aviso',c:'ent',i:'O nível é escolhido pelo custo do erro para o usuário, não pelo código HTTP.'}
+],
+n:[
+ {id:'q1',x:30,y:250,w:185,h:85,l:'infra',t:'queued',s:'No outbox local ou na fila.',term:1,
+  d:{q:'O job foi criado e persistido localmente antes de qualquer chamada de rede.',p:'Esse é o padrão outbox e resolve o caso mais comum de perda: o usuário pede, a rede cai, e ninguém sabe se chegou.',te:'Chave de idempotência gerada no cliente. Posição na fila visível quando o servidor responde.',f:'Fila fora: fica aqui com rótulo "aguardando conexão". Nada se perde.',k:['outbox','idempotência']}},
+ {id:'q2',x:245,y:250,w:185,h:85,l:'infra',t:'running',s:'Com progresso real, não indeterminado.',term:1,
+  d:{q:'Executando no device ou no worker. Progresso por frame, bloco ou segmento.',p:'Barra indeterminada é a pior UI de espera que existe: não dá informação e faz tudo parecer travado. Se dá para contar, conte.',te:'Progresso por servidor enviado via SSE. No device, por callback do worker.',f:'Sem progresso disponível: mostra tempo decorrido e etapa atual, nunca uma barra girando sozinha.',k:['progresso real','SSE']}},
+ {id:'q3',x:460,y:250,w:185,h:85,l:'ok',t:'succeeded',s:'Resultado aplicado. Notificação se demorou.',term:1,
+  d:{q:'Resultado disponível e já aplicado no documento quando faz sentido.',p:'Se o job passou de 30s, o usuário provavelmente saiu da tela. Notificação do sistema com ação direta traz ele de volta ao ponto exato.',te:'Notificação nativa no desktop e mobile, aba com indicador na web.',f:'Resultado aplicado sobre documento já alterado: entra como comando normal, portanto reversível com undo.',k:['notificação','reversível']}},
+ {id:'q4',x:675,y:250,w:185,h:85,l:'ent',t:'failed',s:'Com motivo em português e ação possível.',term:1,
+  d:{q:'Falhou após esgotar as tentativas. O usuário vê o que houve e o que pode fazer.',p:'"Erro 500" não é mensagem, é desistência. Toda falha precisa dizer o que falhou, o que já foi salvo e qual o próximo passo.',te:'Dead letter após 5 tentativas com backoff exponencial. Motivo traduzido e registrado.',f:'Nunca descarta trabalho sem avisar. O parcial fica disponível.',k:['dead letter','motivo claro']}},
+ {id:'q5',x:890,y:250,w:185,h:85,l:'infra',t:'cancelled',s:'Cancelável sempre. Sem resíduo.',term:1,
+  d:{q:'Usuário cancelou. Recursos liberados, parciais apagados, cobrança não acontece.',p:'Job que não dá para cancelar faz o usuário fechar o app na marra, e aí você perde o estado inteiro em vez de um job.',te:'Sinal de cancelamento propagado até o worker. Limpeza garantida por finally, não por caminho feliz.',f:'Cancelamento não propaga: o job expira pelo TTL e nada é cobrado.',k:['sem resíduo','sem cobrança']}},
+ {id:'q6',x:1105,y:250,w:185,h:85,l:'infra',t:'expired',s:'TTL de 24h. Entrada e saída apagadas.',term:1,
+  d:{q:'Passou o prazo. Tudo que estava no bucket temporário foi removido de fato.',p:'Prazo declarado na tela de consentimento e cumprido por regra de ciclo de vida do bucket, não por rotina de aplicação que pode falhar sem ninguém ver.',te:'Regra no R2. Alerta de observabilidade se o volume de storage não cair como esperado.',f:'Regra falha: o custo de storage é o sinal, e o alerta dispara antes de virar problema.',k:['TTL 24h','regra do bucket']}},
+
+ {id:'er1',x:30,y:510,w:400,h:110,l:'ok',t:'Nível 1 · Inline',s:'O erro vive dentro do componente que falhou. Não interrompe.',
+  d:{q:'Catálogo que não carregou, miniatura que falhou, item indisponível, campo inválido.',p:'A maioria dos erros é local e recuperável. Tirar o usuário do fluxo para avisar algo que ele pode ignorar é desrespeito com o tempo dele.',te:'Estado de erro no próprio card ou lista, com botão de tentar de novo. Resto da tela intacto.',f:'É o tratamento de falha, não o que falha.',k:['não interrompe','retry no lugar']}},
+ {id:'er2',x:450,y:510,w:400,h:110,l:'warn',t:'Nível 2 · Toast',s:'Informa algo que mudou fora da tela atual. Some sozinho.',
+  d:{q:'Job terminou, sincronização falhou, voltou a ficar offline, pack baixado.',p:'Informação que o usuário precisa saber mas não precisa agir agora. Toast com ação opcional, nunca com botão obrigatório.',te:'Fila de toasts com teto de 3 simultâneos. Duração proporcional ao tamanho do texto. Ação opcional embutida.',f:'É o tratamento de falha.',k:['efêmero','ação opcional']}},
+ {id:'er3',x:870,y:510,w:420,h:110,l:'ent',t:'Nível 3 · Modal',s:'Só quando o usuário perderia trabalho ou dinheiro.',
+  d:{q:'Disco cheio durante gravação, sessão expirada com alterações não salvas, cobrança que falhou, exclusão definitiva.',p:'Modal é o recurso mais caro da interface porque bloqueia. Usar para aviso comum treina o usuário a fechar sem ler, e aí ele fecha o que importava.',te:'Sempre com duas saídas nomeadas pela consequência: "Salvar em outro lugar" e "Continuar sem salvar", nunca "OK" e "Cancelar".',f:'É o tratamento de falha.',k:['bloqueia','duas saídas nomeadas']}},
+
+ {id:'er4',x:30,y:650,w:1260,h:105,l:'accent',t:'A regra única: toda mensagem de erro responde três coisas',
+  s:'1. O que falhou, em palavra que o usuário reconhece, não em nome de componente.  ·  2. O que já foi salvo, porque o medo real é perder trabalho.  ·  3. O que ele pode fazer agora, com o botão ao lado da frase.  ·  Nunca: código HTTP cru, stack trace, nome de serviço interno, ou a palavra "inesperado".',
+  d:{q:'O contrato de escrita de erro do produto inteiro.',p:'Erro é o momento em que o usuário mais precisa de clareza e é onde quase todo produto escreve pior. Fazer isso bem custa texto, não código, e é o diferencial mais barato que existe.',te:'Catálogo de mensagens centralizado, com chave por causa e não por código. Testado com os mesmos critérios de qualquer componente.',f:'Causa sem mensagem catalogada: mensagem genérica honesta mais identificador do evento para suporte. Nunca inventa uma explicação.',k:['3 perguntas','sem jargão','sem stack trace']}}
+],
+e:[
+ {f:'q1',t:'q2'},{f:'q2',t:'q3',l:'ok'},{f:'q2',t:'q4',l:'falhou'},
+ {f:'q4',t:'q1',l:'retry com backoff',k:'d'},{f:'q2',t:'q5',l:'cancelou',k:'d'},{f:'q3',t:'q6',l:'24h',k:'d'}
+],
+k:[
+ {x:0,y:1230,w:655,c:'render',b:'A faixa perigosa: entre 16ms e 2 segundos',
+  h:'Rápido demais para justificar spinner, lento demais para parecer instantâneo. É onde a percepção de qualidade se perde sem ninguém saber por quê.<br><br>Solução: <b>feedback otimista</b>. Aplica o resultado esperado na hora e corrige se falhar. Vale para aplicar efeito, salvar, renomear, reordenar.<br><br>O risco é reverter visivelmente. Mitigação: só otimize onde a taxa de falha é comprovadamente baixa, e quando reverter, explique no mesmo lugar onde o otimismo apareceu.'},
+ {x:685,y:1230,w:655,c:'ai',b:'O caso específico da IA: preview progressivo',
+  h:'Remover fundo em um clipe de 30s leva de 10 a 60 segundos no device. Esperar isso com barra é ruim, mas mandar embora também: o usuário precisa <b>validar a qualidade</b> antes de confiar.<br><br>Padrão: processa <b>os 3 primeiros segundos primeiro</b>, mostra na hora, e continua o resto em background. Ele aprova ou cancela em 4 segundos em vez de 60.<br><br>Isso corta o custo do erro. Hoje, no CapCut, errar o recurso de IA custa crédito que não estorna: <code>pc_ai_expand_m10n_popup_desc_stop_generate_credits_consumed</code> diz literalmente que as imagens não serão geradas e os créditos ainda serão consumidos.'}
+],
+t:[
+ {x:0,y:820,w:1340,cap:'Onde o usuário espera, quanto tempo, e o que acontece na tela',
+  h:['Operação','Tempo típico','Modelo','O que o usuário vê'],
+  r:[['Scrub e corte na timeline','<span class="num">&lt; 16 ms</span>','<span class="pill ok">Síncrono</span>','Nada. Resposta imediata, sem exceção'],
+     ['Abrir projeto','<span class="num">0,2 a 1 s</span>','<span class="pill ok">Síncrono</span>','Esqueleto da timeline preenchendo'],
+     ['Importar e gerar proxy','<span class="num">1 a 5 s</span>','<span class="pill wa">Progressivo</span>','Edita já no original enquanto o proxy gera atrás'],
+     ['Aplicar efeito de catálogo local','<span class="num">&lt; 200 ms</span>','<span class="pill ok">Síncrono</span>','Aplicação otimista com resultado na hora'],
+     ['Baixar pack remoto','<span class="num">2 a 15 s</span>','<span class="pill wa">Job curto</span>','Placeholder na timeline mais progresso no item'],
+     ['Remover fundo (device)','<span class="num">10 a 60 s</span>','<span class="pill wa">Job com preview</span>','3 primeiros segundos prontos em 4s para validar'],
+     ['Legendas automáticas','<span class="num">30 s a 3 min</span>','<span class="pill da">Assíncrono</span>','Continua editando. Legenda aparece quando chega'],
+     ['Export 1080p local','<span class="num">1 a 5 min</span>','<span class="pill da">Assíncrono</span>','Background, notificação do sistema no fim'],
+     ['Export 4K em servidor','<span class="num">5 a 20 min</span>','<span class="pill da">Assíncrono</span>','Pode fechar o app. Notificação e e-mail'],
+     ['Upscale 4K em servidor','<span class="num">3 a 15 min</span>','<span class="pill da">Assíncrono</span>','Posição na fila mais estimativa antes de confirmar']]}
+]
+});
+
+/* ======================= 06 ACESSO ======================= */
+BOARDS.push({
+id:'acesso', nome:'Acesso', num:'06',
+head:{x:0,y:0,w:820,kick:'A lição central do CapCut, com a economia invertida',
+  t:'Entitlement e cobrança',
+  p:'A mecânica é copiada: servidor decide por item, cliente resolve e obedece, UI lê um booleano. O que muda é o que fica atrás do muro. No CapCut, o que roda na máquina do usuário é pago. Aqui, o que roda na máquina do usuário é grátis, porque custa zero para você.'},
+g:[
+ {x:0,y:190,w:1300,h:430,t:'Resolução do acesso em runtime',c:'ent',i:'Mesmo desenho do CapCut 9.5.0.4050, com o campo de decisão vindo do servidor.'}
+],
+n:[
+ {id:'g1',x:30,y:250,w:280,h:110,l:'cat',t:'Catálogo devolve o item',s:'Metadados em lote de 50, como o mget_item.',
+  d:{q:'A vitrine pede metadados em lote. Cada item traz sua descrição e, separadamente, sua condição comercial.',p:'Lote de 50 evita N+1 e mantém a vitrine fluida. A separação entre descrição e condição é o que permite mudar preço sem reprocessar catálogo.',te:'POST /v1/catalog/mget. Resposta com ETag. Condição comercial em bloco próprio, com TTL próprio.',f:'Catálogo fora: cache local mais pack base. A vitrine mostra estado offline.',k:['lote de 50','ETag','TTL']}},
+ {id:'g2',x:340,y:250,w:280,h:110,l:'ent',t:'Servidor resolve a condição',s:'Por conta e por item. Nunca no cliente.',
+  d:{q:'Dada a conta e a lista de itens, o servidor devolve o que ela pode usar. É o equivalente ao commercial_strategy mais paid_strategy_list do CapCut.',p:'A decisão não pode viver no cliente porque o cliente é modificável. Trocar o flag localmente não libera nada, já que o export pago e a publicação revalidam do lado do servidor.',te:'Resposta com TTL curto. Cache no cliente respeitando o TTL. Revalidação obrigatória no export server side.',f:'Dentro do TTL, o cache vale (fail-open curto). Sem cache, cai no gratuito (fail-closed). Nunca o contrário.',k:['por item','fail-closed','revalida no export']}},
+ {id:'g3',x:650,y:250,w:280,h:110,l:'ent',t:'Normaliza para um booleano',s:'A UI nunca vê a estratégia crua.',
+  d:{q:'Copiado literalmente: business_info.json = { is_vip: isVip }. Qualquer que seja a forma da resposta, a interface lê um campo só.',p:'Permite trocar o modelo comercial inteiro, de assinatura para pacote, de pacote para avulso, sem tocar em um componente de tela. Também dá compatibilidade retroativa de graça, exatamente como o código do CapCut faz ao cair no is_vip antigo quando commercial_strategy vem indefinido.',te:'Função pura, testada, com caminho legado explícito. Formato desconhecido assume gratuito.',f:'Formato novo não reconhecido: gratuito mais evento de telemetria. Falha segura.',k:['um booleano','função pura','legado explícito']}},
+ {id:'g4',x:960,y:250,w:280,h:110,l:'shell',t:'UI aplica ou oferece',s:'Com marca d água, nunca com bloqueio seco.',
+  d:{q:'Item liberado entra no projeto. Item não liberado entra com marca, igual ao areaLocked/AmazingFeature do CapCut, que é uma cena de efeito completa e não um alerta.',p:'O usuário vê o resultado antes de decidir. Esconder o recurso atrás de um cadeado impede justamente a experiência que justificaria o pagamento.',te:'Shader de marca aplicado na cadeia de preview. Removido no export quando o entitlement confirma.',f:'Shader de marca falha: export server side bloqueia. Marca ausente nunca pode virar export limpo.',k:['marca d água','prova antes da compra']}},
+ {id:'g5',x:30,y:400,w:280,h:110,l:'ent',t:'Revalidação no export',s:'O único momento que não aceita cache.',
+  d:{q:'Antes de gerar o arquivo final sem marca, o servidor confirma o direito, ignorando qualquer cache local.',p:'É o fecho do sistema. Sem ele, todo o resto é decoração: bastaria editar um JSON local. Com ele, o cliente pode ser adulterado à vontade sem liberar nada que custe dinheiro.',te:'Chamada obrigatória, sem cache, com o identificador do projeto e a lista de itens pagos usados.',f:'Fora do ar no momento do export: export local com marca, mais oferta de refazer depois sem marca. Nunca libera por omissão.',k:['sem cache','fecho do sistema']}},
+ {id:'g6',x:340,y:400,w:280,h:110,l:'ent',t:'Webhook de cobrança',s:'Fonte de verdade do plano. Não o redirect.',
+  d:{q:'O estado da assinatura vem por webhook do provedor, com verificação de assinatura e processamento idempotente.',p:'Confiar na tela de sucesso é o mesmo erro de confiar no cliente para decidir o preço. A aba fecha, a rede cai, e o estado diverge silenciosamente.',te:'Verificação de assinatura, idempotência por identificador de evento, fila de retry e reconciliação diária.',f:'Webhook perdido: a reconciliação diária corrige em até 24h. O usuário nunca fica pagando sem acesso.',k:['webhook','idempotente','reconciliação']}},
+ {id:'g7',x:650,y:400,w:280,h:110,l:'ai',t:'Sem créditos de IA',s:'A decisão que o CapCut não pode tomar.',
+  d:{q:'Nenhum contador, nenhuma cota, nenhuma unidade a comprar. IA on device é ilimitada no plano gratuito.',p:'O CapCut precisa de crédito porque a IA dele roda em servidor com custo real por operação. Se a sua roda no device, cobrar crédito seria inventar fricção. Crédito gera ansiedade de uso, ticket de suporte e abandono, e as traduções pt BR mostram o pior caso: crédito consumido mesmo quando a geração é interrompida.',te:'Único limite é o hardware do usuário, e ele é informado antes, não no meio.',f:'Não aplicável: não existe o mecanismo.',k:['sem cota','sem crédito','posicionamento']}},
+ {id:'g8',x:960,y:400,w:280,h:110,l:'ent',t:'Permissões de criador',s:'Segundo sistema, separado do consumo.',
+  d:{q:'Publicar template, publicar efeito, destacar na vitrine. É whitelist por conta, não assinatura.',p:'O CapCut separa os dois sistemas e isso é correto: EffectSetVip é permissão de publicação, não gate de consumidor. Misturar os dois é o erro clássico que leva a "assinante pode publicar qualquer coisa".',te:'Lista de capacidades habilitadas por conta, filtrada por is_enable. Mesmo desenho do enable_list observado no publish-text-effect.',f:'Serviço fora: publicação indisponível com aviso. Consumo não é afetado.',k:['whitelist','publicação ≠ consumo']}}
+],
+e:[
+ {f:'g1',t:'g2',l:'item'},{f:'g2',t:'g3',l:'estratégia'},{f:'g3',t:'g4',l:'1 booleano'},
+ {f:'g4',t:'g5',l:'export'},{f:'g6',t:'g2',l:'estado do plano',k:'d'},{f:'g5',t:'g6',k:'d'}
+],
+k:[
+ {x:0,y:1070,w:640,c:'accent',b:'Por que isso é defensável e não é promoção',
+  h:'O CapCut <b>não pode copiar</b> "sem crédito, sem cota, sem upload" sem destruir a própria receita, porque a IA dele é server side por decisão de arquitetura, e cada operação tem custo marginal real.<br><br>Sua vantagem é estrutural, não comercial. Isso é raro e vale mais que qualquer desconto.<br><br><b>O limite honesto:</b> só vale enquanto a IA on device entregar qualidade comparável. Para matting (RMBG-2.0, BiRefNet) e legenda (Whisper), hoje entrega. Para geração de vídeo, não entrega e não vai entregar tão cedo. Esse é o recorte real do produto.'},
+ {x:670,y:1070,w:630,c:'ent',b:'Risco que precisa ser dito',
+  h:'Se o plano pago for só "export 4K mais packs extras", a conversão será baixa. O gratuito resolve o caso completo, e é isso que a arquitetura entrega de propósito.<br><br>Isso não é defeito, é a escolha. Mas obriga a <b>receita a vir de onde o valor é maior</b>: equipe (vários editores no mesmo projeto), marca (templates e kit da empresa) e volume (lote, API, integração).<br><br>Em outras palavras: o modelo de consumidor paga pouco. O modelo que fecha conta é o de pequena empresa que produz vídeo toda semana. Isso muda o público alvo, não só o preço. Veja o quadro <b>Veredito</b>.'}
+],
+t:[
+ {x:0,y:660,w:1300,cap:'O corte entre gratuito e pago, derivado do custo marginal real',
+  h:['Recurso','Onde executa','Custo marginal para você','Plano','Por quê'],
+  r:[['Importar, cortar, timeline, transições','Device','<span class="num">R$ 0</span>','<span class="pill ok">Gratuito</span>','É o produto. Cobrar aqui mata a adoção'],
+     ['Remover fundo','Device (ONNX)','<span class="num">R$ 0</span>','<span class="pill ok">Gratuito</span>','Doi no paywall do CapCut e roda local com qualidade equivalente'],
+     ['Legendas automáticas','Device (Whisper)','<span class="num">R$ 0</span>','<span class="pill ok">Gratuito</span>','Mesma lógica. É o recurso de maior uso diário'],
+     ['Redução de ruído','Device (RNNoise)','<span class="num">R$ 0</span>','<span class="pill ok">Gratuito</span>','Mesmo modelo que o CapCut usa, verificado no disco'],
+     ['Export até 1080p','Device','<span class="num">R$ 0</span>','<span class="pill ok">Gratuito</span>','Sem marca d água. É o diferencial mais visível'],
+     ['Pack base de efeitos e fontes','Embarcado','<span class="num">R$ 0</span>','<span class="pill ok">Gratuito</span>','Funciona offline, é argumento de venda'],
+     ['Packs premium e templates de marca','CDN','Banda (R2: egress zero)','<span class="pill wa">Pago</span>','Custo baixo mas contínuo, e o valor é percebido'],
+     ['Export 4K e upscale em servidor','GPU worker','<span class="num">Alto, por minuto</span>','<span class="pill da">Pago</span>','Custo real e variável. Preço visível antes do clique'],
+     ['Projeto compartilhado em equipe','Infra','Storage e sync','<span class="pill da">Pago</span>','Onde a disposição a pagar é maior'],
+     ['Kit de marca e templates da empresa','Infra','Baixo','<span class="pill da">Pago</span>','Trava de permanência real para empresa']]}
+]
+});
+</script>
+<script>
+/* ======================= 07 FALHAS ======================= */
+BOARDS.push({
+id:'falhas', nome:'Falhas', num:'07',
+head:{x:0,y:0,w:810,kick:'Se o componente X cai, o que para?',
+  t:'Raio de dano e degradação',
+  p:'A pergunta certa não é se algo vai cair, é o que fica de pé quando cair. Esta arquitetura tem um único ponto de falha total, o disco do usuário, e ele não é seu. Todo o resto degrada em funcionalidade, nunca em disponibilidade do editor.'},
+g:[
+ {x:0,y:190,w:600,h:400,t:'Caminho crítico (não pode cair)',c:'ent',i:'Tudo aqui é local. Nenhuma dependência de rede.'},
+ {x:650,y:190,w:700,h:400,t:'Degrada sem parar a edição',c:'infra',i:'Isolado por fila, cache e fallback declarado.'}
+],
+n:[
+ {id:'f1',x:30,y:250,w:255,h:100,l:'core',t:'Núcleo de edição',s:'Em memória. Sem rede, sem disco no caminho quente.',
+  d:{q:'Se isso falha, o produto falha. É a única parte sem rede de segurança possível.',p:'Por isso é TypeScript puro, sem framework e sem DOM: a superfície de falha é a menor possível e a cobertura de teste pode ser quase total.',te:'Mitigação: invariantes verificadas em desenvolvimento, cobertura alta nos caminhos de comando, teste baseado em propriedade para a resolução de timeline.',f:'Exceção não tratada: captura no limite do comando, descarta o comando, mantém o documento. Nunca deixa o documento em estado parcial.',k:['sem rede','teste por propriedade']}},
+ {id:'f2',x:303,y:250,w:255,h:100,l:'core',t:'Autosave',s:'Se isso falha, o usuário perde trabalho.',
+  d:{q:'O segundo componente sem tolerância. Perder trabalho uma vez custa o usuário.',p:'A causa mais comum não é bug, é disco cheio. E é a que mais produto trata mal, gravando pela metade e corrompendo o projeto.',te:'Escrita atômica: grava em temporário e renomeia. Nunca sobrescreve direto. Verifica espaço antes de começar.',f:'Disco cheio: para de gravar, modal de nível 3 com duas saídas nomeadas, mantém em memória. Jamais grava parcial.',k:['escrita atômica','modal nível 3']}},
+ {id:'f3',x:30,y:370,w:255,h:100,l:'render',t:'Motor de render',s:'Falha é visível e localizada.',
+  d:{q:'Perda de contexto de GPU, shader que não compila, driver com bug.',p:'Falha de GPU é comum e específica de hardware. Precisa ser tratada como evento esperado, não como exceção.',te:'Recria o dispositivo e redesenha a partir do documento. Fallback WebGL2 se WebGPU falhar duas vezes seguidas.',f:'Clipe que não renderiza fica preto com marcador de erro. O resto da timeline continua.',k:['recria dispositivo','fallback WebGL2']}},
+ {id:'f4',x:303,y:370,w:255,h:100,l:'cat',t:'Pack base',s:'Embarcado. Não existe cenário de indisponibilidade.',
+  d:{q:'Efeitos, fontes, sons e LUTs que vão no instalador.',p:'É a apólice de seguro contra qualquer falha de rede. Enquanto ele existir, o usuário termina o vídeo.',te:'Verificação de integridade no boot. Reinstalável a partir do instalador.',f:'Arquivo corrompido no disco: regenera do instalador ou baixa, com aviso.',k:['embarcado','seguro']}},
+ {id:'f5',x:30,y:480,w:528,h:80,l:'accent',t:'Ponto único de falha total: o disco do usuário',s:'Se o disco dele morre, nada do que você construir resolve. É o limite honesto da arquitetura local first, e a razão de existir sync opcional como réplica.',
+  d:{q:'O custo da escolha local first. Em troca de custo zero de servidor e privacidade real, a durabilidade fica com o usuário.',p:'Precisa ser dito na cara, não escondido. E é exatamente o gancho do plano pago: sync de projeto como réplica, não como fonte de verdade.',te:'Sync opcional replica o EDL (dezenas de KB), nunca a mídia. Barato de operar, alto valor percebido.',f:'É o cenário sem saída. Mitigação é oferecer a réplica, não prometer o que não dá para cumprir.',k:['limite honesto','réplica paga']}},
+
+ {id:'f6',x:680,y:250,w:310,h:100,l:'cat',t:'CDN de catálogo cai',s:'Impacto: packs novos indisponíveis.',
+  d:{q:'Nenhum item remoto baixa.',p:'O pack base cobre o fluxo completo, então o usuário edita e exporta normalmente.',te:'Cache local serve o que já foi baixado. Vitrine marca o resto como indisponível com motivo.',f:'<b>Degradação:</b> vitrine em modo offline. Edição, IA e export intactos.',k:['pack base intacto']}},
+ {id:'f7',x:1010,y:250,w:310,h:100,l:'ent',t:'Autenticação cai',s:'Impacto: login novo. Sessão existente continua.',
+  d:{q:'Nenhuma sessão nova pode ser criada.',p:'Token em cache com validade de 7 dias offline cobre praticamente todo o uso real. Quem já está dentro não percebe.',te:'Grace period de 7 dias. Modo convidado sempre disponível para quem não tem sessão.',f:'<b>Degradação:</b> quem está dentro continua. Quem chega entra como convidado e edita.',k:['grace 7 dias','convidado']}},
+ {id:'f8',x:680,y:360,w:310,h:100,l:'infra',t:'Fila de jobs cai',s:'Impacto: nada. O outbox segura.',
+  d:{q:'Jobs server side não são despachados.',p:'O padrão outbox garante que a intenção foi persistida localmente antes de qualquer chamada. Nada se perde, só atrasa.',te:'Outbox local com retry e backoff. Estado visível: "aguardando conexão".',f:'<b>Degradação:</b> jobs aguardam. Tudo que é on device continua sem nenhum impacto.',k:['outbox','nada se perde']}},
+ {id:'f9',x:1010,y:360,w:310,h:100,l:'infra',t:'Workers de GPU caem',s:'Impacto: fila cresce. Caminho local liberado.',
+  d:{q:'Jobs ficam em queued e a fila cresce.',p:'O usuário vê a posição e a estimativa, e tem sempre a alternativa on device na mesma tela.',te:'Escala a zero significa que a recuperação é automática quando a capacidade volta.',f:'<b>Degradação:</b> espera visível mais alternativa local oferecida no mesmo lugar.',k:['fila visível','alternativa local']}},
+ {id:'f10',x:680,y:470,w:310,h:100,l:'ent',t:'Entitlement cai',s:'Impacto: a regra assimétrica resolve.',
+  d:{q:'Não dá para resolver quem pode usar o quê.',p:'A assimetria é deliberada. Cache válido continua valendo, porque tirar acesso de quem pagou por uma falha sua é inaceitável. Sem cache, cai no gratuito, porque liberar pago por falha sua é prejuízo.',te:'Fail-open dentro do TTL, fail-closed fora dele. Export pago sempre revalida, nunca aceita cache.',f:'<b>Degradação:</b> quem pagou continua. Quem chega vê o gratuito, que resolve o caso completo.',k:['fail-open no TTL','fail-closed fora']}},
+ {id:'f11',x:1010,y:470,w:310,h:100,l:'infra',t:'Banco cai',s:'Impacto: escrita de conta. Leitura segue por réplica.',
+  d:{q:'Cadastro, mudança de plano e sync de projeto param.',p:'Nada disso está no caminho de editar. O editor sequer percebe.',te:'Réplica de leitura assume. Escrita entra em modo degradado com fila e reconciliação.',f:'<b>Degradação:</b> somente leitura com banner. Edição local intacta.',k:['réplica','modo leitura']}}
+],
+e:[
+ {f:'f6',t:'f4',l:'cai para',k:'d'},{f:'f7',t:'f1',l:'não bloqueia',k:'d'},
+ {f:'f8',t:'f1',l:'não bloqueia',k:'d'},{f:'f9',t:'f3',l:'alternativa local',k:'d'},
+ {f:'f10',t:'f4',l:'cai para gratuito',k:'d'},{f:'f11',t:'f2',l:'não bloqueia',k:'d'}
+],
+k:[
+ {x:0,y:1030,w:655,c:'accent',b:'O princípio que organiza tudo acima',
+  h:'<b>Nenhuma camada de rede está no caminho de abrir, editar ou exportar.</b><br><br>Esse foi o critério de desenho, não uma consequência feliz. A camada 5 (acesso e cobrança) ficou <i>embaixo</i> da camada 4 (catálogo) justamente para que nada acima dependa dela.<br><br>No CapCut, a camada de rede é caminho crítico: sem internet o app vira casca, porque não há catálogo embarcado nem IA on device. A diferença não é de competência, é de modelo de negócio. Eles podem pagar essa dependência, você não.'},
+ {x:685,y:1030,w:655,c:'infra',b:'O que medir para saber que está funcionando',
+  h:'Métrica de resiliência não é uptime do servidor, é <b>a fração de sessões que terminaram num arquivo exportado</b>, cruzada com o estado de rede da sessão.<br><br>Se a taxa de export cair junto com uma queda de serviço, a arquitetura vazou: alguma coisa remota entrou no caminho crítico sem ninguém notar. Esse é o alarme que importa.<br><br>Alvo: <b>sessões offline devem ter a mesma taxa de export que sessões online.</b> Qualquer diferença é um bug de arquitetura, não de infraestrutura.'}
+],
+t:[
+ {x:0,y:640,w:1350,cap:'Matriz de falha: o que cai, o que o usuário perde, o que ele continua fazendo',
+  h:['Componente','Sem isolamento, o que pararia','Com degradação graciosa','Mecanismo','Severidade real'],
+  r:[['CDN de catálogo','Vitrine vazia, efeitos somem','Pack base inteiro, cache local serve o resto','Embarcado mais cache por hash','<span class="pill ok">Baixa</span>'],
+     ['API de autenticação','App não abre','Sessão em cache 7 dias, modo convidado','Grace period mais convidado','<span class="pill ok">Baixa</span>'],
+     ['Fila de jobs','Pedido de IA se perde','Fica no outbox e sobe depois','Outbox com idempotência','<span class="pill ok">Baixa</span>'],
+     ['Workers de GPU','Jobs server side travam','Fila visível mais alternativa on device','Escala a zero mais fallback local','<span class="pill ok">Baixa</span>'],
+     ['Entitlement','Todo mundo vira gratuito ou todo mundo vira pago','Cache no TTL vale, fora dele cai no gratuito','Fail-open curto mais fail-closed','<span class="pill wa">Média</span>'],
+     ['Object storage','Jobs falham e resultado some','Só server side falha. Local intacto','Separação local e remoto','<span class="pill ok">Baixa</span>'],
+     ['Postgres','Login, plano e sync param','Réplica de leitura mais modo somente leitura','Réplica mais fila de escrita','<span class="pill wa">Média</span>'],
+     ['Cobrança (provedor)','Ninguém assina','Assinatura nova espera. Quem tem continua','Webhook mais reconciliação diária','<span class="pill wa">Média</span>'],
+     ['GPU do usuário','Preview e export param','WebGL2, depois render por software em baixa','Fallback em dois degraus','<span class="pill wa">Média</span>'],
+     ['Disco do usuário','<b>Perda total do trabalho</b>','Sync opcional como réplica (plano pago)','Réplica do EDL, nunca da mídia','<span class="pill da">Alta</span>']]}
+]
+});
+
+/* ======================= 08 SEGURANÇA ======================= */
+BOARDS.push({
+id:'seguranca', nome:'Segurança', num:'08',
+head:{x:0,y:0,w:810,kick:'Autenticação, segredos e o que nunca sai do servidor',
+  t:'Segurança e acesso',
+  p:'OAuth2 Authorization Code com PKCE em todos os clientes, porque desktop, mobile e web são clientes públicos e nenhum deles consegue guardar segredo. Token de acesso curto, refresh rotativo com detecção de reuso, e nenhuma credencial de terceiro no cliente, jamais.'},
+g:[
+ {x:0,y:190,w:1340,h:290,t:'Fluxo de autenticação (Authorization Code + PKCE)',c:'ent',i:'O mesmo fluxo nas três plataformas. Diferença só no cofre.'},
+ {x:0,y:520,w:1340,h:270,t:'Onde cada segredo mora',c:'infra',i:'Regra: se o cliente consegue ler, não é segredo.'}
+],
+n:[
+ {id:'a1',x:30,y:250,w:230,h:95,l:'shell',t:'1. Gera o verifier',s:'Aleatório no cliente. Nunca trafega.',
+  d:{q:'O cliente gera um valor aleatório (code_verifier) e envia só o hash dele (code_challenge) no pedido de autorização.',p:'É o que impede que um app malicioso instalado na mesma máquina intercepte o código de autorização e troque por token. Sem PKCE, o deeplink de retorno é um buraco aberto.',te:'43 a 128 caracteres de aleatoriedade criptográfica. SHA-256 como método de desafio, nunca "plain".',f:'Falha de geração: aborta o login com erro claro. Nunca cai para fluxo sem PKCE.',k:['PKCE','S256','cliente público']}},
+ {id:'a2',x:278,y:250,w:230,h:95,l:'ent',t:'2. Autoriza',s:'Navegador do sistema, nunca WebView embutida.',
+  d:{q:'Abre a tela de login no navegador padrão do sistema operacional.',p:'WebView embutida permite ao app ler o que o usuário digita, e por isso Google e Apple recusam esse fluxo. Além de bloqueado, é prática ruim: quebra o gerenciador de senha e o 2FA do usuário.',te:'ASWebAuthenticationSession no iOS, Custom Tabs no Android, navegador padrão no desktop via Tauri.',f:'Navegador indisponível: mostra URL e código para digitar em outro device.',k:['navegador do sistema','sem WebView']}},
+ {id:'a3',x:526,y:250,w:230,h:95,l:'ent',t:'3. Troca por token',s:'Código mais verifier. Só então vem o token.',
+  d:{q:'O cliente apresenta o código recebido junto do code_verifier original. O servidor confere contra o challenge.',p:'Essa conferência é o que amarra o código ao cliente que iniciou o fluxo. Código interceptado sem o verifier é inútil.',te:'Access token JWT de 15 minutos. Refresh token opaco, rotativo.',f:'Verifier não bate: recusa e registra. Possível tentativa de interceptação.',k:['JWT 15min','refresh opaco']}},
+ {id:'a4',x:774,y:250,w:230,h:95,l:'ent',t:'4. Guarda',s:'Keychain do sistema. Nunca localStorage.',
+  d:{q:'Onde o refresh token descansa em cada plataforma.',p:'Token em localStorage é roubado por qualquer XSS. É a falha mais comum em aplicação web e a mais barata de evitar: custa uma linha de configuração.',te:'Web: cookie HttpOnly com SameSite=Strict, access só em memória. Desktop: Tauri Stronghold ou keychain do SO. Mobile: Keychain iOS e Keystore Android.',f:'Cofre inacessível: sessão só em memória, expira ao fechar, com aviso ao usuário.',k:['HttpOnly','Stronghold','Keystore']}},
+ {id:'a5',x:1022,y:250,w:230,h:95,l:'ent',t:'5. Rotaciona',s:'Reuso detectado revoga a família inteira.',
+  d:{q:'Cada uso do refresh token emite um novo e invalida o anterior. Se um token já usado reaparecer, toda a família de tokens daquela sessão é revogada.',p:'É o que transforma roubo de refresh token em incidente detectável em vez de acesso permanente e silencioso.',te:'Família de tokens com identificador comum. Reuso dispara revogação e notificação ao usuário.',f:'Revogação por falso positivo: o usuário faz login de novo. Incômodo pequeno, proteção alta.',k:['rotação','detecção de reuso']}},
+ {id:'a6',x:30,y:370,w:478,h:95,l:'ent',t:'Autorização: escopo por conta, verificado no servidor a cada chamada',
+  s:'Token de acesso válido não significa permissão para a ação. O servidor verifica escopo e propriedade do recurso em toda requisição, mesmo nas que a UI já escondeu.',
+  d:{q:'Autenticação diz quem é. Autorização diz o que pode. São checagens separadas e a segunda nunca pode ser delegada ao cliente.',p:'Esconder um botão não é controle de acesso, é organização visual. A falha mais explorada em API é justamente o endpoint que confia na UI.',te:'Verificação de propriedade em toda operação sobre recurso identificado. Escopo no token é teto, nunca permissão final.',f:'Falha na checagem: nega por padrão. Nunca libera por exceção não tratada.',k:['nega por padrão','propriedade do recurso']}},
+ {id:'a7',x:526,y:370,w:478,h:95,l:'infra',t:'Rate limit por conta e por IP, com 429 que o cliente respeita',
+  s:'Janela deslizante na borda. Resposta com Retry-After, e o cliente espera de verdade em vez de insistir.',
+  d:{q:'Proteção contra abuso, enumeração de conta e custo descontrolado de GPU.',p:'Sem limite por conta, uma única conta pode esgotar a sua capacidade de GPU e a sua conta bancária numa tarde.',te:'Limite separado para autenticação (mais rígido), catálogo e jobs. Cliente implementa backoff exponencial respeitando Retry-After.',f:'Limite atingido: mensagem com o tempo de espera, não erro genérico.',k:['429','Retry-After','backoff']}},
+
+ {id:'s1',x:30,y:580,w:255,h:95,l:'infra',t:'Chaves de API de terceiro',s:'Secrets manager. Nunca no cliente, nunca no repositório.',
+  d:{q:'Credenciais de provedor de pagamento, e-mail, storage e qualquer serviço externo.',p:'Chave em cliente é chave pública: basta abrir o bundle. Chave em repositório vive para sempre no histórico do git, mesmo depois de removida.',te:'AWS Secrets Manager, Doppler ou Infisical. Injeção por variável de ambiente no deploy. Rotação programada. Varredura de segredo no CI, bloqueando o merge.',f:'Secrets manager fora: as instâncias já rodando mantêm o que carregaram. Deploy novo espera.',k:['secrets manager','rotação','varredura no CI']}},
+ {id:'s2',x:303,y:580,w:255,h:95,l:'infra',t:'Chave de assinatura de JWT',s:'Só no servidor de autenticação. Rotação com janela.',
+  d:{q:'A chave privada que assina os tokens de acesso.',p:'Vazou, o atacante emite token de qualquer conta. É o segredo mais crítico do sistema inteiro.',te:'Assimétrica (RS256 ou EdDSA): só o emissor assina, os verificadores usam a pública. Rotação com JWKS e período de sobreposição.',f:'Rotação malfeita derruba todas as sessões. Por isso a janela de sobreposição não é opcional.',k:['RS256','JWKS','sobreposição']}},
+ {id:'s3',x:576,y:580,w:255,h:95,l:'cat',t:'URL assinada de CDN',s:'Validade curta para material pago.',
+  d:{q:'Acesso temporário aos bytes de um pack pago.',p:'Sem isso, descobrir uma URL vale compartilhar o material inteiro. Com validade curta, o link vazado morre antes de circular.',te:'Assinatura com validade de 5 minutos, vinculada à conta. Pack gratuito usa URL pública com cache longo.',f:'Relógio do cliente errado: aceita janela de tolerância pequena, com mensagem clara se expirar.',k:['5 minutos','por conta']}},
+ {id:'s4',x:849,y:580,w:255,h:95,l:'ent',t:'Dado de cartão',s:'Nunca toca o seu servidor.',
+  d:{q:'Número, validade e código de segurança.',p:'Tokenização no provedor tira você inteiro do escopo de PCI. É a diferença entre uma auditoria cara e nenhuma auditoria.',te:'Elementos hospedados do Stripe ou Pagar.me. Você armazena apenas o identificador do cliente e o do método.',f:'Provedor fora: compra nova indisponível. Assinatura ativa não é afetada.',k:['tokenização','fora do PCI']}},
+ {id:'s5',x:1122,y:580,w:190,h:95,l:'ai',t:'Modelos de IA',s:'Públicos. Verificados por hash.',
+  d:{q:'Os pesos ONNX que descem para o device.',p:'Não são segredo (são modelos abertos), mas são vetor de ataque: um modelo trocado executa no device do usuário.',te:'Verificação de hash na carga. Origem fixa e declarada. Sem carregar modelo de URL arbitrária.',f:'Hash divergente: recusa carregar e avisa. Nunca executa modelo não verificado.',k:['hash','origem fixa']}},
+ {id:'s6',x:30,y:695,w:1282,h:80,l:'accent',t:'A regra que resolve 90% das decisões de segredo neste sistema',
+  s:'Se o cliente consegue ler, não é segredo. Se não é segredo, não pode proteger nada. Todo controle que importa (entitlement, cobrança, publicação, export pago) é verificado no servidor, e a verificação do cliente existe só para dar boa experiência, nunca para dar garantia.',
+  d:{q:'O princípio derivado direto da engenharia reversa: o CapCut não guarda a decisão de preço no cliente, e por isso adulterar o cliente não libera nada.',p:'Essa é a única postura que sobrevive a um cliente que pode ser descompilado, e todo cliente pode. Assumir isso desde o começo é mais barato que descobrir depois.',te:'Revalidação obrigatória nos pontos que custam dinheiro: export sem marca, upload para GPU, publicação.',f:'Revalidação indisponível: nega a operação paga e oferece a alternativa local. Nunca libera por omissão.',k:['nega por padrão','cliente não garante']}}
+],
+e:[
+ {f:'a1',t:'a2'},{f:'a2',t:'a3'},{f:'a3',t:'a4'},{f:'a4',t:'a5'},{f:'a5',t:'a3',l:'novo ciclo',k:'d'}
+],
+k:[
+ {x:0,y:1130,w:440,c:'ent',b:'OWASP: o que de fato se aplica aqui',
+  h:'<b>Controle de acesso quebrado:</b> maior risco do sistema. Mitigado por verificação de propriedade em toda operação.<br><b>Falha criptográfica:</b> TLS obrigatório, criptografia em repouso, nenhum segredo no cliente.<br><b>Injeção:</b> consultas parametrizadas sempre. Nome de arquivo e caminho vindos do usuário são tratados como hostis.<br><b>Desenho inseguro:</b> endereçado pela assimetria fail-open e fail-closed do entitlement.<br><b>SSRF:</b> relevante por causa de import por URL. Lista de permissão de destino, nunca lista de bloqueio.'},
+ {x:470,y:1130,w:440,c:'render',b:'Riscos específicos de um editor de vídeo',
+  h:'<b>Arquivo de mídia malformado:</b> decodificador é superfície clássica de exploração. Mitigação: decodificar em worker isolado, com limite de memória e tempo, e nunca no processo principal.<br><br><b>Shader vindo do catálogo:</b> código executando na GPU do usuário. Mitigação: shader só de origem assinada, compilado com validação, nunca de URL arbitrária.<br><br><b>Projeto compartilhado:</b> um EDL é dado estruturado vindo de terceiro. Validação de schema estrita e caminho de mídia tratado como não confiável.'},
+ {x:940,y:1130,w:400,c:'infra',b:'O que fazer antes do primeiro usuário real',
+  h:'<ol style="margin:0;padding-left:18px"><li>Varredura de segredo no CI, bloqueando merge</li><li>Dependências com alerta automático de vulnerabilidade</li><li>TLS com HSTS em tudo</li><li>Backup testado, com restauração ensaiada ao menos uma vez</li><li>Política de privacidade que descreva o que o sistema faz de verdade, incluindo o TTL de 24h</li><li>Canal de contato para relato de vulnerabilidade</li></ol><br>Nada disso é opcional, e tudo cabe em um dia de trabalho.'}
+],
+t:[]
+});
+</script>
+<script>
+/* ======================= 09 PLATAFORMAS ======================= */
+BOARDS.push({
+id:'plataformas', nome:'Plataformas', num:'09',
+head:{x:0,y:0,w:820,kick:'Web, desktop e mobile sem escrever três vezes',
+  t:'Estratégia multiplataforma',
+  p:'A pergunta não é qual framework roda em tudo. É onde cortar para que o reaproveitamento seja real. O corte certo: núcleo de edição e tokens são 100% compartilhados, UI de web e desktop é 100% a mesma, e a UI mobile é deliberadamente diferente onde o gesto é diferente.'},
+g:[
+ {x:0,y:190,w:1340,h:250,t:'Compartilhado de verdade',c:'core',i:'Escrito uma vez, roda em tudo.'},
+ {x:0,y:480,w:1340,h:250,t:'Específico por plataforma',c:'shell',i:'Fingir que compartilha aqui produz UI ruim nos dois lados.'}
+],
+n:[
+ {id:'m1',x:30,y:250,w:300,h:95,l:'core',t:'Núcleo de edição',s:'100%. TypeScript puro, sem DOM.',
+  d:{q:'Documento, comandos, timeline, autosave, registro de efeitos.',p:'Por não tocar em DOM nem em framework, roda em navegador, em Tauri, em React Native e em Node para testes. É o maior ganho de reaproveitamento do projeto inteiro e é de graça, desde que a disciplina de não importar nada de UI seja mantida.',te:'Pacote isolado no monorepo, com regra de lint que proíbe importar qualquer coisa de UI.',f:'Nenhuma: é lógica pura.',k:['100%','sem DOM','regra de lint']}},
+ {id:'m2',x:348,y:250,w:300,h:95,l:'core',t:'Tokens de design',s:'100%. Uma fonte, três consumidores.',
+  d:{q:'Cor, tipografia, espaçamento, raio, sombra e duração de animação.',p:'Token em JSON vira variável CSS na web, objeto no NativeWind e constante no React Native. Uma mudança de marca se propaga em um commit.',te:'JSON como fonte, geradores no build. Nenhum valor literal de cor em componente, verificado por lint.',f:'Nenhuma: é build time.',k:['JSON como fonte','lint contra literal']}},
+ {id:'m3',x:666,y:250,w:300,h:95,l:'ai',t:'Modelos e pipelines de IA',s:'100% do modelo, runtime por plataforma.',
+  d:{q:'Os mesmos arquivos ONNX, o mesmo pré e pós processamento.',p:'Um formato só é a diferença entre manter um pipeline e manter três. Só o runtime muda: Web no navegador e no Tauri, nativo no mobile.',te:'ONNX Runtime Web com WebGPU, ONNX Runtime nativo no mobile. Mesma versão de modelo em todos.',f:'Device sem suporte: resolução menor ou caminho servidor.',k:['ONNX','um formato']}},
+ {id:'m4',x:984,y:250,w:326,h:95,l:'ent',t:'Contratos de API e schemas',s:'100%. Tipos gerados, não escritos à mão.',
+  d:{q:'Schema do EDL, do descritor de catálogo, das respostas de API.',p:'Tipo gerado a partir do schema elimina a classe inteira de bug de contrato divergente entre cliente e servidor, que é a mais chata de achar.',te:'OpenAPI ou tRPC para API, JSON Schema para documento e descritor, com geração de tipos no build.',f:'Schema divergente é erro de build, não de produção.',k:['geração de tipos','erro de build']}},
+
+ {id:'m5',x:30,y:540,w:300,h:95,l:'render',t:'Timeline',s:'Mouse e toque são produtos diferentes.',
+  d:{q:'Precisão de trim, zoom, seleção múltipla, atalho de teclado contra pinça, arraste e alvo de toque.',p:'No desktop o usuário ajusta frame a frame com o mouse e usa atalho. No celular ele usa o polegar numa faixa de 44px. A mesma implementação atende mal os dois. O IMG.LY documenta bem isso: a timeline mobile é o componente mais difícil do produto.',te:'Mesma máquina de estados vinda do núcleo, duas camadas de interação. O que é compartilhado é a lógica, não o gesto.',f:'Nenhuma: é UI.',k:['44px','atalho vs pinça']}},
+ {id:'m6',x:348,y:540,w:300,h:95,l:'render',t:'Pipeline de render',s:'WebGPU na web, nativo no mobile.',
+  d:{q:'Compositor e codec.',p:'A web tem WebCodecs e WebGPU, com a ressalva de que o WebCodecs ainda é Working Draft do W3C, não é Baseline, e a cobertura fora de Chrome e Edge é desigual. O mobile tem codec de hardware por API nativa. O que compartilha é a descrição da cadeia de efeitos, não a execução.',te:'Cadeia descrita em estrutura comum, executada por backend específico de plataforma.',f:'Codec indisponível: resolução menor com aviso.',k:['WebCodecs não é Baseline','backend por plataforma']}},
+ {id:'m7',x:666,y:540,w:300,h:95,l:'shell',t:'Navegação e layout',s:'Painel lateral no desktop, folha inferior no mobile.',
+  d:{q:'O mesmo conteúdo, duas formas de chegar nele.',p:'O painel de propriedades do desktop (159 telas no FunctionPanel do CapCut) não cabe num celular. Vira folha inferior com altura em degraus, que é o padrão que o próprio CapCut usa.',te:'Mesmos componentes de conteúdo, dois contêineres. O conteúdo não sabe onde está.',f:'Nenhuma: é UI.',k:['folha inferior','contêiner agnóstico']}},
+ {id:'m8',x:984,y:540,w:326,h:95,l:'shell',t:'Sistema de arquivos e atalhos',s:'Capacidade real diferente, não preferência.',
+  d:{q:'Desktop tem pasta observada, arrastar do Finder, FFmpeg nativo e atalho de teclado. Mobile tem galeria, câmera e compartilhamento do sistema.',p:'Não é questão de paridade. São capacidades diferentes e cada plataforma deve usar a sua. Forçar paridade entrega o pior dos dois.',te:'Camada de capacidade com detecção, não com suposição por plataforma.',f:'Capacidade ausente: o recurso não aparece, em vez de aparecer e falhar.',k:['detecção de capacidade','sem paridade forçada']}}
+],
+e:[],
+k:[
+ {x:0,y:1270,w:655,c:'render',b:'Grid no desktop, lista no celular: a mesma informação, duas formas',
+  h:'A biblioteca de material é tabela densa no desktop (miniatura, nome, duração, formato, tamanho, data, ações) e precisa caber em 390px.<br><br><b>Regra de transposição:</b> cada linha da tabela vira um card com três níveis. <b>Primário</b> (miniatura e nome) sempre visível. <b>Secundário</b> (duração e formato) na mesma linha, menor. <b>Terciário</b> (tamanho, data, caminho) só ao expandir.<br><br>Ordenação e filtro, que no desktop são cabeçalho de coluna, viram uma barra de controle no topo. <b>Nenhum dado desaparece</b>, a hierarquia é que muda. Esconder coluna no mobile é o erro comum: o usuário procura o que sumiu e não encontra.'},
+ {x:685,y:1270,w:655,c:'shell',b:'O que aprender de quem já faz isso bem',
+  h:'<b>DaVinci Resolve:</b> as páginas (Cut, Edit, Fusion, Color, Fairlight, Deliver) são exatamente o padrão dos sete layouts do CapCut: um documento, um layout por tarefa. Vale copiar inclusive a troca por tecla numérica.<br><br><b>Descript:</b> edição pela transcrição. O texto vira a interface e apagar uma palavra apaga o trecho de vídeo. É a redução de cliques mais agressiva do mercado para o caso "cortar fala", e encaixa direto no pipeline de legendas que já existe aqui.<br><br><b>CapCut mobile:</b> a timeline touch como faixa horizontal com zoom por pinça, alças de trim e tracks empilhadas sincronizadas ao preview. É a referência de gesto.<br><br><b>Figma:</b> canvas mais painel contextual que muda conforme a seleção. É o modelo do painel de propriedades.'}
+],
+t:[
+ {x:0,y:790,w:1340,cap:'Decisão de framework: o que foi avaliado e por quê a escolha',
+  h:['Caminho','Reaproveitamento real','O que ganha','O que custa','Veredito'],
+  r:[['<b>React + Tauri v2 + React Native</b> (escolhido)','Núcleo 100%, tokens 100%, UI web e desktop 100%, UI mobile cerca de 40%','Uma linguagem, um ecossistema. Acesso direto a WebCodecs, WebGPU e ONNX Runtime Web, que é onde mora o produto. Bundle desktop de 2,5 a 10 MB contra 80 a 200 MB do Electron, RAM em repouso de 40 a 80 MB contra 150 a 400 MB','WebView difere por sistema operacional, então o QA de render multiplica por 3. Rust necessário para plugin nativo','<span class="pill ok">Escolhido</span>'],
+     ['Flutter','Interface praticamente 100% em tudo, inclusive desktop','Consistência visual idêntica em qualquer tela, alto desempenho, uma base de UI só','Joga fora o ecossistema web inteiro. WebCodecs, WebGPU e ONNX Runtime Web não existem em Dart com a mesma maturidade. O núcleo precisaria ser reescrito em Dart e o Flutter Web é notoriamente pesado para canvas de produto','<span class="pill da">Recusado</span>'],
+     ['Electron','UI web e desktop 100%','Chromium idêntico em todo sistema operacional, então zero surpresa de render. Build mais rápido (cerca de 22s contra 48s do Tauri em comparativos)','Bundle de 80 a 200 MB e 150 a 400 MB de RAM antes do seu código. Num app que já vai disputar memória com decodificação de vídeo, isso é caro onde dói','<span class="pill wa">Plano B</span>'],
+     ['React Native com Tamagui para tudo','Teoricamente tudo, inclusive web','Um sistema de UI universal com compilador que extrai estilo estático no build','A timeline do desktop não cabe nesse modelo, e a camada universal vira atrito justamente no componente mais complexo do produto. Resolve um problema que o corte núcleo e casca já resolve melhor','<span class="pill da">Recusado</span>'],
+     ['NativeWind só no mobile (complementar)','Tokens 100% entre web e mobile','Mesma linguagem de utilitário do Tailwind nas duas pontas, sem camada de abstração universal','Suporte web mais fraco que o do Tamagui, mas isso não importa: na web usamos Tailwind direto','<span class="pill ok">Adotado</span>']]}
+]
+});
+
+/* ======================= 10 DESIGN SYSTEM ======================= */
+BOARDS.push({
+id:'ds', nome:'Design System', num:'10',
+head:{x:0,y:0,w:830,kick:'Atomic design aplicado a um editor, sem wireframe',
+  t:'Componentes e design system',
+  p:'Um editor de vídeo tem duas metades de interface com naturezas opostas. A metade genérica (diálogo, popover, formulário, tabela) existe pronta e madura. A metade específica (timeline, canvas, régua, keyframe, curva) não existe em biblioteca nenhuma e será construída de qualquer forma. A escolha de biblioteca só decide a primeira.'},
+g:[
+ {x:0,y:190,w:1340,h:200,t:'Tokens · a fonte de tudo',c:'core',i:'JSON. Gera CSS no web e objeto no React Native.'},
+ {x:0,y:430,w:1340,h:200,t:'Átomos · vêm prontos',c:'shell',i:'shadcn/ui sobre Radix. Código na sua mão, acessibilidade resolvida.'},
+ {x:0,y:670,w:1340,h:200,t:'Moléculas · composição sua',c:'cat',i:'Combinação de átomos com regra de negócio do produto.'},
+ {x:0,y:910,w:1340,h:210,t:'Organismos · específicos do domínio',c:'render',i:'Nenhuma biblioteca tem isso. É aqui que mora o produto.'}
+],
+n:[
+ {id:'t1',x:30,y:245,w:245,h:100,l:'core',t:'Cor',s:'Semântica, não literal. Dois temas desde o dia um.',
+  d:{q:'Superfície, texto, linha, estado (ok, atenção, erro) e cor por tipo de track na timeline.',p:'Editor de vídeo é escuro por padrão porque a interface não pode competir com o conteúdo. Mas tema claro é requisito de acessibilidade real, não preferência estética. Decidir isso depois significa refazer tudo.',te:'JSON com os dois temas. Nenhum literal de cor em componente, verificado por lint.',f:'Token ausente: cai para o neutro e quebra o build em desenvolvimento.',k:['semântica','2 temas','lint']}},
+ {id:'t2',x:293,y:245,w:245,h:100,l:'core',t:'Tipografia',s:'Uma família de UI, uma monoespaçada para números.',
+  d:{q:'Escala com seis degraus e tabular-nums obrigatório em timecode, duração e tamanho de arquivo.',p:'Timecode que dança quando o número muda é um defeito perceptível em todo frame. É o detalhe que separa ferramenta profissional de protótipo.',te:'font-variant-numeric: tabular-nums em toda coluna de número. Monoespaçada para timecode.',f:'Fonte não carrega: pilha de fallback declarada, nunca o padrão do navegador.',k:['tabular-nums','timecode']}},
+ {id:'t3',x:556,y:245,w:245,h:100,l:'core',t:'Espaço e densidade',s:'Duas densidades: confortável e compacta.',
+  d:{q:'Escala de 4px. Modo compacto para quem trabalha em tela pequena com muita track.',p:'Editor profissional precisa de densidade. Editor casual precisa de respiro. Um valor só atende mal os dois, e isso se resolve com token, não com duas telas.',te:'Multiplicador de densidade aplicado no token de espaçamento, não em cada componente.',f:'Nenhuma: é build time.',k:['escala 4px','2 densidades']}},
+ {id:'t4',x:819,y:245,w:245,h:100,l:'core',t:'Alvo de toque',s:'44px no mobile. Não negociável.',
+  d:{q:'Tamanho mínimo de área tocável em qualquer controle de mobile.',p:'Numa timeline, alça de trim pequena demais é o defeito mais frustrante que existe, porque falha justamente na ação mais repetida.',te:'Área de toque pode ser maior que a área visual, com pseudo elemento. Visual pequeno, alvo grande.',f:'Nenhuma: é regra de componente.',k:['44px','área maior que o visual']}},
+ {id:'t5',x:1082,y:245,w:228,h:100,l:'core',t:'Movimento',s:'Curto, com propósito, respeitando reduced motion.',
+  d:{q:'Duração e curva por tipo de transição: entrada de painel, feedback de ação, mudança de estado.',p:'Animação em ferramenta de trabalho é sinal de estado, não enfeite. Acima de 200ms em interação frequente vira atraso percebido.',te:'150ms para feedback, 220ms para painel. prefers-reduced-motion desliga tudo que não comunica estado.',f:'Nenhuma: é CSS.',k:['150/220ms','reduced motion']}},
+
+ {id:'c1',x:30,y:485,w:245,h:100,l:'shell',t:'Botão',s:'Cinco estados, inclusive carregando e desabilitado com motivo.',
+  d:{q:'Padrão, secundário, fantasma, perigo. Estados: repouso, foco, hover, carregando, desabilitado.',p:'Botão desabilitado sem explicação é a falha de usabilidade mais comum em software. Se está desabilitado, o tooltip diz por quê e o que fazer para habilitar.',te:'shadcn/ui. O código fica no seu repositório, então o estado "desabilitado com motivo" é adicionado sem fork de biblioteca.',f:'Carregando sem resposta por mais de 10s: vira estado de erro com retry.',k:['5 estados','motivo no desabilitado']}},
+ {id:'c2',x:293,y:485,w:245,h:100,l:'shell',t:'Campo e formulário',s:'Validação na saída do campo, nunca a cada tecla.',
+  d:{q:'Texto, número, seleção, slider e campo de timecode com máscara.',p:'Validar a cada tecla mostra erro enquanto a pessoa ainda está digitando, o que é hostil. Validar na saída do campo, com correção na hora seguinte, é o comportamento certo.',te:'Mensagem de erro abaixo do campo, com aria-describedby. Nunca só cor, porque cor sozinha falha para daltônicos.',f:'Validação de servidor falha: erro inline no campo, resto do formulário intacto.',k:['blur','aria-describedby','nunca só cor']}},
+ {id:'c3',x:556,y:485,w:245,h:100,l:'shell',t:'Diálogo e popover',s:'Foco preso, Escape fecha, foco volta ao gatilho.',
+  d:{q:'Modal, folha inferior, popover, menu de contexto, tooltip.',p:'Gerenciamento de foco é onde quase toda implementação caseira falha, e é exatamente o que o Radix resolve bem. Reconstruir isso é desperdiçar semanas para chegar num resultado pior.',te:'Radix via shadcn/ui. Escape, clique fora, foco preso e retorno de foco já corretos.',f:'Nenhuma: é componente.',k:['Radix','foco preso']}},
+ {id:'c4',x:819,y:485,w:245,h:100,l:'shell',t:'Tabela e lista',s:'Virtualizada. Dez mil itens sem travar.',
+  d:{q:'Biblioteca de material, lista de projetos, fila de jobs.',p:'Renderizar mil linhas no DOM trava qualquer navegador. Virtualização não é otimização aqui, é requisito de funcionamento.',te:'TanStack Table mais TanStack Virtual. Paginação por cursor no servidor, virtualização no cliente.',f:'Carga falha: estado inline na própria lista com retry. Resto da tela intacto.',k:['virtualização','cursor']}},
+ {id:'c5',x:1082,y:485,w:228,h:100,l:'shell',t:'Feedback',s:'Toast, inline e modal. Três níveis, regra clara.',
+  d:{q:'Os três níveis de aviso definidos no quadro Espera.',p:'Ter o componente não basta: o que importa é a regra de qual nível usar. Sem regra escrita, tudo vira toast e o usuário para de ler.',te:'Função única de notificação que escolhe o nível pelo tipo de evento, não pelo gosto de quem escreveu a tela.',f:'Nenhuma: é componente.',k:['3 níveis','regra escrita']}},
+
+ {id:'o1',x:30,y:725,w:310,h:100,l:'cat',t:'Card de material',s:'Local, baixando ou remoto. O estado é visível antes do clique.',
+  d:{q:'Miniatura, nome, estado de disponibilidade e indicador de plano quando aplicável.',p:'O usuário precisa saber antes de clicar se vai esperar. Essa é a diferença entre interface que respeita o tempo dele e interface que surpreende.',te:'Composição de miniatura, selo e botão. Mesmo componente em grade no desktop e em lista no mobile.',f:'Miniatura falha: placeholder com a inicial do nome, nunca quadrado vazio.',k:['3 estados','mesmo componente']}},
+ {id:'o2',x:358,y:725,w:310,h:100,l:'infra',t:'Cartão de job',s:'A máquina de estados do quadro Espera, em componente.',
+  d:{q:'Nome, progresso real, tempo estimado, ação de cancelar e motivo quando falha.',p:'Um componente só para todo tipo de job (IA, export, download) significa que o usuário aprende uma vez e reconhece sempre.',te:'Consome a mesma máquina de seis estados. Nenhuma variação por tipo de job.',f:'Sem progresso disponível: tempo decorrido e etapa, nunca barra indeterminada.',k:['6 estados','um componente']}},
+ {id:'o3',x:686,y:725,w:310,h:100,l:'ent',t:'Oferta contextual',s:'Aparece no ponto de uso, com o resultado já na tela.',
+  d:{q:'O equivalente ao areaLocked do CapCut: o recurso é usado, o resultado aparece com marca, a oferta vem junto.',p:'Oferta antes da experiência converte mal, porque o usuário ainda não sabe o que está comprando. Depois do resultado, ele sabe.',te:'Componente que recebe o booleano normalizado de entitlement e nada mais. Nunca a estratégia comercial crua.',f:'Entitlement indesconhecido: assume gratuito e não mostra oferta. Nunca mostra oferta errada.',k:['pós resultado','1 booleano']}},
+ {id:'o4',x:1014,y:725,w:296,h:100,l:'shell',t:'Painel de propriedades',s:'Muda com a seleção. Painel lateral ou folha inferior.',
+  d:{q:'O equivalente ao FunctionPanel do CapCut, que tem 159 telas. Aqui é um contêiner com conteúdo por tipo de seleção.',p:'159 telas separadas é o resultado de não ter esse contêiner. Com ele, cada tipo de clipe declara seus controles e o painel monta.',te:'Registro de controles por tipo de item. O conteúdo não sabe se está em painel lateral ou folha inferior.',f:'Tipo sem controles declarados: painel vazio nomeado, nunca erro.',k:['contêiner único','registro por tipo']}},
+
+ {id:'x1',x:30,y:965,w:310,h:110,l:'render',t:'Timeline',s:'Canvas, não DOM. O componente mais caro do projeto.',
+  d:{q:'Tracks, clipes, régua, cursor, seleção, alças de trim, zoom, snap e arraste entre tracks.',p:'Nenhuma biblioteca de UI entrega isso, e tentar fazer com DOM morre em cem clipes. Canvas com hit testing próprio é o caminho, e é também onde mais tempo de desenvolvimento vai. Estimar isso por baixo é o erro clássico de quem monta editor.',te:'Canvas 2D ou WebGL para desenho, camada de hit testing própria, acessibilidade por lista paralela navegável por teclado.',f:'Falha no desenho: cai para lista textual de clipes, que é feia mas usável e acessível.',k:['canvas','hit testing','lista paralela']}},
+ {id:'x2',x:358,y:965,w:310,h:110,l:'render',t:'Preview e sobreposições',s:'Canvas de vídeo mais alças de transformação.',
+  d:{q:'O vídeo composto mais os controles de posição, escala, rotação, recorte e máscara desenhados por cima.',p:'As alças precisam acompanhar a transformação do item em tempo real, com o cursor correto e com snap. É matemática de transformação, não componente de biblioteca.',te:'Sobreposição em SVG sobre o canvas de vídeo, compartilhando a mesma matriz de transformação.',f:'Sobreposição falha: controles numéricos no painel continuam funcionando.',k:['matriz compartilhada','SVG sobre canvas']}},
+ {id:'x3',x:686,y:965,w:310,h:110,l:'render',t:'Editor de curvas',s:'Keyframe, easing, curva de volume.',
+  d:{q:'Edição de valor ao longo do tempo com interpolação ajustável.',p:'É o que separa ferramenta de brinquedo. E é o tipo de componente que parece simples até precisar de seleção múltipla, zoom e desfazer.',te:'Canvas com manipulação de Bézier. Mesmo componente para áudio, opacidade e transformação.',f:'Falha: edição por valor numérico no painel continua.',k:['Bézier','reuso entre propriedades']}},
+ {id:'x4',x:1014,y:965,w:296,h:110,l:'render',t:'Scrubber e navegação',s:'Precisão de frame com atalhos.',
+  d:{q:'Régua de tempo, navegação por frame, marcadores, zoom temporal e laço de repetição.',p:'Precisão de frame com teclado é requisito de quem edita a sério. Setas movem um frame, Shift mais seta move um segundo.',te:'Mapa de atalhos configurável. No mobile, pinça para zoom e arraste para scrub com aceleração.',f:'Nenhuma: é interação.',k:['frame a frame','atalho configurável']}}
+],
+e:[],
+k:[
+ {x:0,y:1420,w:655,c:'accent',b:'Decisão: shadcn/ui sobre Radix, com Tailwind',
+  h:'<b>Por quê:</b> metade da sua interface não existe em biblioteca nenhuma e será construída de qualquer jeito. O que você precisa comprar pronto é diálogo, popover, menu e slider <b>acessíveis</b>, que é onde implementação caseira falha. O Radix resolve isso e o shadcn coloca o código no seu repositório, sem lock-in de tema.<br><br><b>Por que não Ant Design:</b> é a melhor opção para painel denso de dados, com a tabela e o formulário mais completos do ecossistema React. Mas traz um visual de sistema corporativo que briga com ferramenta criativa, e a parte densa não é o núcleo aqui. <b>Vale para o painel administrativo interno</b>, onde a velocidade importa mais que a identidade.<br><br><b>Por que não MUI:</b> Material Design é opinativo demais e o data grid avançado é pago (MUI X). Pagar por grid num produto cujo componente crítico é canvas não se justifica.'},
+ {x:685,y:1420,w:655,c:'render',b:'O número que muda o planejamento',
+  h:'Dos quatro grupos acima, <b>os tokens, átomos e moléculas somam talvez 15% do esforço de front-end</b>. Os quatro organismos da última faixa somam o resto.<br><br>A timeline sozinha é, com folga, o componente mais caro do projeto inteiro. Qualquer cronograma que trate "escolher biblioteca de componentes" como decisão estrutural está olhando para o lugar errado.<br><br>A decisão que realmente importa de front-end aqui não é shadcn contra Ant Design. É <b>canvas contra DOM na timeline</b>, e a resposta é canvas, porque DOM morre em cem clipes.'}
+],
+t:[]
+});
+</script>
+<script>
+/* ======================= 11 CARGA E CUSTO ======================= */
+BOARDS.push({
+id:'custo', nome:'Carga e custo', num:'11',
+head:{x:0,y:0,w:840,kick:'Volumetria, dimensionamento e a conta de nuvem',
+  t:'Carga e custo',
+  p:'Não existe dado de mercado para o EDITICARUS, então tudo aqui é hipótese de trabalho declarada, não projeção. O que vale não são os números absolutos e sim a sensibilidade: a variável que quebra a conta não é usuário cadastrado, é minuto de GPU. Por isso a arquitetura local first não é preferência técnica, é a decisão financeira do projeto.'},
+g:[
+ {x:0,y:190,w:640,h:300,t:'Lançamento (mês 1 a 3)',c:'user',i:'Hipótese conservadora.'},
+ {x:690,y:190,w:640,h:300,t:'Ano 1 (hipótese otimista)',c:'render',i:'Só acontece se houver aquisição de verdade.'}
+],
+n:[
+ {id:'v1',x:30,y:250,w:270,h:95,l:'user',t:'500 cadastros, 50 por dia',s:'Hipótese. Nenhum dado sustenta ainda.',
+  d:{q:'Base de lançamento assumida para dimensionar, não para prometer.',p:'Declarar como hipótese evita o erro de construir infraestrutura para um volume que nunca chega, que é o jeito mais comum de queimar caixa antes da primeira venda.',te:'Validação: só a instrumentação de uso real confirma ou derruba.',f:'Se vier 10x mais, a arquitetura escala porque o custo marginal por usuário é quase zero. Se vier 10x menos, o custo fixo é baixo o bastante para não doer.',k:['hipótese','a validar']}},
+ {id:'v2',x:318,y:250,w:292,h:95,l:'render',t:'95% das operações no device',s:'Essa é a premissa que governa a conta.',
+  d:{q:'Importar, cortar, efeito, matting, legenda, denoise e export até 1080p rodam local.',p:'Se essa premissa cair, a conta de nuvem multiplica por sete. É a hipótese mais importante do projeto inteiro e precisa ser medida desde o primeiro usuário.',te:'Métrica obrigatória: proporção entre operações on device e server side, por semana.',f:'Se cair abaixo de 85%, a arquitetura vazou e precisa de correção antes de crescer.',k:['premissa crítica','medir desde o dia 1']}},
+ {id:'v3',x:30,y:360,w:270,h:95,l:'infra',t:'Servidor: auth, catálogo, telemetria',s:'Nenhum job de GPU previsto no lançamento.',
+  d:{q:'O que de fato precisa existir no mês 1.',p:'Lançar sem GPU worker é possível e recomendado. Upscale e export 4K entram quando houver alguém pedindo, não antes.',te:'Uma instância pequena, um Postgres gerenciado e R2. Nada mais.',f:'Indisponibilidade total: o editor continua funcionando. Esse é o ponto.',k:['sem GPU no dia 1']}},
+ {id:'v4',x:318,y:360,w:292,h:95,l:'ent',t:'Custo estimado: R$ 250 a 400 por mês',s:'Ordem de grandeza, não orçamento fechado.',
+  d:{q:'Instância pequena, banco gerenciado, R2 com egress zero e observabilidade em plano gratuito.',p:'Esse número é baixo o bastante para não exigir receita antes de validar. É exatamente o que a arquitetura local first compra.',te:'Verificar contra a página de preço de cada fornecedor antes de fechar orçamento. Preços de nuvem mudam mais rápido que documento.',f:'Estouro: o alarme é o custo de storage, que indica TTL não executando.',k:['ordem de grandeza','verificar fornecedor']}},
+
+ {id:'v5',x:720,y:250,w:270,h:95,l:'user',t:'20 mil cadastros, 2 mil por dia',s:'Só se houver canal de aquisição funcionando.',
+  d:{q:'Hipótese otimista para ano 1.',p:'Crescimento de produto de consumidor sem orçamento de mídia depende de boca a boca ou de conteúdo. Nenhum dos dois é previsível e nenhum dos dois é rápido. Tratar isso como certo é o erro de planejamento mais comum.',te:'Validação: custo de aquisição medido, não estimado.',f:'Sem aquisição, o número é irrelevante e o custo continua baixo. Risco financeiro contido.',k:['depende de aquisição']}},
+ {id:'v6',x:1008,y:250,w:292,h:95,l:'render',t:'60 mil minutos processados por mês',s:'Dos quais cerca de 3 mil vão para servidor.',
+  d:{q:'Volume total editado contra volume que realmente precisa de GPU remota.',p:'Os 5% que vão para o servidor são upscale 4K, modelo grande e device incapaz. É pouco em proporção e caro em unidade.',te:'Medição por tipo de job, não por total. O custo está concentrado em poucos tipos.',f:'Se a proporção subir, o alarme dispara antes do custo.',k:['5% remoto','custo concentrado']}},
+ {id:'v7',x:720,y:360,w:270,h:95,l:'infra',t:'GPU: US$ 150 a 300 por mês',s:'A única linha que escala com uso.',
+  d:{q:'Referência de preço em 2026 em provedor serverless: A10 na faixa de US$ 1,10/h e H100 perto de US$ 3,95/h, contra H100 a cerca de US$ 5,49/h em plataforma gerenciada. Cobrança por segundo, escala a zero.',p:'Escala a zero é o que mantém o custo fixo perto de zero enquanto não há volume. Você paga segundo de uso, não máquina parada.',te:'Multiplicador de região e de instância não interrompível pode somar de 1,5x a 3x sobre a tarifa base. Confirmar na página do fornecedor.',f:'Pico inesperado: limite de gasto por conta e por dia, com corte antes do prejuízo.',k:['por segundo','escala a zero','limite de gasto']}},
+ {id:'v8',x:1008,y:360,w:292,h:95,l:'ent',t:'Total: US$ 300 a 500 por mês',s:'Perto de R$ 1,6 mil a R$ 2,7 mil ao câmbio de R$ 5,40.',
+  d:{q:'GPU, banco, storage, API e observabilidade somados, na hipótese de ano 1.',p:'Com 20 mil cadastrados, isso dá menos de R$ 0,15 por usuário por mês. É sustentável mesmo com conversão baixa. O ponto não é o total, é a inclinação da curva.',te:'Câmbio declarado como premissa. Revisar.',f:'A linha que estoura primeiro é GPU. Por isso o limite de gasto diário é obrigatório desde o dia um.',k:['R$ 0,15 por usuário','câmbio como premissa']}},
+
+ {id:'v9',x:0,y:530,w:1330,h:120,l:'accent',t:'O contrafactual: quanto custaria a mesma operação com arquitetura server first, como a do CapCut',
+  s:'Mesmos 60 mil minutos por mês, com render e IA no servidor: cerca de 1.500 horas de GPU, algo próximo de US$ 1.650 por mês só em computação, mais armazenamento de mídia bruta de milhares de usuários. Total perto de US$ 2.000 por mês, por volta de R$ 11 mil. A diferença entre as duas arquiteturas, na mesma escala, passa de R$ 8 mil por mês.',
+  d:{q:'A conta que justifica cada decisão dos quadros anteriores.',p:'Esse número é a tradução financeira da frase "o valor do CapCut Pro não está no código do cliente". A ByteDance pode pagar essa conta porque tem escala e porque o catálogo é o produto. Você não pode, e por isso a arquitetura precisa ser outra. Não é uma versão mais pobre da deles: é um modelo diferente, que só funciona porque a IA on device amadureceu.',te:'Premissas: cerca de 1,5 minuto de GPU por minuto de vídeo com efeitos, A10 a US$ 1,10/h, R2 a US$ 0,015 por GB ao mês. Todas verificáveis e todas sujeitas a mudança.',f:'Se a premissa de 95% on device cair, você caminha para esta conta sem perceber. Por isso ela é métrica, não suposição.',k:['R$ 8 mil por mês de diferença','premissas declaradas']}}
+],
+e:[{f:'v2',t:'v9',l:'se esta premissa cair',k:'d'}],
+k:[
+ {x:0,y:1030,w:655,c:'core',b:'Separando fato de hipótese, como seu padrão pede',
+  h:'<b>Fato:</b> as faixas de preço de GPU, bundle e memória citadas vêm de comparativos públicos de 2026 e estão nas fontes. Os dados do CapCut vêm do disco, foram lidos.<br><br><b>Inferência:</b> que 95% das operações cabem no device. Sustentada pela maturidade de RMBG-2.0, Whisper e RNNoise, e pelo fato de o próprio CapCut já rodar RNNoise e interpolação localmente. Não foi medida no seu produto.<br><br><b>Hipótese:</b> todos os números de usuário e volume. Não há nenhum dado. Servem para dimensionar e para testar sensibilidade, não para planejar receita.<br><br><b>Desconhecido:</b> quanto tempo de GPU cada job realmente consome. Só medição responde, e ela só existe depois do primeiro usuário.'},
+ {x:685,y:1030,w:645,c:'ent',b:'A pergunta que os números não respondem',
+  h:'Custo de infraestrutura <b>nunca foi o risco deste projeto</b>. R$ 400 por mês no lançamento é irrelevante perto do risco real, que é o <b>custo de oportunidade do seu tempo</b>.<br><br>Dezoito meses construindo isso são dezoito meses sem prospectar, sem fechar contrato e sem faturar. A nuvem custa R$ 400. O seu tempo, na sua própria referência de R$ 7 mil a R$ 8 mil líquidos, custa <b>mais de R$ 130 mil</b> no mesmo período.<br><br>Essa é a conta que decide o projeto, e ela está no quadro seguinte.'}
+],
+t:[
+ {x:0,y:690,w:1330,cap:'Dimensionamento por componente: o que escala com uso e o que é custo fixo',
+  h:['Componente','Lançamento','Ano 1 (hipótese)','Escala com','Risco de estouro'],
+  r:[['Instância de API','1 pequena','2 a 3 pequenas com balanceador','Requisição por segundo','<span class="pill ok">Baixo</span>'],
+     ['Postgres gerenciado','Menor plano','Plano médio mais réplica de leitura','Conta e assinatura','<span class="pill ok">Baixo</span>'],
+     ['Object storage (R2)','Poucos GB','Pico de cerca de 500 GB com TTL de 24h','Job server side','<span class="pill wa">Médio se o TTL falhar</span>'],
+     ['CDN de catálogo','Alguns GB de egress','Dezenas de GB de egress','Downloads de pack','<span class="pill ok">Baixo (R2 tem egress zero)</span>'],
+     ['Workers de GPU','<b>Nenhum</b>','Cerca de 25 a 50 horas por mês','<b>Minuto de vídeo server side</b>','<span class="pill da">Alto. É a única linha perigosa</span>'],
+     ['Observabilidade','Plano gratuito','Plano pago inicial','Volume de evento','<span class="pill ok">Baixo</span>'],
+     ['Fila','Plano gratuito','Plano pago inicial','Jobs por dia','<span class="pill ok">Baixo</span>'],
+     ['<b>Total aproximado</b>','<b>R$ 250 a 400 por mês</b>','<b>R$ 1,6 mil a 2,7 mil por mês</b>','','']]}
+]
+});
+
+/* ======================= 12 VEREDITO ======================= */
+BOARDS.push({
+id:'veredito', nome:'Veredito', num:'12',
+head:{x:0,y:0,w:860,kick:'A arquitetura está certa. A pergunta é se o projeto deve existir agora',
+  t:'Veredito e próximo passo',
+  p:'Esta parte não é sobre engenharia. A arquitetura dos onze quadros anteriores é sólida e eu a defendo. O que eu não defendo é construí-la inteira agora, com dívida para quitar e meta de R$ 10 mil mensais em aberto. Abaixo está a conta que sustenta essa posição e os três caminhos possíveis, com recomendação.'},
+g:[
+ {x:0,y:560,w:1340,h:330,t:'Três caminhos possíveis',c:'ent',i:'Não são alternativas excludentes. A ordem é que muda tudo.'}
+],
+n:[
+ {id:'w1',x:0,y:190,w:1340,h:150,l:'accent',t:'A conta de esforço, feita sem otimismo',
+  s:'Núcleo de edição e timeline: 3 a 5 meses.  ·  Motor de render com WebGPU, cache e codec: 3 a 4 meses.  ·  Integração de dois modelos de IA: 1 a 2 meses.  ·  Catálogo e packs: 1 mês.  ·  Auth, entitlement e cobrança: 1 a 1,5 mês.  ·  Tauri mais mobile: 2 a 3 meses.  ·  QA e correção em três plataformas: 3 meses ou mais.  ·  Total: 14 a 20 meses em tempo integral, assumindo zero curva de aprendizado em WebGPU, WebCodecs e Rust. Com a curva, 24 meses é mais honesto.',
+  d:{q:'Estimativa para uma pessoa, em tempo integral, construindo o produto completo descrito nos quadros anteriores.',p:'Estimativas de projeto pessoal erram por baixo por padrão, e editor de vídeo é a categoria onde elas erram mais. A timeline sozinha costuma consumir o dobro do previsto, porque hit testing, snap, seleção múltipla, arraste entre tracks e undo interagem entre si de formas que só aparecem na implementação.',te:'O que puxa o prazo: canvas com hit testing próprio, coerência temporal de matting, cache de três níveis, e o QA em três WebViews diferentes por causa do Tauri.',f:'O modo de falha típico não é o projeto dar errado tecnicamente. É ele ficar 70% pronto e o autor ficar sem dinheiro.',k:['14 a 20 meses','estimativa sem otimismo']}},
+ {id:'w2',x:0,y:370,w:1340,h:150,l:'ent',t:'O custo que importa não é o da nuvem',
+  s:'R$ 400 por mês de infraestrutura é irrelevante. Dezoito meses do seu tempo, na sua própria referência de R$ 7 mil a R$ 8 mil líquidos, custam mais de R$ 130 mil em renda não realizada. E são dezoito meses sem prospectar, sem fechar contrato e sem construir carteira, enquanto a dívida continua existindo e a meta de R$ 10 mil mensais continua aberta.',
+  d:{q:'O custo de oportunidade, que é o número que decide o projeto.',p:'Você pediu rigor na análise e não entusiasmo. Então: construir o EDITICARUS completo agora é a decisão que mais atrasa a sua meta financeira declarada, entre todas as opções em cima da mesa. Isso não torna o projeto ruim. Torna o momento errado.',te:'A conta não muda se você construir à noite e nos fins de semana. Muda o prazo, que vai de 18 meses para algo entre 36 e 48, e aí o risco vira a janela de oportunidade fechando: IA on device é vantagem hoje, e pode virar commodity em dois anos.',f:'O risco específico de fazer em paralelo: energia gasta num projeto interessante vira justificativa para adiar prospecção, que é a atividade desconfortável. Isso é o padrão que você mesmo pediu para eu sinalizar.',k:['R$ 130 mil','custo de oportunidade','janela fechando']}},
+
+ {id:'w3',x:30,y:620,w:420,h:240,l:'ent',t:'A · Produto completo agora',
+  s:'Construir os doze quadros.',
+  d:{q:'O caminho que o pedido original descreve.',p:'Tecnicamente viável e arquiteturalmente correto. Financeiramente é o pior dos três no seu contexto atual, porque produz receita zero por 18 meses enquanto a dívida corre.',te:'Só faz sentido com reserva financeira para 18 meses ou com sócio financiando, e nenhum dos dois está na mesa.',f:'Modo de falha mais provável: 70% pronto e sem dinheiro para terminar.',k:['18 meses','receita zero','recusado agora']}},
+ {id:'w4',x:468,y:620,w:420,h:240,l:'render',t:'B · Fatia estreita, em 6 a 10 semanas',
+  s:'Só remover fundo e legendar. Web, sem instalar nada.',
+  d:{q:'Uma ferramenta web que faz duas coisas: remove fundo de vídeo e gera legenda, tudo no navegador, sem upload. Nada de timeline, nada de projeto, nada de multiplataforma.',p:'São exatamente os dois recursos que o próprio documento aponta como os que mais doem no paywall do CapCut e com melhor implementação aberta. E é o único jeito de descobrir se alguém paga por isso <b>antes</b> de gastar 18 meses. Sem timeline, o componente mais caro do projeto sai do caminho crítico.',te:'React mais ONNX Runtime Web mais WebCodecs. Reaproveita as camadas 2 e 3 da arquitetura. Se der certo, vira o núcleo do produto completo. Se não der, você perdeu 8 semanas e não 18 meses.',f:'Risco real: pode não ter demanda paga. Mas esse é exatamente o ponto. Descobrir isso em 8 semanas é o resultado, não o fracasso.',k:['6 a 10 semanas','testa demanda','reaproveitável']}},
+ {id:'w5',x:906,y:620,w:404,h:240,l:'core',t:'C · O ativo que já existe',
+  s:'A engenharia reversa e esta arquitetura, usadas agora.',
+  d:{q:'Você já tem dois documentos técnicos raros: uma engenharia reversa conduzida com método (Ghidra, REA, triagem por contagem de bytes, pivô para a camada JS quando o nativo bateu no limite) e uma arquitetura de sistema completa com trade-offs declarados. Isso é portfólio de arquiteto, não de desenvolvedor júnior.',p:'Custo: zero. Já está pronto. É o único dos três caminhos que gera retorno nesta semana, e é o que mais se aproxima da sua meta declarada de R$ 7 mil a R$ 8 mil líquidos em CLT ou de contrato PJ com ticket alto.',te:'Uso imediato: anexo de candidatura para vaga de arquitetura ou tech lead, material de conversa comercial para projeto de automação e integração, e prova de capacidade técnica onde você hoje depende de currículo.',f:'Risco: nenhum. O material existe e não expira.',k:['custo zero','retorno nesta semana','posicionamento']}},
+
+ {id:'w6',x:0,y:930,w:1340,h:160,l:'accent',t:'Recomendação: C agora, B como teste, A só se B provar demanda',
+  s:'Esta semana: C. Publique a engenharia reversa e esta arquitetura como material técnico e use nas duas frentes, candidatura e conversa comercial. Custo zero, retorno imediato.  ·  Próximas 6 a 10 semanas: B, em tempo protegido e sem comer o tempo comercial. Uma ferramenta, dois recursos, cobrança desde o primeiro usuário.  ·  A só entra se B mostrar que alguém paga. E aí a arquitetura destes doze quadros já está pronta esperando, que é exatamente para isso que ela serve.',
+  d:{q:'A recomendação, com critério explícito.',p:'O critério que separa B de A é um só e precisa ser definido antes de começar: <b>quantos usuários pagantes em 60 dias justificam continuar?</b> Sem esse número definido antes, B vira A por inércia, que é o modo de falha clássico de projeto pessoal interessante.',te:'Sugestão de critério: 30 pagantes recorrentes em 60 dias, ou um contrato de empresa que cubra o desenvolvimento. Qualquer coisa abaixo disso significa parar e voltar para a prestação de serviço, que é o que paga a conta hoje.',f:'O modo de falha desta recomendação: você fazer B e A ao mesmo tempo. Não faça. B existe justamente para ser pequeno.',k:['critério antes de começar','30 pagantes em 60 dias']}}
+],
+e:[{f:'w1',t:'w2'},{f:'w3',t:'w6',k:'d'},{f:'w4',t:'w6'},{f:'w5',t:'w6'}],
+k:[
+ {x:0,y:1380,w:655,c:'render',b:'Por que a arquitetura continua valendo mesmo no caminho B',
+  h:'A fatia estreita usa <b>as camadas 2 e 3 inteiras</b>: motor de render, cache, decode, ONNX Runtime, matting e transcrição. São as mesmas peças, montadas num produto menor.<br><br>O que fica de fora em B é justamente o que é caro e incerto: timeline, catálogo, entitlement, multiplataforma. Nenhuma dessas peças é desperdiçada, elas só são adiadas até existir evidência de que alguém paga.<br><br>Esse é o valor real de ter desenhado os doze quadros antes de escrever código: você sabe exatamente <b>onde cortar</b> sem destruir o caminho de volta.'},
+ {x:685,y:1380,w:655,c:'ent',b:'A pergunta que vale mais que esta arquitetura inteira',
+  h:'Você passou o esforço de uma engenharia reversa completa, com Ghidra e 40 minutos de descompilação, para entender um produto que já perdeu.<br><br>A mesma pergunta aplicada à sua oferta comercial atual seria: <b>por que a Operação Comercial Inteligente de R$ 2.900 ainda não foi vendida?</b> O que o comprador olha e não compra? Qual objeção aparece e não é respondida?<br><br>Esse diagnóstico custa zero em infraestrutura, zero em código, e responde direto à meta de R$ 10 mil mensais. O EDITICARUS responde daqui a 18 meses, se responder.<br><br>A capacidade técnica demonstrada aqui não está em dúvida. O que está em dúvida é se ela está apontada para o lugar que paga.'}
+],
+t:[]
+});
+</script>
+<script>
+(function(){
+'use strict';
+const $ = s => document.querySelector(s);
+const world = $('#world'), stage = $('#stage'), svg = $('#edges'), rail = $('#rail');
+const panel = $('#panel'), pb = $('#pb'), ptitle = $('#ptitle'), player = $('#player');
+
+const COL = {shell:'--l-shell',core:'--l-core',render:'--l-render',ai:'--l-ai',cat:'--l-cat',
+  ent:'--l-ent',infra:'--l-infra',user:'--l-user',accent:'--accent',ok:'--ok',warn:'--warn'};
+const col = l => 'var(' + (COL[l] || '--l-infra') + ')';
+const LNAMES = {shell:'Casca de UI',core:'Núcleo de edição',render:'Motor de render',ai:'Inteligência',
+  cat:'Catálogo',ent:'Acesso e cobrança',infra:'Plataforma',user:'Usuário',accent:'Decisão',
+  ok:'Positivo',warn:'Atenção'};
+
+let view = {x:60,y:40,k:1}, cur = 0, sel = null, nodeMap = {};
+
+/* ---------- legenda ---------- */
+$('#lkeys').innerHTML = ['shell','core','render','ai','cat','ent','infra','user']
+  .map(l => '<span><i style="background:' + col(l) + '"></i>' + LNAMES[l] + '</span>').join('');
+
+/* ---------- trilha ---------- */
+BOARDS.forEach((b,i) => {
+  const btn = document.createElement('button');
+  btn.className = 'rb'; btn.type = 'button';
+  btn.innerHTML = '<em>' + b.num + '</em>' + b.nome;
+  btn.addEventListener('click', () => show(i));
+  rail.appendChild(btn);
+});
+
+/* ---------- escape ---------- */
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* ---------- render de um quadro ---------- */
+function show(i, keepView){
+  cur = i; const b = BOARDS[i];
+  [...rail.children].forEach((c,j) => c.setAttribute('aria-current', j === i ? 'true' : 'false'));
+  [...world.children].forEach(c => { if (c.id !== 'edges') c.remove(); });
+  svg.innerHTML = ''; nodeMap = {}; closePanel();
+
+  if (b.head){
+    const h = document.createElement('div');
+    h.className = 'bhead';
+    h.style.cssText = 'left:' + b.head.x + 'px;top:' + b.head.y + 'px;width:' + b.head.w + 'px';
+    h.innerHTML = '<span class="kick">' + esc(b.head.kick) + '</span><h2>' + esc(b.head.t) +
+      '</h2><p>' + esc(b.head.p) + '</p>';
+    world.appendChild(h);
+  }
+
+  (b.g || []).forEach(g => {
+    const d = document.createElement('div');
+    d.className = 'grp';
+    d.style.cssText = 'left:' + g.x + 'px;top:' + g.y + 'px;width:' + g.w + 'px;height:' + g.h +
+      'px;--gc:' + col(g.c) + ';border-color:color-mix(in srgb,' + col(g.c) + ' 40%,transparent)';
+    d.innerHTML = '<b>' + esc(g.t) + '</b>' + (g.i ? '<i>' + esc(g.i) + '</i>' : '');
+    world.appendChild(d);
+  });
+
+  (b.n || []).forEach(n => {
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'n' + (n.dec ? ' dec' : '') + (n.term ? ' term' : '') + (n.ghost ? ' ghost' : '');
+    el.style.cssText = 'left:' + n.x + 'px;top:' + n.y + 'px;width:' + n.w + 'px;min-height:' +
+      n.h + 'px;--c:' + col(n.l);
+    el.innerHTML = (n.dec ? '<span class="tag">decisão</span>' : '') + '<b>' + esc(n.t) + '</b>' +
+      (n.s ? '<small>' + esc(n.s) + '</small>' : '');
+    el.addEventListener('click', e => { e.stopPropagation(); openPanel(n, el); });
+    world.appendChild(el);
+    nodeMap[n.id] = {el, n};
+  });
+
+  (b.k || []).forEach(k => {
+    const d = document.createElement('div');
+    d.className = 'note';
+    d.style.cssText = 'left:' + k.x + 'px;top:' + k.y + 'px;width:' + k.w + 'px;--c:' + col(k.c);
+    d.innerHTML = '<b>' + esc(k.b) + '</b>' + k.h;
+    world.appendChild(d);
+  });
+
+  (b.t || []).forEach(t => {
+    const d = document.createElement('div');
+    d.className = 'tbl';
+    d.style.cssText = 'left:' + t.x + 'px;top:' + t.y + 'px;width:' + t.w + 'px';
+    d.innerHTML = '<table><caption>' + esc(t.cap) + '</caption><thead><tr>' +
+      t.h.map(h => '<th>' + esc(h) + '</th>').join('') + '</tr></thead><tbody>' +
+      t.r.map(r => '<tr>' + r.map(c => '<td>' + c + '</td>').join('') + '</tr>').join('') +
+      '</tbody></table>';
+    world.appendChild(d);
+  });
+
+  requestAnimationFrame(() => { drawEdges(b); if (!keepView) fit(); });
+  try { history.replaceState(null, '', '#' + b.id); } catch(e){}
+}
+
+/* ---------- arestas ---------- */
+function drawEdges(b){
+  const NS = 'http://www.w3.org/2000/svg';
+  svg.innerHTML = '';
+  world.querySelectorAll('.elab').forEach(e => e.remove());
+  const line = getComputedStyle(document.documentElement).getPropertyValue('--line-strong').trim();
+
+  const defs = document.createElementNS(NS, 'defs');
+  defs.innerHTML = '<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" ' +
+    'markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="' + line + '"/></marker>';
+  svg.appendChild(defs);
+
+  (b.e || []).forEach(e => {
+    const A = nodeMap[e.f], B = nodeMap[e.t];
+    if (!A || !B) return;
+    const a = {x:A.n.x, y:A.n.y, w:A.n.w, h:A.el.offsetHeight || A.n.h};
+    const z = {x:B.n.x, y:B.n.y, w:B.n.w, h:B.el.offsetHeight || B.n.h};
+    const ac = {x:a.x + a.w/2, y:a.y + a.h/2}, zc = {x:z.x + z.w/2, y:z.y + z.h/2};
+    const dx = zc.x - ac.x, dy = zc.y - ac.y;
+    let p1, p2, c1, c2;
+    if (Math.abs(dx) > Math.abs(dy) * 1.1){
+      const s = dx > 0 ? 1 : -1;
+      p1 = {x: dx > 0 ? a.x + a.w : a.x, y: ac.y};
+      p2 = {x: dx > 0 ? z.x : z.x + z.w, y: zc.y};
+      const d = Math.min(Math.abs(p2.x - p1.x) * 0.5, 80);
+      c1 = {x: p1.x + s*d, y: p1.y}; c2 = {x: p2.x - s*d, y: p2.y};
+    } else {
+      const s = dy > 0 ? 1 : -1;
+      p1 = {x: ac.x, y: dy > 0 ? a.y + a.h : a.y};
+      p2 = {x: zc.x, y: dy > 0 ? z.y : z.y + z.h};
+      const d = Math.min(Math.abs(p2.y - p1.y) * 0.5, 70);
+      c1 = {x: p1.x, y: p1.y + s*d}; c2 = {x: p2.x, y: p2.y - s*d};
+    }
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', 'M' + p1.x + ',' + p1.y + ' C' + c1.x + ',' + c1.y + ' ' + c2.x + ',' +
+      c2.y + ' ' + p2.x + ',' + p2.y);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', line);
+    path.setAttribute('stroke-width', '1.6');
+    path.setAttribute('marker-end', 'url(#ah)');
+    if (e.k === 'd') path.setAttribute('stroke-dasharray', '5 4');
+    svg.appendChild(path);
+
+    if (e.l){
+      const t = 0.5;
+      const bx = Math.pow(1-t,3)*p1.x + 3*Math.pow(1-t,2)*t*c1.x + 3*(1-t)*t*t*c2.x + t*t*t*p2.x;
+      const by = Math.pow(1-t,3)*p1.y + 3*Math.pow(1-t,2)*t*c1.y + 3*(1-t)*t*t*c2.y + t*t*t*p2.y;
+      const lab = document.createElement('div');
+      lab.className = 'elab';
+      lab.style.cssText = 'left:' + bx + 'px;top:' + by + 'px';
+      lab.textContent = e.l;
+      world.appendChild(lab);
+    }
+  });
+
+  let maxX = 0, maxY = 0;
+  [...world.children].forEach(c => {
+    if (c.id === 'edges') return;
+    maxX = Math.max(maxX, c.offsetLeft + c.offsetWidth);
+    maxY = Math.max(maxY, c.offsetTop + c.offsetHeight);
+  });
+  svg.setAttribute('width', maxX + 200); svg.setAttribute('height', maxY + 200);
+}
+
+/* ---------- painel ---------- */
+function openPanel(n, el){
+  if (sel) sel.classList.remove('on');
+  sel = el; el.classList.add('on');
+  const d = n.d || {};
+  player.textContent = LNAMES[n.l] || '';
+  player.style.setProperty('--c', col(n.l));
+  ptitle.textContent = n.t;
+  let h = '';
+  if (d.q) h += '<section><h4>O que é</h4><p>' + d.q + '</p></section>';
+  if (d.p) h += '<section><h4>Por que existe assim</h4><p>' + d.p + '</p></section>';
+  if (d.te) h += '<section><h4>Tecnologia e critério</h4><p>' + d.te + '</p></section>';
+  if (d.f) h += '<section><h4>Se falhar</h4><p class="fail">' + d.f + '</p></section>';
+  if (d.k && d.k.length) h += '<section><h4>Referências</h4><div class="chips">' +
+    d.k.map(k => '<span class="chip">' + esc(k) + '</span>').join('') + '</div></section>';
+  pb.innerHTML = h || '<p>Sem detalhe adicional.</p>';
+  pb.scrollTop = 0;
+  panel.classList.add('open'); panel.setAttribute('aria-hidden','false');
+}
+function closePanel(){
+  panel.classList.remove('open'); panel.setAttribute('aria-hidden','true');
+  if (sel) { sel.classList.remove('on'); sel = null; }
+}
+$('#pclose').addEventListener('click', closePanel);
+
+/* ---------- transform ---------- */
+function apply(){
+  world.style.transform = 'translate(' + view.x + 'px,' + view.y + 'px) scale(' + view.k + ')';
+  $('#zlvl').textContent = Math.round(view.k * 100) + '%';
+}
+function fit(){
+  let maxX = 0, maxY = 0, minX = 1e9, minY = 1e9;
+  [...world.children].forEach(c => {
+    if (c.id === 'edges') return;
+    minX = Math.min(minX, c.offsetLeft); minY = Math.min(minY, c.offsetTop);
+    maxX = Math.max(maxX, c.offsetLeft + c.offsetWidth);
+    maxY = Math.max(maxY, c.offsetTop + c.offsetHeight);
+  });
+  if (minX > 1e8) return;
+  const pad = 56, vw = stage.clientWidth, vh = stage.clientHeight;
+  const k = Math.min((vw - pad*2) / (maxX - minX), (vh - pad*2) / (maxY - minY), 1.1);
+  view.k = Math.max(0.08, k);
+  view.x = pad - minX * view.k + (vw - pad*2 - (maxX-minX)*view.k) / 2;
+  view.y = pad - minY * view.k;
+  apply();
+}
+function zoomAt(f, cx, cy){
+  const k2 = Math.min(2.4, Math.max(0.08, view.k * f));
+  const r = k2 / view.k;
+  view.x = cx - (cx - view.x) * r; view.y = cy - (cy - view.y) * r;
+  view.k = k2; apply();
+}
+$('#bzi').addEventListener('click', () => zoomAt(1.25, stage.clientWidth/2, stage.clientHeight/2));
+$('#bzo').addEventListener('click', () => zoomAt(0.8, stage.clientWidth/2, stage.clientHeight/2));
+$('#bfit').addEventListener('click', fit);
+
+/* ---------- pan ---------- */
+let drag = null;
+stage.addEventListener('pointerdown', e => {
+  if (e.target.closest('.n, #panel, #legend, .tbl')) return;
+  drag = {x:e.clientX, y:e.clientY, vx:view.x, vy:view.y, id:e.pointerId};
+  stage.classList.add('drag');
+  try { stage.setPointerCapture(e.pointerId); } catch(err){}
+});
+stage.addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  view.x = drag.vx + (e.clientX - drag.x); view.y = drag.vy + (e.clientY - drag.y); apply();
+});
+const endDrag = () => { drag = null; stage.classList.remove('drag'); };
+stage.addEventListener('pointerup', endDrag);
+stage.addEventListener('pointercancel', endDrag);
+stage.addEventListener('click', e => { if (!e.target.closest('.n, #panel')) closePanel(); });
+
+stage.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = stage.getBoundingClientRect();
+  if (e.ctrlKey || e.metaKey) zoomAt(e.deltaY < 0 ? 1.12 : 0.89, e.clientX - r.left, e.clientY - r.top);
+  else { view.x -= e.deltaX; view.y -= e.deltaY; apply(); }
+}, {passive:false});
+
+/* pinça */
+let pinch = null;
+stage.addEventListener('touchstart', e => {
+  if (e.touches.length === 2){
+    const [a,b] = e.touches;
+    pinch = {d: Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY), k: view.k};
+    drag = null; stage.classList.remove('drag');
+  }
+}, {passive:true});
+stage.addEventListener('touchmove', e => {
+  if (e.touches.length === 2 && pinch){
+    e.preventDefault();
+    const [a,b] = e.touches, r = stage.getBoundingClientRect();
+    const d = Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY);
+    const target = Math.min(2.4, Math.max(0.08, pinch.k * (d / pinch.d)));
+    const cx = (a.clientX + b.clientX)/2 - r.left, cy = (a.clientY + b.clientY)/2 - r.top;
+    zoomAt(target / view.k, cx, cy);
+  }
+}, {passive:false});
+stage.addEventListener('touchend', () => { pinch = null; }, {passive:true});
+
+/* ---------- teclado ---------- */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePanel();
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === '0'){ fit(); }
+  if (e.key === 'ArrowRight' && e.altKey){ show(Math.min(BOARDS.length-1, cur+1)); }
+  if (e.key === 'ArrowLeft' && e.altKey){ show(Math.max(0, cur-1)); }
+});
+
+/* ---------- tema ---------- */
+$('#btheme').addEventListener('click', () => {
+  const r = document.documentElement;
+  const dark = r.getAttribute('data-theme') === 'dark' ||
+    (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+  r.setAttribute('data-theme', dark ? 'light' : 'dark');
+  try { localStorage.setItem('ep-theme', dark ? 'light' : 'dark'); } catch(err){}
+  drawEdges(BOARDS[cur]);
+});
+try {
+  const t = localStorage.getItem('ep-theme');
+  if (t) document.documentElement.setAttribute('data-theme', t);
+} catch(err){}
+
+/* ---------- boot ---------- */
+let start = 0;
+const hash = (location.hash || '').replace('#','');
+if (hash){ const i = BOARDS.findIndex(b => b.id === hash); if (i >= 0) start = i; }
+show(start);
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => show(cur, false), 180); });
+})();
+</script>

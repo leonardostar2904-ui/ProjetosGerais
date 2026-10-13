@@ -10,6 +10,19 @@ Repositorio dos projetos de cliente. Um diretorio por cliente.
 | Pereira & Martins Contabilidade | Site + branding basico + 15 templates de post | Nao iniciado |
 | BiblioMaison | Site + 7 templates de post | Nao iniciado |
 
+## Projetos proprios
+
+Alem dos clientes, este repositorio guarda os projetos da marca ICARUS em
+`projetos/<projeto>/`.
+
+| Projeto | Entregavel | Status |
+|---|---|---|
+| EDITICARUS PRO | Arquitetura e fluxo de editor de video multiplataforma | Documento de arquitetura, sem codigo de produto |
+
+**Criterio de separacao:** `clientes/` e trabalho pago com prazo e escopo acordados.
+`projetos/` e investimento proprio e compete por tempo com a prospeccao, entao cada
+um precisa declarar no README o criterio que justifica continuar.
+
 ## Estrutura por cliente
 
 ```
