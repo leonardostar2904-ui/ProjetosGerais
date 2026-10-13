@@ -1,0 +1,41 @@
+$ProgressPreference='SilentlyContinue'
+$base="$HOME\Desktop\VOE_ICARUS_v2"
+$B="https://d8j0ntlcm91z4.cloudfront.net/user_37tbqglOsi6AfrwV1PTKpPVBzzi/hf_20261013_"
+$lista=@'
+01_Personas_22a28|01_homem_tranca_camisa_egeu|010407_64aedc16-a10e-4fc6-86b8-3bd7834ac825
+01_Personas_22a28|02_mulher_trancas_perfil|010408_ffb3adeb-3e47-4b11-b753-0888036f2aff
+01_Personas_22a28|03_homem_degrau_concreto|010406_3c4c8797-f3dc-459f-93ea-f3cbb9d5912d
+01_Personas_22a28|04_mulher_rindo_corredor|010408_2bfc3c62-bd6c-4950-a98d-8dc7505070bc
+01_Personas_22a28|05_homem_porta_de_luz|010407_792b74fe-8fc5-45da-9971-32f087f7e878
+01_Personas_22a28|06_mulher_olhar_close|010407_e2616c8b-13ae-41bd-8f35-27eb221faca2
+01_Personas_22a28|07_homem_olhando_o_ceu|010407_d85678ca-2739-4473-9c7d-81eed152429e
+02_Personas_29a53|08_mulher_cachos_estudio|010406_7be49e54-0ec9-49df-b7aa-b0a835e24c45
+02_Personas_29a53|09_homem_barba_mesa_janela|010407_2460863d-ece0-4e20-be78-fdeadc978989
+02_Personas_29a53|10_mulher_cabelo_grisalho_rindo|010408_43e24448-a3a9-4cbe-9e7f-b90cc926a267
+02_Personas_29a53|11_homem_perfil_janela|010406_cbd306e1-2da8-4553-be74-b4d5a917a891
+02_Personas_29a53|12_mulher_locs_porta|010408_b29d54cf-62a1-4ed7-92d0-0693f8b7bf71
+02_Personas_29a53|13_homem_cafe_xicara|010418_94ee8d3d-f9fb-42a6-8096-40535dc8f2a7
+02_Personas_29a53|14_mulher_maos_lenco|010419_46e416ee-581c-499c-8d5b-ab41984338b7
+03_Cenarios_e_Objetos|15_livro_aberto_luz|010418_d907d966-72b8-45e9-82b6-70730796cf26
+03_Cenarios_e_Objetos|16_flatlay_diario_cafe|010421_848c40aa-c7f6-4220-8cc6-cc74b7021402
+03_Cenarios_e_Objetos|17_plataforma_de_trem|010421_3a93fec9-93e6-4a8c-92d9-f9b1e087b65e
+03_Cenarios_e_Objetos|18_teclas_maquina_escrever|010420_4ec5d679-4cc9-4dd6-b634-75c180777d18
+03_Cenarios_e_Objetos|19_bicicleta_parede_creme|010420_5bb4cab1-4fcd-4ca1-8300-fea7676d734b
+03_Cenarios_e_Objetos|20_pilha_livros_flor|010421_f524c475-667d-46f3-b108-bf9a2dbd9fd6
+03_Cenarios_e_Objetos|21_relogio_romano|010419_2d875ca8-551d-463f-93c1-9dbcb0d8a936
+03_Cenarios_e_Objetos|22_cadeiras_cafe_vazias|010420_ceca52a1-6e4b-416c-b2f4-ebed0a8c7eb8
+04_Texturas_e_Elementos_Graficos|23_papel_artesanal_linha|010418_34364cc7-2627-4a26-a63c-2b412bb15e27
+04_Texturas_e_Elementos_Graficos|24_paralelepipedo_molhado|010419_bc7ee23e-35e2-4a13-a9af-00d08887fbe2
+04_Texturas_e_Elementos_Graficos|25_lona_respingos_tinta|010427_fa233a4f-ce90-48b0-8406-69c44f6dac57
+04_Texturas_e_Elementos_Graficos|26_linha_navy_tecido|010427_44c7c99d-9db6-4c0d-a8fd-92b9147756ea
+04_Texturas_e_Elementos_Graficos|27_luz_persiana_parede|010427_7197ca3c-4bdb-4712-bc59-171e7a2c1833
+04_Texturas_e_Elementos_Graficos|28_papel_seda_embrulho|010427_59290cf0-55bd-4a31-ad0a-bbd049289302
+04_Texturas_e_Elementos_Graficos|29_trilha_em_s_areia|010426_a3e062a6-137b-47de-83db-f203259d379d
+04_Texturas_e_Elementos_Graficos|30_tigela_agua_reflexo|010426_64bdbeac-27ac-4967-91ce-51bdff3592d4
+04_Texturas_e_Elementos_Graficos|31_papel_rasgado_navy|010426_9760d476-ee47-4a58-a756-826982b22c55
+04_Texturas_e_Elementos_Graficos|32_simbolo_parede_creme|010426_444f000d-ce44-4adc-9896-0cf30f14375e
+'@
+$lista -split "`n" | ForEach-Object { $p=$_.Trim() -split '\|'; if($p.Count -eq 3){ $d="$base\$($p[0])"; New-Item -ItemType Directory -Force -Path $d | Out-Null; Invoke-WebRequest ($B+$p[2]+".png") -OutFile "$d\$($p[1]).png"; Write-Host "OK $($p[1])" } }
+Compress-Archive -Path $base -DestinationPath "$base.zip" -Force
+Write-Host "Pronto: $base e $base.zip"
+explorer $base
