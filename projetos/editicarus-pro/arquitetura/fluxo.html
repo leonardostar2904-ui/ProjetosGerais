@@ -133,7 +133,8 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .note{position:absolute;background:var(--surface-2);border:1px solid var(--line);
   border-top:2px solid var(--c,var(--accent));border-radius:8px;padding:11px 13px;
   font-size:11.5px;line-height:1.55;color:var(--fg-2)}
-.note b{display:block;color:var(--fg);font-size:11.5px;margin-bottom:5px;font-weight:650}
+.note > b:first-child{display:block;color:var(--fg);font-size:11.5px;margin-bottom:5px;font-weight:650}
+.note b{color:var(--fg);font-weight:650}
 .note code{font-family:var(--ff-m);font-size:10.5px;background:var(--surface-3);
   padding:1px 4px;border-radius:3px;color:var(--fg)}
 .note ul{margin:5px 0 0;padding-left:16px}
@@ -222,13 +223,66 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   #legend{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- etapa de design: etiquetas, status, esquemas, aprovação ---------- */
+.rgrp{display:flex;align-items:center;padding:0 4px 0 2px;font-family:var(--ff-m);font-size:9.5px;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--fg-3);white-space:nowrap;font-weight:700}
+.rgrp:not(:first-child){margin-left:10px;border-left:1px solid var(--line);padding-left:14px}
+.n .tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:2px}
+.tg{font-family:var(--ff-m);font-size:8.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;
+  padding:1.5px 6px;border-radius:4px;border:1px solid var(--line-strong);color:var(--fg-2);
+  white-space:nowrap;font-style:normal;line-height:1.5}
+.tg.req{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.tg.arq{border-color:var(--l-core);color:var(--l-core)}
+.tg.hip{border-style:dashed}
+.tg.rec{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.tg.lac{border-style:dashed;color:var(--fg-3)}
+.tg.bb{border-color:var(--l-ent);color:var(--l-ent)}
+.tg.dec{border-color:var(--l-shell);color:var(--l-shell)}
+.tg.v2{color:var(--fg-3);border-color:var(--line)}
+.stp{display:inline-block;font-family:var(--ff-m);font-size:9px;letter-spacing:.06em;text-transform:uppercase;
+  font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;align-self:flex-start;margin-top:3px}
+.stp.aguardando{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.stp.aprovado{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.stp.ajustes{background:color-mix(in srgb,var(--danger) 16%,transparent);color:var(--danger)}
+.stp.nao_iniciado{background:var(--surface-3);color:var(--fg-3)}
+.stp.em_elaboracao{background:color-mix(in srgb,var(--l-shell) 18%,transparent);color:var(--l-shell)}
+.pill.nu{background:var(--surface-3);color:var(--fg-3)}
+#legend em.tg{margin-right:2px}
+/* esquema espacial: modelo de áreas, não wireframe */
+.zfr{position:absolute}
+.zfr>b{display:block;font-size:12.5px;font-weight:700;margin-bottom:8px}
+.zdev{position:relative;border:2px solid var(--line-strong);border-radius:12px;background:var(--surface);overflow:hidden}
+.zz{position:absolute;border:1px dashed var(--line-strong);background:var(--surface-3);display:flex;
+  align-items:center;justify-content:center;text-align:center;padding:4px}
+.zz span{font-size:10.5px;color:var(--fg-2);line-height:1.3}
+.zz span em{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;
+  border-radius:50%;background:var(--fg);color:var(--bg);font-family:var(--ff-m);font-size:9.5px;font-weight:700;
+  margin-right:4px;vertical-align:middle}
+.zz.hot{background:var(--surface-2);border-style:solid;border-color:var(--fg-3)}
+.zfr>i{display:block;font-style:normal;font-size:11px;color:var(--fg-3);margin-top:8px;line-height:1.5}
+/* aprovação no painel */
+#pb .appr{border-top:1px solid var(--line);padding-top:16px;margin-top:6px}
+#pb .appr label{display:block;font-size:11.5px;color:var(--fg-3);margin:12px 0 5px}
+#pb .appr textarea{width:100%;min-height:76px;resize:vertical;background:var(--surface-2);color:var(--fg);
+  border:1px solid var(--line);border-radius:7px;padding:9px 10px;font:inherit;font-size:12.5px;line-height:1.5}
+#pb .apb{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+#pb .apb button{padding:8px 13px;border-radius:7px;font-size:12.5px;font-weight:600;border:1px solid var(--line-strong);
+  background:var(--surface-2)}
+#pb .apb button:hover:not(:disabled){border-color:var(--fg-3)}
+#pb .apb button.pri{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+#pb .apb button.lnk{border:none;background:none;color:var(--fg-3);text-decoration:underline;padding:8px 4px;font-weight:500}
+#pb .apb button:disabled{opacity:.45;cursor:default}
+#pb .aph{font-size:11.5px;color:var(--fg-3);margin-top:9px;min-height:1em;line-height:1.5}
+#pb .stline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11.5px;color:var(--fg-3)}
+#pb .stline .stp{margin-top:0}
 </style>
 
 <div id="app">
   <header id="top">
     <div class="brand">
       <b>EDIT<i>ICARUS</i> PRO</b>
-      <span>fluxo e arquitetura · v0.1</span>
+      <span>arquitetura v0.1 · design etapa 1</span>
     </div>
     <div class="sp"></div>
     <button class="tbtn hide-s" id="btheme">tema</button>
@@ -245,7 +299,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
       <svg id="edges" aria-hidden="true"></svg>
     </div>
     <aside id="legend">
-      <b>Camadas</b>
+      <b id="lhead">Camadas</b>
       <div class="ls" id="lkeys"></div>
       <div class="hint">Arraste para mover. <kbd>Ctrl</kbd>+scroll ou pinça para zoom. Clique num bloco para abrir o detalhe.</div>
     </aside>
@@ -1093,6 +1147,589 @@ t:[]
 });
 </script>
 <script>
+/* ===========================================================================
+   DESIGN · ETAPA 1 · ENTENDIMENTO DO PRODUTO (pré-wireframe)
+   tag: req (confirmado no briefing) arq (herdado da arquitetura v0.1)
+        bb (brand book) hip (hipótese) rec (recomendação) lac (lacuna)
+        dec (decisão pendente) v2 (fora da V1)
+   dcs: id da decisão gravada no registro (db, coleção "decisoes")
+   =========================================================================== */
+
+/* ======================= D1 PRODUTO ======================= */
+BOARDS.push({
+id:'produto', grp:'des', nome:'Produto', num:'D1',
+head:{x:0,y:0,w:880,kick:'Etapa 1 · Entendimento · item 1 de 7',
+  t:'O que é o produto',
+  p:'Antes de desenhar, o que eu entendi. Cada bloco diz de onde veio a informação: o que você confirmou no briefing, o que veio da arquitetura v0.1 (proposto por mim e ainda não validado como requisito de produto), o que veio do brand book e o que é hipótese minha. Nada neste quadro é wireframe, e nenhuma cor ou fonte da marca foi aplicada ao produto.'},
+g:[
+ {x:0,y:200,w:1340,h:240,t:'Proposta central',c:'accent'},
+ {x:0,y:480,w:1340,h:270,t:'Para quem: segmentos, não personas',c:'user',i:'Hipóteses de trabalho para orientar o escopo. Nenhuma persona validada.'},
+ {x:0,y:790,w:1340,h:300,t:'Princípios de experiência',c:'core',i:'Critérios para julgar cada tela. Os cinco primeiros vêm do brand book.'}
+],
+n:[
+ {id:'pc1',x:24,y:250,w:870,h:160,l:'accent',tag:['arq','hip'],
+  t:'Um editor de vídeo curto que roda no aparelho de quem edita',
+  s:'Legenda automática, remoção de fundo e exportação sem marca d’água até 1080p, sem upload do material e sem crédito por uso. O servidor só entra quando o aparelho não dá conta, com o preço na tela antes do clique.',
+  d:{sec:[
+   ['De onde veio','<p>Da arquitetura v0.1, quadros Princípio e Acesso: IA no aparelho é gratuita porque custa zero para você, e o que usa servidor é pago e explícito. Não está no seu briefing de design, que descreve o produto apenas como sistema de edição de vídeo.</p>'],
+   ['O que ainda é hipótese','<p>Que alguém prefira isso ao CapCut, que é gratuito e bom. A arquitetura não tem dado de mercado e eu também não tenho.</p>'],
+   ['Por que importa para o desenho','<p>A proposta decide qual é a ação principal de quase toda tela. Se a promessa é rapidez, o caminho curto (receita) precisa ser o mais visível da Início. Se fosse precisão, a protagonista seria a timeline. Por isso ela precisa de validação antes da seção 1, junto com D01 e D02.</p>']]}},
+ {id:'pc2',x:914,y:250,w:402,h:160,l:'user',tag:['req'],
+  t:'O que você confirmou no briefing',
+  s:'Desktop e mobile, tablet quando fizer sentido. Uso diário por profissionais e por quem precisa editar rápido. Prevenção de perda de trabalho. Área de edição com tudo fácil de localizar.',
+  d:{sec:[
+   ['Requisitos','<ul><li>Plataformas: desktop e mobile; tablet quando aplicável.</li><li>Público: profissionais e pessoas que precisam editar de forma rápida e eficiente, em uso diário.</li><li>Área de edição com pré visualização, timeline, ferramentas, biblioteca de mídia e propriedades claramente identificáveis.</li><li>Desempenho percebido, estados de processamento e prevenção contra perda de trabalho.</li><li>Mobile com experiência própria, nunca redução do desktop.</li><li>Estrutura antes da aparência, em duas etapas.</li></ul>'],
+   ['O que está ambíguo','<p>"Profissionais" e "quem precisa editar rápido" descrevem produtos com interfaces opostas. Um pede densidade e precisão de quadro, o outro pede poucos passos e escolhas prontas. É a decisão D02.</p>'],
+   ['O que é lista para avaliar, não requisito','<p>Os 19 módulos da seção 5 do briefing. Você pediu para não assumir que todos entram. A avaliação está no quadro D4.</p>']]}},
+
+ {id:'sg1',x:24,y:530,w:305,h:190,l:'user',tag:['hip','rec'],
+  t:'S1 · Criador solo e pequeno negócio',
+  s:'Publica vídeo curto toda semana. Grava no celular, edita entre outras tarefas e quer o vídeo vertical legendado em minutos. Recomendado como principal.',
+  d:{sec:[
+   ['Tarefa que faz alguém usar o produto','<p>Quando gravo um vídeo falando para a câmera, quero transformar em vídeo vertical, legendado e sem pausas em menos de 15 minutos, para publicar no mesmo dia.</p>'],
+   ['Por que recomendo como principal','<ul><li>As duas tarefas mais caras desse público, legendar e remover fundo, são exatamente o que a IA no aparelho resolve sem custo.</li><li>É o segmento que o quadro Veredito aponta como pagante: quem produz vídeo toda semana.</li><li>O caso cabe no celular e no desktop, como o briefing pede.</li></ul>'],
+   ['Risco','<p>É o território mais disputado do mercado. O CapCut atende esse público de graça. O diferencial precisa aparecer no primeiro uso, não na página de preço.</p>'],
+   ['Como validar','<p>Lacuna L01: cinco conversas curtas com pessoas desse perfil.</p>']]}},
+ {id:'sg2',x:349,y:530,w:305,h:190,l:'user',tag:['hip'],
+  t:'S2 · Social media e agência',
+  s:'Edita para vários clientes, no notebook. Precisa repetir a identidade de cada marca e produzir em volume. Secundário.',
+  d:{sec:[
+   ['Tarefa','<p>Quando entrego vídeos para cinco clientes por semana, quero aplicar o estilo de cada marca sem refazer do zero, para manter consistência sem gastar horas.</p>'],
+   ['Por que secundário','<p>Tem a maior disposição a pagar (kit de marca, volume, equipe), mas depende de recursos de V2: templates de marca, biblioteca entre projetos, exportação em lote. A V1 só precisa não fechar a porta: projeto como unidade e estilos reaproveitáveis em vez de valores soltos.</p>']]}},
+ {id:'sg3',x:674,y:530,w:305,h:190,l:'user',tag:['hip'],
+  t:'S3 · Editor avançado',
+  s:'Vídeo longo, várias câmeras, correção de cor, precisão de quadro. Vive no desktop, com atalhos. Fora da V1.',
+  d:{sec:[
+   ['Recomendação','<p>Fora da V1.</p>'],
+   ['Por que','<ul><li>Compete de frente com DaVinci Resolve, que é gratuito, e com Premiere.</li><li>Trilhas livres em quantidade multiplicam o custo da timeline, que já é o componente mais caro do projeto (quadro 10 da arquitetura).</li><li>Desenhar para ele deixa a interface densa demais para S1, que é quem a proposta atende melhor.</li></ul>'],
+   ['O que preservar dele mesmo assim','<p>Atalhos de teclado e precisão de quadro no desktop. Custam pouco e não atrapalham S1.</p>']]}},
+ {id:'sg4',x:999,y:530,w:317,h:190,l:'ent',tag:['bb','lac'],
+  t:'S4 · Público da marca ICARUS',
+  s:'Pessoas a partir de 20 anos que sabem que têm potencial e se sentem travadas. Público aprovado no brand book. Encaixe a validar.',
+  d:{sec:[
+   ['O que o brand book diz','<p>A arquitetura de marca aprovada em 26.09.2026 tem três frentes: rotina (App ICARUS), hobby (ICARUS TOM) e presença (ICARUS Scent). Editor de vídeo não está nela.</p>'],
+   ['Leitura possível, minha','<p>O encaixe seria o verbo "fazer" da estratégia: quem trava para começar a publicar porque editar dá trabalho. A promessa herdada "menos atrito entre intenção e ação" descreve bem um editor rápido. Isso é interpretação minha e não está escrito no brand book.</p>'],
+   ['Por que importa','<p>Decide se a Etapa 2 usa o brand book ou precisa de identidade própria. Decisão D03.</p>']]}},
+
+ {id:'p1',x:24,y:840,w:305,h:105,l:'core',tag:['bb'],t:'Conforto: acolher antes de exigir',
+  s:'Editar sem conta. Nenhuma configuração antes do primeiro resultado. Estado vazio com uma ação, não com tutorial.',
+  d:{sec:[['Origem','<p>Valor principal aprovado no brand book: o sistema acolhe o usuário antes de qualquer exigência. Quando dois valores entram em conflito, Conforto decide.</p>'],['Como vira critério de tela','<p>Toda tela responde: o que o usuário precisa entregar antes de ver valor? Passou de um passo, a tela está errada.</p>']]}},
+ {id:'p2',x:349,y:840,w:305,h:105,l:'core',tag:['bb'],t:'Clareza: uma coisa grande, o resto pequeno',
+  s:'Uma ação principal por tela. No editor, a coisa grande é o preview.',
+  d:{sec:[['Origem','<p>Valor Clareza e regra de composição aprovada: "Uma coisa gigante. O resto, pequeno."</p>'],['Critério','<p>Se duas ações disputam o mesmo peso visual, uma delas desce de nível.</p>']]}},
+ {id:'p3',x:674,y:840,w:305,h:105,l:'core',tag:['bb'],t:'Controle: o usuário decide',
+  s:'IA nunca aplica sem poder desfazer. Nada sobe para servidor sem consentimento. Ação destrutiva sempre com saída.',
+  d:{sec:[['Origem','<p>Valor Controle aprovado: "O usuário decide. O app apenas remove o que estava no caminho."</p>'],['Critério','<p>Toda automação mostra o resultado e oferece desfazer no mesmo lugar onde o resultado apareceu.</p>']]}},
+ {id:'p4',x:999,y:840,w:317,h:105,l:'core',tag:['bb'],t:'Constância: o retorno importa',
+  s:'Abrir o app leva ao ponto exato onde parou. Salvamento contínuo e recuperação após falha.',
+  d:{sec:[['Origem','<p>Valor Constância aprovado: o retorno importa mais que a sequência perfeita.</p>'],['Critério','<p>A primeira tela depois de um intervalo oferece "continuar", nunca "começar".</p>']]}},
+ {id:'p5',x:24,y:960,w:305,h:105,l:'core',tag:['bb'],t:'Sem punição: a falha é dado',
+  s:'Erro diz o que houve, o que foi salvo e o próximo passo. Nunca culpa, nunca código cru.',
+  d:{sec:[['Origem','<p>Traço de personalidade do brand book (herdado do Manual v2.0) e regras de voz: sem culpa, sem exclamação. Converge com a regra de erro da arquitetura, quadro Espera.</p>']]}},
+ {id:'p6',x:349,y:960,w:305,h:105,l:'core',tag:['arq'],t:'16 ms ou tarefa',
+  s:'Interação direta responde na hora. O que demora vira tarefa com estado, cancelável, e libera a tela.',
+  d:{sec:[['Origem','<p>Arquitetura v0.1, quadros Jornada e Espera.</p>'],['Critério','<p>Não existe indicador de carregamento sobre a timeline. Se precisa de um, a operação devia ser tarefa.</p>']]}},
+ {id:'p7',x:674,y:960,w:305,h:105,l:'core',tag:['rec'],t:'Revelação progressiva',
+  s:'O básico visível, o avançado a um toque. Nada essencial escondido em três níveis.',
+  d:{sec:[['Origem','<p>Recomendação minha, padrão consolidado em ferramentas criativas. Atende S1 sem fechar a porta para S2.</p>'],['Critério','<p>Contar níveis de navegação até cada ação do inventário. Acima de dois, justificar por escrito.</p>']]}}
+],
+e:[],
+k:[
+ {x:999,y:960,w:317,c:'accent',b:'Por que princípios antes de telas',
+  h:'São a régua dos comentários de cada wireframe. Quando eu justificar uma posição ou uma ação, a justificativa aponta para um destes sete. Se você discordar de um princípio, é melhor descobrir agora do que em dez telas.'},
+ {x:0,y:1560,w:1340,c:'ent',b:'O que esta entrega não faz',
+  h:'Nenhuma tela desenhada. Nenhuma cor, fonte ou logo da marca aplicados ao produto: este canvas usa o visual do documento, que não é proposta de identidade. Nenhuma funcionalidade tratada como definida sem etiqueta de origem. Nenhum dado de mercado inventado: onde não há dado, a etiqueta é <b>hipótese</b> ou <b>lacuna</b>.'}
+],
+t:[
+ {x:0,y:1130,w:1340,cap:'Tarefas principais que o produto precisa permitir',
+  h:['Tarefa','Segmento','Frequência (hipótese)','Na V1?'],
+  r:[['T1 · Transformar gravação bruta em vídeo vertical legendado','S1 S2','Toda semana, várias vezes','<span class="pill ok">Sim, é a tarefa central</span>'],
+     ['T2 · Retomar um projeto parado','Todos','Toda sessão','<span class="pill ok">Sim</span>'],
+     ['T3 · Cortar pausas e silêncios','S1','Quase todo vídeo falado','<span class="pill ok">Sim</span>'],
+     ['T4 · Remover ou trocar o fundo','S1 S2','Ocasional','<span class="pill ok">Sim, é proposta central</span>'],
+     ['T5 · Ajustar texto, estilo e tempo da legenda','S1 S2','Todo vídeo legendado','<span class="pill ok">Sim</span>'],
+     ['T6 · Adicionar música e equilibrar volume','S1 S2','Frequente','<span class="pill wa">Sim, básico</span>'],
+     ['T7 · Exportar no formato da rede','Todos','Todo vídeo','<span class="pill ok">Sim</span>'],
+     ['T8 · Aplicar a identidade de uma marca (kit)','S2','Todo vídeo de cliente','<span class="pill nu">V2</span>'],
+     ['T9 · Editar várias trilhas com precisão de quadro','S3','Diária para S3','<span class="pill nu">Fora da V1</span>']]}
+]
+});
+
+/* ======================= D2 DECISÕES ======================= */
+BOARDS.push({
+id:'decisoes', grp:'des', nome:'Decisões', num:'D2',
+head:{x:0,y:0,w:860,kick:'Item 2 de 7 · Hipóteses e dúvidas',
+  t:'Decisões que dependem de você',
+  p:'Doze decisões, cada uma com opções, a minha recomendação e o efeito no trabalho. Abra um bloco para aprovar a recomendação ou pedir ajuste: o status fica gravado nesta página e eu leio o registro antes de seguir. Bloco sem resposta continua como aguardando aprovação. Silêncio não conta como aprovado.'},
+g:[
+ {x:0,y:200,w:1340,h:340,t:'Antes da seção 1',c:'shell',i:'Definem a Início, as receitas e o formato dos wireframes.'},
+ {x:0,y:580,w:1340,h:200,t:'Antes da seção 2 · estrutura do editor',c:'core'},
+ {x:0,y:820,w:1340,h:200,t:'Antes da Etapa 2',c:'ent',i:'Não bloqueiam os wireframes.'},
+ {x:0,y:1060,w:1340,h:200,t:'Lacunas · informação que falta',c:'infra',i:'Não são decisões: são dados que ninguém tem ainda.'}
+],
+n:[
+ {id:'d01',x:24,y:250,w:305,h:120,l:'shell',tag:['dec'],dcs:'D01',
+  t:'D01 · Escopo da V1',
+  s:'Recomendo: editor enxuto de vídeo curto, com a fatia mínima marcada dentro dele.',
+  d:{sec:[
+   ['A pergunta','<p>O que a V1 do produto cobre, e onde fica a fatia mínima recomendada no quadro Veredito?</p>'],
+   ['Opções','<ul><li><strong>A.</strong> Os 19 módulos da sua lista, completos.</li><li><strong>B.</strong> Editor V1 enxuto para vídeo curto: o essencial dos 19, timeline simplificada e os recursos de IA.</li><li><strong>C.</strong> Só a fatia mínima: remover fundo e legendar, sem timeline.</li></ul>'],
+   ['Recomendação','<p><strong>B</strong>, com as telas da fatia C marcadas dentro dela.</p>'],
+   ['Por que','<p>A leva a uma V1 que compete com o DaVinci em profundidade e com o CapCut em amplitude ao mesmo tempo. C valida mercado mas não é um editor, e o seu briefing pede timeline, área de edição e propriedades. B desenha o editor que você descreveu, cortado ao que o segmento principal usa. A ordem dos wireframes entrega primeiro as telas da fatia C: se você decidir construir só ela, o desenho fica pronto antes do resto.</p><p>Mantenho a leitura do quadro Veredito: construir tudo agora atrasa a sua meta financeira. Desenhar é outra conta: custa semanas, e o resultado vira portfólio de produto.</p>'],
+   ['O que muda se você aprovar','<p>28 unidades de wireframe em vez de cerca de 40. O que está marcado V2 no quadro D4 fica fora desta etapa.</p>']]}},
+ {id:'d02',x:349,y:250,w:305,h:120,l:'shell',tag:['dec'],dcs:'D02',
+  t:'D02 · Usuário principal',
+  s:'Recomendo: S1 criador e pequeno negócio. S2 como evolução, S3 fora da V1.',
+  d:{sec:[
+   ['A pergunta','<p>Para quem a V1 é desenhada primeiro, e o que "profissionais" significa no seu briefing?</p>'],
+   ['Opções','<ul><li><strong>A.</strong> S1, criador e pequeno negócio.</li><li><strong>B.</strong> S3, editor avançado.</li><li><strong>C.</strong> Os dois por igual.</li></ul>'],
+   ['Recomendação','<p><strong>A</strong>, com S2 como evolução natural e S3 fora da V1.</p>'],
+   ['Por que','<p>Os dois públicos do briefing pedem interfaces opostas: densidade e precisão contra poucos passos e escolhas prontas. Desenhar para os dois por igual produz uma interface densa demais para S1 e rasa demais para S3.</p><p>Se "profissional" significa a pessoa de social media que edita para clientes (S2), a recomendação atende. Se significa editor de vídeo de carreira (S3), preciso saber agora, porque muda a timeline, a densidade e a ordem dos wireframes.</p>'],
+   ['O que muda se você aprovar','<p>Define a densidade padrão, o modelo de timeline (D04) e o que fica a um toque ou recolhido.</p>']]}},
+ {id:'d05',x:674,y:250,w:305,h:120,l:'shell',tag:['dec','arq'],dcs:'D05',
+  t:'D05 · Receitas como entrada principal',
+  s:'Recomendo: duas receitas em destaque na Início. Projeto em branco disponível, em segundo plano.',
+  d:{sec:[
+   ['A pergunta','<p>A Início leva primeiro a receitas (sequências prontas) ou a um projeto em branco?</p>'],
+   ['Opções','<ul><li><strong>A.</strong> Receitas em destaque, projeto em branco disponível.</li><li><strong>B.</strong> Projeto em branco em destaque, receitas como atalho.</li></ul>'],
+   ['Recomendação','<p><strong>A</strong>, com duas receitas na V1: "Legendar e cortar pausas" e "Remover fundo".</p>'],
+   ['Por que','<p>É o que leva o objetivo principal de 12 para 4 interações (quadro Jornada da arquitetura). Mostra o valor do produto no primeiro uso, em vez de entregar uma timeline vazia para quem nunca editou. O risco é a receita virar ruído se for fraca; por isso só duas, ligadas às tarefas T1, T3 e T4.</p>'],
+   ['O que muda se você aprovar','<p>A Início ganha uma área de receitas acima dos projetos. Cada receita abre o editor já no layout certo, com o trabalho feito.</p>']]}},
+ {id:'d06',x:999,y:250,w:317,h:120,l:'shell',tag:['dec','arq'],dcs:'D06',
+  t:'D06 · Conta obrigatória',
+  s:'Recomendo: editar e exportar sem conta. Conta só para servidor, sincronização e cobrança.',
+  d:{sec:[
+   ['A pergunta','<p>Editar exige cadastro?</p>'],
+   ['Opções','<ul><li><strong>A.</strong> Não. Conta só quando o recurso exige.</li><li><strong>B.</strong> Conta no primeiro uso.</li></ul>'],
+   ['Recomendação','<p><strong>A</strong>.</p>'],
+   ['Por que','<p>Pedir cadastro antes do primeiro resultado é o ponto de abandono mais caro de um app criativo. A arquitetura local first permite isso sem custo, porque o projeto vive no aparelho. Também é o princípio Conforto.</p>'],
+   ['O que muda se você aprovar','<p>Login sai do fluxo principal e vira tela transversal (seção 8). Custo: menos dado de uso identificado até a pessoa criar conta.</p>']]}},
+ {id:'d07',x:24,y:390,w:305,h:120,l:'shell',tag:['dec','hip'],dcs:'D07',
+  t:'D07 · Formato e duração de referência',
+  s:'Recomendo: vertical 9:16 como padrão. Interface pensada para até 3 minutos, sem quebrar até 15.',
+  d:{sec:[
+   ['A pergunta','<p>Qual o formato padrão de projeto e a duração de vídeo que a interface otimiza?</p>'],
+   ['Recomendação','<p>Vertical 9:16 como padrão, trocável a qualquer momento. Interface otimizada para vídeos de até 3 minutos e funcional até 15.</p>'],
+   ['Por que','<p>Define quantos segundos cabem na tela da timeline, o tamanho das miniaturas e o tempo de processamento das receitas. É uma hipótese sobre S1. Acima de 15 minutos o caso já é S3.</p>'],
+   ['Lacuna','<p>Não há dado real de duração típica. Validar nas conversas da L01.</p>']]}},
+ {id:'d12',x:349,y:390,w:305,h:120,l:'shell',tag:['dec','rec'],dcs:'D12',
+  t:'D12 · Onde os wireframes vivem',
+  s:'Recomendo: neste mesmo canvas, com desktop e mobile lado a lado e comentários numerados clicáveis.',
+  d:{sec:[
+   ['A pergunta','<p>Os wireframes da Etapa 1 são feitos aqui ou no Figma?</p>'],
+   ['Opções','<ul><li><strong>A.</strong> Neste canvas: um quadro por seção, wireframes em blocos cinza, numeração no desenho que abre o comentário, interações simuladas marcadas como simuladas, e o mesmo registro de aprovação.</li><li><strong>B.</strong> Figma.</li></ul>'],
+   ['Recomendação','<p><strong>A</strong> para a Etapa 1.</p>'],
+   ['Por que','<p>Mantém arquitetura, decisões e wireframes num lugar só, com histórico de aprovação. Permite simular abrir painel e trocar estado, que você pediu.</p>'],
+   ['Limitação','<p>O conector de design do Figma (plugin) recusou conexão nesta sessão. Há um segundo conector do Figma listado que eu ainda não testei. Avalio para a Etapa 2 se você quiser um arquivo que outro designer edite.</p>']]}},
+
+ {id:'d04',x:24,y:630,w:305,h:120,l:'core',tag:['dec','rec'],dcs:'D04',
+  t:'D04 · Modelo de timeline',
+  s:'Recomendo: magnética, com trilha principal e o resto preso a ela.',
+  d:{sec:[
+   ['A pergunta','<p>A timeline é magnética ou de trilhas livres?</p>'],
+   ['Opções','<ul><li><strong>A.</strong> Magnética: uma trilha principal onde os clipes se encostam sozinhos. Texto, legenda, áudio e sobreposições ficam presos a ela. Modelo do CapCut e do Final Cut.</li><li><strong>B.</strong> Trilhas livres: várias trilhas independentes, posição livre. Modelo do Premiere e do DaVinci.</li></ul>'],
+   ['Recomendação','<p><strong>A</strong>.</p>'],
+   ['Por que','<p>Para S1, a magnética elimina os erros mais comuns de quem começa: buraco preto entre clipes e legenda fora de sincronia depois de um corte. Funciona no toque. Trilhas livres dão um controle que S3 quer e S1 não usa, e custam mais no componente mais caro do projeto. É também o que permite uma timeline mobile sem virar outro produto.</p>'],
+   ['O que muda se você aprovar','<p>Define a seção 2 inteira e o comportamento de cortar, mover e excluir.</p>']]}},
+ {id:'d08',x:349,y:630,w:305,h:120,l:'core',tag:['dec','rec'],dcs:'D08',
+  t:'D08 · Organização da mídia',
+  s:'Recomendo: mídia por projeto na V1. Biblioteca global entre projetos na V2.',
+  d:{sec:[
+   ['A pergunta','<p>A mídia mora dentro de cada projeto ou numa biblioteca global?</p>'],
+   ['Recomendação','<p>Por projeto na V1. Biblioteca global, com pastas e etiquetas, na V2.</p>'],
+   ['Por que','<p>Biblioteca global é um produto dentro do produto: indexação, busca, duplicatas, arquivo que mudou de lugar. S1 importa a gravação do dia, usa e esquece. S2 vai precisar dela, e ela entra junto com o kit de marca.</p>']]}},
+ {id:'d09',x:674,y:630,w:305,h:120,l:'core',tag:['dec','rec'],dcs:'D09',
+  t:'D09 · Tablet',
+  s:'Recomendo: sem layout próprio. Paisagem usa o desktop, retrato usa o mobile.',
+  d:{sec:[
+   ['A pergunta','<p>Tablet ganha um terceiro layout?</p>'],
+   ['Recomendação','<p>Não na V1. Tablet em paisagem usa o layout desktop com alvos de toque ampliados. Em retrato, usa o layout mobile com mais área de preview.</p>'],
+   ['Por que','<p>Um terceiro layout aumenta em metade o trabalho de wireframe e de testes para a menor fatia de uso. Os dois layouts cobrem o tablet com ajuste de densidade.</p>'],
+   ['Faixas propostas','<ul><li>Até 599 px: mobile.</li><li>De 600 a 1023 px: mobile expandido (tablet em retrato).</li><li>A partir de 1024 px: desktop (tablet em paisagem incluso).</li></ul>']]}},
+
+ {id:'d03',x:24,y:870,w:305,h:120,l:'ent',tag:['dec','bb'],dcs:'D03',
+  t:'D03 · Relação com a marca ICARUS',
+  s:'Recomendo: decidir antes da Etapa 2. Até lá, EDITICARUS PRO é nome de trabalho.',
+  d:{sec:[
+   ['A pergunta','<p>O EDITICARUS é submarca da ICARUS ou marca independente?</p>'],
+   ['Contexto do brand book','<ul><li>A arquitetura de marca aprovada em 26.09.2026 lista rotina, hobby e presença. Editor de vídeo não está nela.</li><li>O padrão de nome das submarcas é ICARUS mais uma palavra (ICARUS TOM, ICARUS Scent). EDITICARUS PRO foge dele.</li><li>"PRO" puxa para o território de performance que a marca combate. Entre as palavras evitadas estão "alta performance" e "produtividade extrema".</li></ul>'],
+   ['Opções','<ul><li><strong>A.</strong> Submarca: herda logo e sistema (regra aprovada: submarcas herdam o logo da marca mãe por enquanto). Os valores viram princípios de UX e a voz vale para a microcopy.</li><li><strong>B.</strong> Marca independente: a Etapa 2 precisa de uma identidade que ainda não existe.</li></ul>'],
+   ['Recomendação','<p>Decidir antes da Etapa 2, sem bloquear a Etapa 1. Enquanto isso, uso os valores da marca como princípios de UX provisórios (eles servem a um editor por mérito próprio) e escrevo a microcopy dos wireframes em tom neutro.</p>'],
+   ['Por que não recomendo uma das opções','<p>É decisão de marca, e a ficha de governança do brand book diz que o responsável pela marca é você. Não cabe a mim escolher. Cabe a mim mostrar que ela precisa existir antes de aplicar qualquer identidade.</p>']]}},
+ {id:'d10',x:349,y:870,w:305,h:120,l:'ent',tag:['dec','arq'],dcs:'D10',
+  t:'D10 · Recursos pagos na interface',
+  s:'Recomendo: desenhar o padrão de oferta uma vez e usar só onde houver recurso pago.',
+  d:{sec:[
+   ['A pergunta','<p>A interface da V1 mostra recursos pagos, e como?</p>'],
+   ['Contexto','<p>A arquitetura define gratuito tudo que roda no aparelho e pago o que usa servidor (exportação 4K, ampliação de resolução), com marca d’água no preview. O quadro Veredito recomenda cobrar desde o primeiro usuário na fatia mínima.</p>'],
+   ['Opções','<ul><li><strong>A.</strong> Desenhar o padrão uma vez: selo de recurso pago, oferta no momento de uso com o resultado na tela, tela de plano. Aplicar só onde existe recurso pago.</li><li><strong>B.</strong> V1 sem nada pago na interface.</li></ul>'],
+   ['Recomendação','<p><strong>A</strong>.</p>'],
+   ['Por que','<p>O padrão precisa ser desenhado de qualquer jeito e é barato desenhar uma vez. Espalhar ofertas pelas telas contradiz a proposta (sem crédito, sem cota) e o princípio Conforto.</p>'],
+   ['Lacuna','<p>O que é pago ainda não está decidido comercialmente (L04).</p>']]}},
+ {id:'d11',x:674,y:870,w:305,h:120,l:'ent',tag:['dec','rec'],dcs:'D11',
+  t:'D11 · Idiomas',
+  s:'Recomendo: interface em português do Brasil, pronta para tradução. Legendas em português, inglês e espanhol.',
+  d:{sec:[
+   ['A pergunta','<p>Quais idiomas na interface e nas legendas automáticas da V1?</p>'],
+   ['Recomendação','<p>Interface só em português do Brasil, com textos separados do código para tradução futura. Legendas automáticas em português, inglês e espanhol.</p>'],
+   ['Por que','<p>O modelo de transcrição atende os três idiomas sem custo de interface. Traduzir a interface triplica a revisão de microcopy. Desenhar em português já protege o layout, porque os textos costumam ser mais longos que em inglês.</p>']]}},
+
+ {id:'l01',x:24,y:1110,w:305,h:120,l:'infra',tag:['lac','rec'],
+  t:'L01 · Nenhuma pesquisa com usuário',
+  s:'Recomendo: cinco conversas de 20 minutos com pessoas do S1, em paralelo à seção 1. Não bloqueia.',
+  d:{sec:[
+   ['O que falta','<p>Qualquer evidência de como o S1 edita hoje. Todos os segmentos e frequências deste trabalho são hipóteses.</p>'],
+   ['Recomendação','<p>Cinco conversas de 20 minutos, em paralelo à seção 1. Quatro perguntas: como você edita hoje, quanto tempo leva, o que mais irrita, celular ou computador.</p>'],
+   ['Efeito colateral útil','<p>Pequeno negócio que publica vídeo toda semana é o mesmo público dos seus serviços de site e automação. A conversa sobre vídeo também é conversa comercial.</p>']]}},
+ {id:'l02',x:349,y:1110,w:305,h:120,l:'infra',tag:['lac'],
+  t:'L02 · Onde o S1 edita',
+  s:'Celular ou computador? Muda qual layout é a referência de cada seção.',
+  d:{sec:[['O que falta','<p>A plataforma dominante de edição do segmento principal.</p>'],['Enquanto não houver dado','<p>Cada tela é desenhada em par, desktop e mobile, partindo da tarefa e não de um dos layouts.</p>']]}},
+ {id:'l03',x:674,y:1110,w:305,h:120,l:'infra',tag:['lac'],
+  t:'L03 · Tipo de conteúdo dominante',
+  s:'Falado para câmera, imagens com música ou tutorial de tela? Muda o peso da legenda contra a música.',
+  d:{sec:[['O que falta','<p>O formato de vídeo mais comum do S1.</p>'],['Enquanto não houver dado','<p>Assumo vídeo falado para câmera, que é o caso em que legenda e corte de pausas mais pesam.</p>']]}},
+ {id:'l04',x:999,y:1110,w:317,h:120,l:'infra',tag:['lac'],
+  t:'L04 · O que é pago',
+  s:'Decisão comercial, não de design. Afeta só a seção 8 e o padrão de oferta.',
+  d:{sec:[['O que falta','<p>A lista de recursos pagos e o modelo de cobrança da V1.</p>'],['Efeito no trabalho','<p>Nenhum até a seção 8. O padrão de oferta (D10) é desenhado de forma independente do que for pago.</p>']]}}
+],
+e:[],
+k:[
+ {x:999,y:390,w:317,c:'accent',b:'Placar do registro',
+  h:'<span id="dcount">Carregando o registro.</span><br><br>Abra um bloco, leia a recomendação e marque. A nota é opcional. Dá para voltar qualquer decisão para aguardando.'},
+ {x:999,y:630,w:317,c:'core',b:'Sem resposta em D04',
+  h:'A seção 2 não começa. É a decisão de maior efeito estrutural do produto.'},
+ {x:999,y:870,w:317,c:'ent',b:'Sem resposta em D03',
+  h:'A Etapa 1 segue com microcopy neutra e princípios marcados como provisórios.'}
+],
+t:[
+ {x:0,y:1300,w:1340,cap:'Já visível no brand book: o que vai pesar na Etapa 2 (registro, nada aplicado agora)',
+  h:['Item','O que o brand book diz','Efeito na interface','Quando decidir'],
+  r:[['Ícones','Biblioteca de ícones marcada como A DEFINIR. Quando criar: traço fino, reto, pontas limpas.','Um editor usa dezenas de ícones nas barras de ferramentas. Nos wireframes uso rótulo de texto no lugar.','<span class="pill wa">Antes da Etapa 2</span>'],
+     ['Regra de acento','Um acento por peça. Cor de destaque nunca vira fundo inteiro.','Regras escritas para peça gráfica. A interface precisa de várias cores de estado ao mesmo tempo: tipo de trilha, seleção, erro, processamento. Precisa de adaptação para interface aprovada por você.','<span class="pill wa">Antes da Etapa 2</span>'],
+     ['Pouso e voo','Aprovado: no app, o pouso fica no papel e o voo acontece no azul.','A favor: Início clara e editor escuro saem de uma regra que já existe, sem invenção.','<span class="pill ok">Confirmar na Etapa 2</span>'],
+     ['Voz de sistema','IBM Plex Mono aprovada para tempo, números, legendas e rótulos.','A favor: timecode e contadores já têm fonte definida.','<span class="pill ok">Confirmar na Etapa 2</span>'],
+     ['Contraste','Pares marcados para evitar: Aurora sobre Papel 1,6; Ouro sobre Papel 1,8; Brasa sobre Azul 3,0.','Restringe estados de seleção e alerta. WCAG AA vale desde os wireframes.','<span class="pill nu">Etapa 2</span>'],
+     ['Voz filosófica','Instrument Serif nunca em interface, tabela ou texto abaixo de 24 px.','Praticamente fora do app. Pode aparecer em estado vazio ou tela de conclusão.','<span class="pill nu">Etapa 2</span>'],
+     ['Microcopy','Pouso, Leitura, Voo. Sem travessão, sem exclamação em série, sem culpa.','Se D03 for submarca, vale para toda mensagem de erro, estado vazio e confirmação.','<span class="pill wa">Depende de D03</span>']]}
+]
+});
+/* ======================= D3 MAPA ======================= */
+(function(){
+  const cw = 320, gx = [0,340,680,1020], cy = 340, gy = 470, ny = 515, step = 92;
+  const col = (i, items, l) => items.map((it, j) => ({
+    id:it[0], x:gx[i]+15, y:ny+j*step, w:cw-30, h:72, l:l, t:it[1], s:it[2],
+    tag:it[3] ? [it[3]] : undefined, ghost:it[3]==='v2' ? 1 : undefined }));
+  const A = [['mA1','A1 · Início','Continuar onde parou, receitas, projetos e exportações recentes.'],
+    ['mA2','A2 · Primeiro uso','Variação vazia da A1. Uma ação: começar por uma receita.'],
+    ['mA3','A3 · Novo projeto','Folha de um passo: proporção. Nome automático.'],
+    ['mA4','A4 · Receita em andamento','Escolha da mídia e progresso com prévia.'],
+    ['mA5','A5 · Todos os projetos','Lista com busca e ordenação. V1 simplificada.'],
+    ['mAg','Biblioteca global de mídia','Entra com o kit de marca, para S2.','v2']];
+  const B = [['mB1','B1 · Editor, layout Padrão','Para montar: mídia, preview, propriedades, timeline.'],
+    ['mB5','B5 · Editor, layout Legendas','Transcrição ao lado do preview. Editar o texto edita a legenda.'],
+    ['mB2','B2 · Barra superior','Início, nome, salvamento, desfazer, tarefas, Exportar.'],
+    ['mB3','B3 · Timeline magnética','Trilha principal e trilhas presas a ela.'],
+    ['mB4','B4 · Preview e reprodução','A coisa grande da tela.'],
+    ['mB7','B7 · Painel Mídia','Importar e ver o que entrou no projeto.'],
+    ['mB8','B8 · Painel Recursos','Texto, legendas, áudio, efeitos, filtros.'],
+    ['mB9','B9 · Propriedades','Muda conforme o item selecionado.'],
+    ['mB6','B6 · Remover fundo','Fluxo com prévia de 3 segundos.'],
+    ['mB10','B10 · Ajustes do projeto','Proporção, taxa de quadros, nome.'],
+    ['mBg1','Histórico visual de edição','O desfazer da V1 cobre o caso.','v2'],
+    ['mBg2','Cor avançada e keyframes','Rodas, curvas, animação por quadro.','v2'],
+    ['mBg3','Layouts extras','Corte rápido, tradução, publicação.','v2']];
+  const C = [['mC1','C1 · Exportar','Presets por destino. Avançado recolhido.'],
+    ['mC2','C2 · Exportando','Progresso real, segundo plano, cancelável.'],
+    ['mC3','C3 · Concluído ou falhou','Abrir, compartilhar, ou retomar do ponto.'],
+    ['mCg','Gerenciador de exportações','O arquivo já está no disco do usuário.','v2']];
+  const X = [['mX1','X1 · Central de tarefas','Tudo que roda em segundo plano, num lugar só.'],
+    ['mX2','X2 · Recuperação de projeto','Ao abrir depois de uma falha.'],
+    ['mX3','X3 · Sem conexão','Padrão: o que muda e o que continua.'],
+    ['mX4','X4 · Feedback e erros','Inline, aviso e modal. Três níveis.'],
+    ['mX5','X5 · Configurações','Preferências e espaço usado pelo cache.'],
+    ['mX6','X6 · Conta e entrar','Só quando o recurso exige (D06).'],
+    ['mX7','X7 · Plano e oferta','Padrão único de recurso pago (D10).'],
+    ['mX8','X8 · Consentimento de servidor','O que sobe, quanto custa, quando apaga.'],
+    ['mX9','X9 · Atalhos de teclado','Só desktop.'],
+    ['mX10','X10 · Permissões do aparelho','Só mobile: galeria, notificações.']];
+  const h = n => 45 + n*step + 10;
+  BOARDS.push({
+    id:'mapa', grp:'des', nome:'Mapa', num:'D3',
+    head:{x:0,y:0,w:860,kick:'Item 3 de 7 · Arquitetura da informação',
+      t:'Mapa do produto',
+      p:'Uma janela, quatro lugares. Herdado da arquitetura v0.1: o app troca de cena em vez de empilhar telas. O mapa mostra o que existe em cada cena na V1. O que está tracejado é V2 e fica fora dos wireframes desta etapa. Os códigos (A1, B3, X8) são os mesmos do inventário e dos fluxos.'},
+    g:[{x:gx[0],y:gy,w:cw,h:h(A.length),t:'Cena A',c:'user'},
+       {x:gx[1],y:gy,w:cw,h:h(B.length),t:'Cena B',c:'core'},
+       {x:gx[2],y:gy,w:cw,h:h(C.length),t:'Cena C',c:'render'},
+       {x:gx[3],y:gy,w:cw,h:h(X.length),t:'Transversal',c:'infra'}],
+    n:[{id:'r0',x:540,y:200,w:260,h:84,l:'accent',tag:['arq'],t:'Janela única',
+        s:'O app troca de cena em vez de empilhar telas. Nenhuma pilha de navegação para o usuário se perder.'},
+       {id:'cA',x:gx[0],y:cy,w:cw,h:84,l:'user',t:'A · Início',s:'Onde o usuário volta. Projetos, receitas e exportações recentes.'},
+       {id:'cB',x:gx[1],y:cy,w:cw,h:84,l:'core',t:'B · Editor',s:'Foco total. Sem navegação global e uma saída só, de volta à Início.'},
+       {id:'cC',x:gx[2],y:cy,w:cw,h:84,l:'render',t:'C · Exportação',s:'Destino, formato e acompanhamento. Roda em segundo plano.'},
+       {id:'cX',x:gx[3],y:cy,w:cw,h:84,l:'infra',t:'X · Sistema',s:'Camadas que aparecem sobre qualquer cena: tarefas, conta, erros, conexão.'}]
+       .concat(col(0,A,'user'), col(1,B,'core'), col(2,C,'render'), col(3,X,'infra')),
+    e:[{f:'r0',t:'cA'},{f:'r0',t:'cB'},{f:'r0',t:'cC'},{f:'r0',t:'cX'}],
+    k:[{x:680,y:930,w:320,c:'accent',b:'Regras de navegação',
+        h:'<ul><li>No editor não existe navegação global. A única saída é voltar à Início, e o projeto já está salvo.</li><li>Nenhuma ação essencial a mais de dois níveis de uma cena: a cena, depois um painel ou uma folha.</li><li>Uma ação principal por cena. Início: receita ou continuar. Editor: Exportar. Exportação: abrir o arquivo.</li><li>Links diretos herdados da arquitetura: abrir um projeto ou uma receita sem passar pela Início.</li></ul>'},
+       {x:0,y:1120,w:320,c:'core',b:'Por que dois layouts de editor, e não sete',
+        h:'O CapCut tem sete layouts da mesma cena de edição (quadro Princípio). Para S1, dois cobrem a V1: <b>Padrão</b>, para montar, e <b>Legendas</b>, para revisar texto. Cada layout novo é uma tela inteira a desenhar e testar nas duas plataformas. Os outros entram quando houver uso que justifique.'}],
+    t:[]
+  });
+})();
+
+/* ======================= D4 MÓDULOS E TELAS ======================= */
+BOARDS.push({
+id:'telas', grp:'des', nome:'Módulos e telas', num:'D4',
+head:{x:0,y:0,w:880,kick:'Item 4 de 7 · Seções, módulos e telas',
+  t:'Módulos e inventário de telas',
+  p:'Primeiro, os 19 módulos que você listou, avaliados contra a proposta e o usuário principal, mais sete que não estavam na lista e são necessários. Depois, o inventário que sai dessa avaliação. Uma unidade de wireframe pode ser tela inteira, painel, folha ou estado relevante. Estados menores (carregando, vazio, erro) entram como variação da própria tela, não como unidade separada.'},
+g:[],n:[],e:[],
+k:[{x:920,y:20,w:420,c:'accent',b:'Contagem',
+  h:'Dos 19 módulos do briefing, 17 entram na V1 (9 inteiros, 8 simplificados), 1 fica para a V2 e 1 vira parte da Início. Outros 7, fora da lista, entram por necessidade da proposta.<br><br><b>28 unidades de wireframe</b>, em 8 seções. A fatia mínima do quadro Veredito usa 11 delas, todas nas seções 1 a 4.'}],
+t:[
+ {x:0,y:210,w:1340,cap:'Avaliação dos módulos: os 19 do briefing e os que faltavam',
+  h:['Módulo','Veredito','Como entra','Por quê'],
+  r:[['1 · Dashboard e gerenciamento de projetos','<span class="pill wa">V1 simplificado</span>','Início com recentes e "ver todos"','S1 tem poucos projetos ativos. Pastas e arquivamento são V2'],
+     ['2 · Criação de projeto','<span class="pill ok">V1</span>','Folha de um passo: proporção. Nome automático','Formulário antes do resultado fere o princípio Conforto e não decide nada que não possa mudar depois'],
+     ['3 · Importação e organização de mídia','<span class="pill wa">V1 importar, V2 organizar</span>','Painel Mídia por projeto','Decisão D08'],
+     ['4 · Biblioteca de vídeos, imagens, áudios e recursos','<span class="pill wa">V1 com pacote base</span>','Painel Recursos: texto, legendas, áudio, efeitos, filtros','Catálogo amplo e biblioteca entre projetos são V2'],
+     ['5 · Área de edição','<span class="pill ok">V1</span>','Cena Editor com dois layouts','Núcleo do produto'],
+     ['6 · Monitor de pré visualização','<span class="pill ok">V1</span>','A maior área do editor','Princípio Clareza: é a coisa grande da tela'],
+     ['7 · Timeline com faixas de vídeo e áudio','<span class="pill wa">V1 simplificada</span>','Magnética: trilha principal e trilhas presas','Decisão D04'],
+     ['8 · Cortar, dividir, mover e ajustar clipes','<span class="pill ok">V1</span>','Barra de ferramentas da timeline e gestos','A tarefa mais frequente do produto'],
+     ['9 · Controle de áudio','<span class="pill wa">V1 básico</span>','Volume, fade, silenciar, reduzir ruído','Mixer com faixas e automação é V2'],
+     ['10 · Textos, títulos e legendas','<span class="pill ok">V1</span>','Legenda automática e layout Legendas','Metade da proposta central'],
+     ['11 · Transições e efeitos','<span class="pill wa">V1 limitado</span>','Pacote base pequeno','O catálogo cresce sem nova versão do app (arquitetura), então não precisa nascer grande'],
+     ['12 · Ajustes de imagem e cor','<span class="pill wa">V1 básico</span>','Brilho, contraste, saturação, temperatura, filtros prontos','Rodas de cor e curvas são V2 e público S3'],
+     ['13 · Controles de reprodução','<span class="pill ok">V1</span>','Junto ao preview','Essencial'],
+     ['14 · Desfazer e refazer','<span class="pill ok">V1</span>','Sempre visível na barra superior, nas duas plataformas','Princípio Controle'],
+     ['15 · Histórico de edição','<span class="pill nu">V2</span>','Painel de histórico','O desfazer da V1 cobre o caso. O painel é custo de interface para uso raro'],
+     ['16 · Salvamento automático e recuperação','<span class="pill ok">V1</span>','Indicador de salvamento e recuperação ao abrir','Requisito confirmado no briefing'],
+     ['17 · Configurações de projeto','<span class="pill wa">V1 mínimo</span>','Popover dentro do editor','Três campos não justificam tela própria'],
+     ['18 · Exportação e renderização','<span class="pill ok">V1</span>','Cena Exportação com presets por destino','Fim do fluxo principal'],
+     ['19 · Gerenciamento de arquivos exportados','<span class="pill nu">Vira parte da Início</span>','Lista de exportações recentes','O arquivo já está no disco. Replicar um gerenciador de arquivos seria ruído'],
+     ['<b>Fora da lista, necessários</b>','','',''],
+     ['Remover fundo, no aparelho','<span class="pill ok">V1</span>','Ação no clipe com prévia de 3 segundos','Proposta central da arquitetura'],
+     ['Legenda automática e corte de pausas','<span class="pill ok">V1</span>','Receita e layout Legendas','Proposta central'],
+     ['Receitas','<span class="pill ok">V1</span>','Duas, na Início','Decisão D05'],
+     ['Central de tarefas','<span class="pill ok">V1</span>','Indicador na barra superior','Processos em segundo plano precisam de um lugar visível'],
+     ['Estados de conexão e erro','<span class="pill ok">V1</span>','Padrão transversal','Requisito confirmado: estados e prevenção de perda'],
+     ['Configurações do app e armazenamento','<span class="pill wa">V1 mínimo</span>','Preferências e espaço do cache','O cache de pré visualização cresce no disco'],
+     ['Conta, plano e consentimento de servidor','<span class="pill wa">Condicionado</span>','Transversal, só quando o recurso exige','Decisões D06 e D10']]},
+ {x:0,y:1560,w:1340,cap:'Inventário de telas: 28 unidades de wireframe',
+  h:['ID','Tela','Tipo','Seção','Desktop','Mobile','Fatia mínima','Status'],
+  r:[['A1','Início','Tela','S1','Sim','Sim','<span class="pill ok">Sim</span>','<span data-sec="S1" data-def="nao_iniciado"></span>'],
+     ['A2','Primeiro uso (vazio da Início)','Estado','S1','Sim','Sim','<span class="pill ok">Sim</span>','<span data-sec="S1" data-def="nao_iniciado"></span>'],
+     ['A3','Novo projeto','Folha','S1','Modal','Folha inferior','','<span data-sec="S1" data-def="nao_iniciado"></span>'],
+     ['A4','Receita em andamento','Tela','S1','Sim','Sim','<span class="pill ok">Sim</span>','<span data-sec="S1" data-def="nao_iniciado"></span>'],
+     ['A5','Todos os projetos','Tela','S1','Sim','Sim','','<span data-sec="S1" data-def="nao_iniciado"></span>'],
+     ['B1','Editor, layout Padrão','Tela','S2','Quatro áreas simultâneas','Uma área por vez','','<span data-sec="S2" data-def="nao_iniciado"></span>'],
+     ['B2','Barra superior do editor','Componente','S2','Sim','Compacta','<span class="pill ok">Sim</span>','<span data-sec="S2" data-def="nao_iniciado"></span>'],
+     ['B3','Timeline magnética','Componente','S2 e S6','Várias trilhas visíveis','Trilha principal em destaque','','<span data-sec="S2" data-def="nao_iniciado"></span>'],
+     ['B4','Preview e reprodução','Componente','S2 e S6','Centro','Topo','<span class="pill ok">Sim</span>','<span data-sec="S2" data-def="nao_iniciado"></span>'],
+     ['B5','Editor, layout Legendas','Tela','S3','Transcrição ao lado','Lista em tela cheia','<span class="pill ok">Sim</span>','<span data-sec="S3" data-def="nao_iniciado"></span>'],
+     ['B6','Remover fundo','Fluxo e estados','S3','Sim','Sim','<span class="pill ok">Sim</span>','<span data-sec="S3" data-def="nao_iniciado"></span>'],
+     ['B7','Painel Mídia','Painel','S5','Painel lateral','Folha inferior','','<span data-sec="S5" data-def="nao_iniciado"></span>'],
+     ['B8','Painel Recursos','Painel','S5','Painel lateral com abas','Barra inferior abre folha','','<span data-sec="S5" data-def="nao_iniciado"></span>'],
+     ['B9','Propriedades do item selecionado','Painel','S6','Painel lateral fixo','Folha com alturas em degraus','','<span data-sec="S6" data-def="nao_iniciado"></span>'],
+     ['B10','Ajustes do projeto','Popover','S6','Popover','Folha inferior','','<span data-sec="S6" data-def="nao_iniciado"></span>'],
+     ['C1','Exportar','Tela','S4','Sim','Sim','<span class="pill ok">Sim</span>','<span data-sec="S4" data-def="nao_iniciado"></span>'],
+     ['C2','Exportando','Estado','S4','Sim','Sim, com aviso de segundo plano','<span class="pill ok">Sim</span>','<span data-sec="S4" data-def="nao_iniciado"></span>'],
+     ['C3','Concluído ou falhou','Estado','S4','Sim','Sim','<span class="pill ok">Sim</span>','<span data-sec="S4" data-def="nao_iniciado"></span>'],
+     ['X1','Central de tarefas','Popover','S4','Popover','Folha inferior','<span class="pill ok">Sim</span>','<span data-sec="S4" data-def="nao_iniciado"></span>'],
+     ['X2','Recuperação de projeto','Modal','S7','Sim','Sim','','<span data-sec="S7" data-def="nao_iniciado"></span>'],
+     ['X3','Sem conexão','Padrão','S7','Sim','Sim','','<span data-sec="S7" data-def="nao_iniciado"></span>'],
+     ['X4','Feedback: inline, aviso e modal','Padrão','S7','Sim','Sim','','<span data-sec="S7" data-def="nao_iniciado"></span>'],
+     ['X5','Configurações e armazenamento','Tela','S8','Sim','Sim','','<span data-sec="S8" data-def="nao_iniciado"></span>'],
+     ['X6','Conta e entrar','Tela','S8','Sim','Sim','','<span data-sec="S8" data-def="nao_iniciado"></span>'],
+     ['X7','Plano e oferta no momento de uso','Tela e componente','S8','Sim','Sim','','<span data-sec="S8" data-def="nao_iniciado"></span>'],
+     ['X8','Consentimento de processamento em servidor','Modal','S8','Modal','Folha inferior','','<span data-sec="S8" data-def="nao_iniciado"></span>'],
+     ['X9','Atalhos de teclado','Folha','S8','Sim','Não se aplica','','<span data-sec="S8" data-def="nao_iniciado"></span>'],
+     ['X10','Permissões do aparelho','Estado','S8','Não se aplica','Sim','','<span data-sec="S8" data-def="nao_iniciado"></span>']]}
+]
+});
+/* ======================= D5 FLUXOS ======================= */
+(function(){
+  const NM = {A1:'Início',A2:'Primeiro uso',A3:'Novo projeto',A4:'Receita em andamento',A5:'Todos os projetos',
+    B1:'Editor, layout Padrão',B2:'Barra superior',B3:'Timeline',B4:'Preview',B5:'Layout Legendas',B6:'Remover fundo',
+    B7:'Painel Mídia',B8:'Painel Recursos',B9:'Propriedades',B10:'Ajustes do projeto',C1:'Exportar',C2:'Exportando',
+    C3:'Concluído ou falhou',X1:'Central de tarefas',X2:'Recuperação',X3:'Sem conexão',X8:'Consentimento de servidor'};
+  const LY = {A:'user',B:'core',C:'render',X:'infra'};
+  const X0 = 20, ST = 166, W = 150, H = 86;
+  const flows = [
+   {id:'f1',y:200,h:150,t:'F1 · Primeiro vídeo, sem conta',i:'S1. Quatro interações obrigatórias até o arquivo.',
+    s:[['Abre o app pela primeira vez','A2'],['Toca na receita Legendar e cortar pausas','A1'],['Escolhe o vídeo na galeria ou no disco','A4'],
+       ['Vê os 3 primeiros segundos prontos','A4'],['Revisa a legenda, se quiser','B5'],['Toca em Exportar e escolhe Reels','C1'],['Arquivo pronto, com abrir e compartilhar','C3']]},
+   {id:'f2',y:380,h:150,t:'F2 · Edição a partir do zero',i:'S1 e S2. Caminho completo, sem receita.',
+    s:[['Toca em projeto em branco','A1'],['Escolhe a proporção','A3'],['Editor vazio pede mídia','B1'],['Importa os clipes','B7'],
+       ['Monta e corta na timeline','B3'],['Adiciona texto e música','B8'],['Ajusta o item selecionado','B9'],['Exporta','C1']]},
+   {id:'f3',y:560,h:320,t:'F3 · Remover fundo',i:'IA no aparelho por padrão. Servidor só com consentimento.',
+    s:[['Seleciona um clipe','B3'],['Toca em Remover fundo','B9'],['O aparelho dá conta?','B6','d'],['Prévia dos 3 primeiros segundos','B6'],
+       ['Aprova ou cancela','B6'],['Termina em segundo plano','X1'],['Aplicado, com desfazer no mesmo lugar','B1']],
+    b:[[2,'Não dá conta: oferece servidor com preço e prazo de apagamento','X8',2,-1,'não'],[4,'Cancelou: nada muda no projeto','B6',4,-1,'cancela']]},
+   {id:'f4',y:910,h:150,t:'F4 · Legendas num projeto aberto',i:'Gerar a legenda não bloqueia a edição.',
+    s:[['No editor, abre Legendas','B8'],['Escolhe o idioma','B8'],['Tarefa em segundo plano, segue editando','X1'],
+       ['Legenda pronta abre o layout Legendas','B5'],['Corrige texto e tempo','B5'],['Escolhe um estilo','B9'],['Volta ao layout Padrão','B1']]},
+   {id:'f5',y:1090,h:320,t:'F5 · Exportar',i:'Local é o padrão. A tela fica livre durante o processo.',
+    s:[['Toca em Exportar','B2'],['Escolhe o destino','C1'],['Cabe no aparelho?','C1','d'],['Exportando em segundo plano','C2'],
+       ['Notificação do sistema','C2'],['Arquivo pronto','C3']],
+    b:[[2,'Não cabe: oferece servidor com consentimento','X8',2,-1,'não'],[3,'Falhou: retoma do ponto onde parou','C3',3,-1,'falha']]},
+   {id:'f6',y:1440,h:320,t:'F6 · Voltar e recuperar',i:'Princípio Constância: a primeira tela oferece continuar.',
+    s:[['Abre o app','A1'],['Fechou com falha da última vez?','X2','d'],['Recupera até o último salvamento','X2'],['Editor no ponto exato','B1']],
+    b:[[2,'Não: Início com Continuar em destaque','A1',1,3,'não']]},
+   {id:'f7',y:1790,h:150,t:'F7 · Sem conexão',i:'Nada local para. Só o que é remoto espera.',
+    s:[['A conexão cai em qualquer cena','X3'],['Aviso discreto, sem bloquear','X3'],['Itens remotos esmaecidos, com motivo','B8'],
+       ['A edição continua normal','B1'],['Exportação local disponível','C1'],['Tarefas de servidor esperam na fila local','X1'],['Conexão volta e a fila sobe sozinha','X1']]}
+  ];
+  const g = [], n = [], e = [];
+  flows.forEach(f => {
+    g.push({x:0,y:f.y,w:1340,h:f.h,t:f.t,c:'shell',i:f.i});
+    f.s.forEach((st, j) => {
+      const code = st[1];
+      n.push({id:f.id+'s'+j,x:X0+j*ST,y:f.y+46,w:W,h:H,l:LY[code[0]],dec:st[2]==='d'?1:undefined,
+        t:st[0],s:code+' · '+NM[code]});
+      if (j) e.push({f:f.id+'s'+(j-1),t:f.id+'s'+j,l:(f.s[j-1][2]==='d'?'sim':undefined)});
+    });
+    (f.b || []).forEach((br, k) => {
+      const id = f.id+'b'+k, code = br[2];
+      n.push({id,x:X0+br[0]*ST,y:f.y+180,w:W,h:H,l:LY[code[0]],ghost:1,t:br[1],s:code+' · '+NM[code]});
+      e.push({f:f.id+'s'+br[3],t:id,l:br[5],k:'d'});
+      if (br[4] >= 0) e.push({f:id,t:f.id+'s'+br[4],k:'d'});
+    });
+  });
+  BOARDS.push({
+    id:'fluxos', grp:'des', nome:'Fluxos', num:'D5',
+    head:{x:0,y:0,w:880,kick:'Item 5 de 7 · Fluxos de navegação',
+      t:'Fluxos principais',
+      p:'Sete fluxos, cada passo ligado a uma tela do inventário pelo código. Servem para conferir que nenhuma tela falta e que nenhum caminho principal passa por mais de dois níveis de navegação. Os desvios de falha e de recusa estão nas setas tracejadas, em blocos tracejados.'},
+    g, n, e,
+    k:[{x:0,y:1980,w:655,c:'accent',b:'O que os fluxos garantem',
+        h:'<ul><li>Nenhum fluxo principal pede login.</li><li>Nenhum passo essencial fica a mais de dois níveis de uma cena.</li><li>Todo processamento longo tem caminho de cancelamento e de retomada.</li><li>Telas de suporte que não aparecem como passo: A5, B4, B10, X4, X5, X6, X7, X9 e X10. São acessadas a partir das telas dos fluxos ou aparecem dentro delas. O preview, por exemplo, está presente em todo passo de edição.</li></ul>'},
+       {x:685,y:1980,w:655,c:'render',b:'Contagem do F1',
+        h:'Abrir o app não conta. Interações obrigatórias: tocar na receita, escolher o vídeo, tocar em Exportar e escolher o destino. <b>Quatro.</b> Revisar a legenda é opcional.<br><br>É a meta do quadro Jornada da arquitetura (de 12 para 4), agora ligada a telas que vão ser desenhadas e testadas.'}],
+    t:[]
+  });
+})();
+
+/* ======================= D6 ESTRATÉGIA POR PLATAFORMA ======================= */
+BOARDS.push({
+id:'estrategia', grp:'des', nome:'Plataformas', num:'D6',
+head:{x:0,y:0,w:880,kick:'Item 6 de 7 · Desktop, mobile e tablet',
+  t:'Estratégia por plataforma',
+  p:'Mesmo produto, dois modelos de interação. No desktop a pessoa vê tudo ao mesmo tempo e ajusta com precisão. No celular ela vê uma coisa por vez, e o contexto muda com a seleção. Os esquemas abaixo são modelos de divisão de áreas para validar a proporção e a posição. Não são wireframes.'},
+z:[
+ {x:0,y:200,w:660,h:400,t:'Desktop · a partir de 1024 px',c:'Tudo visível ao mesmo tempo. Painéis laterais recolhíveis e redimensionáveis, com o tamanho lembrado por projeto.',
+  zones:[[0,0,100,8,'Barra superior','1'],[0,8,22,52,'Recursos e mídia','2'],[22,8,52,52,'Preview','3',1],[74,8,26,52,'Propriedades','4'],
+         [0,60,100,7,'Ferramentas da timeline','5'],[0,67,100,33,'Timeline','6']]},
+ {x:710,y:200,w:220,h:440,t:'Mobile · nada selecionado',c:'Uma área por vez. A barra contextual oferece adicionar.',
+  zones:[[0,0,100,7,'Barra superior','1'],[0,7,100,40,'Preview','3',1],[0,47,100,6,'Reprodução','7'],[0,53,100,26,'Timeline compacta','6'],
+         [0,79,100,11,'Barra contextual','8'],[0,90,100,10,'Ferramentas','9']]},
+ {x:960,y:200,w:220,h:440,t:'Mobile · clipe selecionado',c:'Propriedades sobem numa folha. O preview encolhe, mas nunca some.',
+  zones:[[0,0,100,7,'Barra superior','1'],[0,7,100,28,'Preview','3',1],[0,35,100,14,'Timeline compacta','6'],[0,49,100,51,'Folha: propriedades do clipe','4']]}
+],
+g:[{x:0,y:1700,w:1340,h:330,t:'Exigem atenção especial no celular',c:'shell',i:'Problemas que não existem no desktop.'}],
+n:[
+ {id:'m1',x:24,y:1750,w:305,h:105,l:'shell',tag:['rec'],t:'Precisão de corte com o dedo',
+  s:'Alça de corte com área de toque de 44 px, zoom automático ao arrastar a alça e vibração ao encaixar.',
+  d:{sec:[['Por que importa','<p>Cortar é a ação mais repetida do produto. No dedo, a imprecisão de alguns pixels vira vários quadros de erro.</p>'],['Tratamento proposto','<p>A área de toque é maior que a alça visível. Ao arrastar, a timeline aproxima sozinha para dar precisão, e volta ao soltar.</p>']]}},
+ {id:'m2',x:349,y:1750,w:305,h:105,l:'shell',tag:['rec'],t:'O teclado cobre metade da tela',
+  s:'Ao editar legenda, o bloco editado sobe para cima do teclado e o preview vira miniatura.',
+  d:{sec:[['Por que importa','<p>Editar texto de legenda é tarefa central de S1 e é exatamente quando o teclado ocupa a tela.</p>'],['Tratamento proposto','<p>Modo de edição de texto dedicado no layout Legendas: lista de blocos em tela cheia, bloco ativo sempre visível, preview pequeno fixo no topo.</p>']]}},
+ {id:'m3',x:674,y:1750,w:305,h:105,l:'shell',tag:['lac'],t:'Processamento com o app fechado',
+  s:'O sistema do celular pode interromper exportação e IA longas. A tela avisa antes, e a tarefa retoma ao voltar.',
+  d:{sec:[['O que se sabe','<p>O iOS restringe processamento em segundo plano. Versões recentes oferecem um tipo de tarefa contínua para exportação iniciada pela pessoa, com o progresso mostrado pelo sistema. O Android usa serviço em primeiro plano com notificação.</p>'],['O que falta decidir','<p>Quais versões mínimas o produto atende. É decisão técnica, mas muda o texto da tela C2 e o comportamento da X1.</p>']]}},
+ {id:'m4',x:999,y:1750,w:317,h:105,l:'shell',tag:['rec'],t:'Gestos que brigam com o sistema',
+  s:'Voltar pela borda da tela conflita com arrastar clipe perto da borda. Margem de segurança nas laterais da timeline.',
+  d:{sec:[['Tratamento proposto','<p>A timeline não aceita início de arraste nos primeiros 20 px de cada lateral. A rolagem da timeline continua funcionando nessa faixa.</p>']]}},
+ {id:'m5',x:24,y:1890,w:305,h:105,l:'shell',tag:['rec'],t:'Toque acidental',
+  s:'Excluir nunca por gesto único. Desfazer sempre visível na barra superior.',
+  d:{sec:[['Tratamento proposto','<p>Excluir exige selecionar e depois tocar na ação. Nada é excluído por deslizar. Ação destrutiva fora do editor, como apagar projeto, pede confirmação. Dentro do editor, o desfazer substitui a confirmação, porque confirmar toda hora treina a pessoa a tocar sem ler.</p>']]}},
+ {id:'m6',x:349,y:1890,w:305,h:105,l:'shell',tag:['rec'],t:'Bateria e temperatura',
+  s:'IA no aparelho esquenta e consome bateria. Avisar antes de tarefa longa com bateria baixa, sem bloquear.',
+  d:{sec:[['Tratamento proposto','<p>Aviso informativo na confirmação da tarefa, com a opção de seguir. Princípio Controle: a pessoa decide.</p>']]}},
+ {id:'m7',x:674,y:1890,w:305,h:105,l:'shell',tag:['arq'],t:'Interrupção',
+  s:'Ligação, notificação ou troca de app salvam o projeto na hora.',
+  d:{sec:[['Origem','<p>Autosave com escrita atômica, quadro Arquitetura (L1). No celular, o gatilho extra é o app perder o foco.</p>']]}},
+ {id:'m8',x:999,y:1890,w:317,h:105,l:'shell',tag:['rec'],t:'Vídeo guardado na nuvem da galeria',
+  s:'Vídeo do iCloud ou do Google Fotos pode precisar baixar antes de importar. Estado de carregamento próprio, com tamanho.',
+  d:{sec:[['Tratamento proposto','<p>O clipe aparece na mídia já com estado de download e tamanho. A pessoa pode continuar escolhendo outros arquivos enquanto baixa.</p>']]}}
+],
+e:[],
+k:[
+ {x:0,y:690,w:660,c:'accent',b:'Áreas numeradas',
+  h:'<b>1</b> Barra superior: Início, nome do projeto, estado de salvamento, desfazer e refazer, tarefas, Exportar.<br><b>2</b> Recursos e mídia: abas Mídia, Texto, Legendas, Áudio, Efeitos, Filtros. No celular, vira a área 9.<br><b>3</b> Preview: a maior área, sempre visível. No celular, encolhe quando uma folha abre.<br><b>4</b> Propriedades do item selecionado. No celular, folha inferior com alturas em degraus.<br><b>5</b> Ferramentas da timeline: dividir, excluir, ímã, zoom. Só desktop.<br><b>6</b> Timeline magnética (D04).<br><b>7</b> Reprodução: tocar, tempo atual, tela cheia. No desktop fica sob o preview.<br><b>8</b> Barra contextual ao alcance do polegar. Muda com a seleção.<br><b>9</b> Ferramentas: Mídia, Texto, Legendas, Áudio, Efeitos.'},
+ {x:710,y:730,w:470,c:'core',b:'Tablet',
+  h:'Sem layout próprio na V1 (D09). Em paisagem, layout desktop com alvos de toque de 44 px. Em retrato, layout mobile com o preview maior. Com teclado físico conectado, os atalhos do desktop funcionam.'},
+ {x:710,y:870,w:470,c:'render',b:'Exclusivo do desktop',
+  h:'Atalhos de teclado, com proposta a validar na S8: espaço toca e pausa, J K L controlam a velocidade, Ctrl B divide o clipe (como no CapCut e no DaVinci Resolve), Ctrl Z desfaz. Arrastar arquivos do sistema. Menu de clique direito. Dica de ferramenta mostra o atalho.'}
+],
+t:[
+ {x:0,y:1080,w:1340,cap:'O que é igual, o que muda de lugar e o que muda de comportamento',
+  h:['Funcionalidade','Desktop','Mobile','Tratamento'],
+  r:[['Projetos e receitas','Grade com receitas no topo','Lista com receitas no topo','<span class="pill ok">Igual</span>'],
+     ['Preview','Centro, maior área','Topo, perto de 40% da altura','<span class="pill wa">Outro contêiner</span>'],
+     ['Timeline','Várias trilhas visíveis, zoom por rolagem, arraste com mouse','Trilha principal em destaque, trilhas presas compactas, zoom por pinça, arraste depois de toque longo','<span class="pill nu">Comportamento distinto</span>'],
+     ['Propriedades','Painel lateral fixo','Folha inferior com alturas em degraus','<span class="pill wa">Outro contêiner</span>'],
+     ['Recursos e mídia','Painel lateral com abas','Barra inferior abre uma folha','<span class="pill wa">Outro contêiner</span>'],
+     ['Seleção de vários itens','Shift e Ctrl, seleção por área','Modo de seleção explícito','<span class="pill nu">Comportamento distinto</span>'],
+     ['Atalhos de teclado','Sim','Não se aplica','<span class="pill nu">Só desktop</span>'],
+     ['Importar','Arrastar do sistema, seletor de arquivo','Galeria e arquivos do aparelho','<span class="pill nu">Comportamento distinto</span>'],
+     ['Editar legenda','Transcrição ao lado do preview','Lista de blocos em tela cheia, teclado ocupando metade','<span class="pill nu">Comportamento distinto</span>'],
+     ['Exportar','Igual','Igual, com aviso de segundo plano','<span class="pill ok">Igual</span>'],
+     ['Desfazer e refazer','Barra superior e Ctrl Z','Barra superior, sempre visível','<span class="pill ok">Igual</span>'],
+     ['Cor avançada e keyframes','V2','Fora','<span class="pill nu">Desktop primeiro, na V2</span>']]}
+]
+});
+
+/* ======================= D7 PLANO ======================= */
+BOARDS.push({
+id:'plano', grp:'des', nome:'Plano', num:'D7',
+head:{x:0,y:0,w:880,kick:'Item 7 de 7 · Ordem de elaboração e aprovação',
+  t:'Plano dos wireframes',
+  p:'Nove seções contando esta, aprovadas uma de cada vez. A primeira de wireframe é pequena de propósito: serve para calibrar com você o formato do desenho e dos comentários antes de investir no editor. Ao fim da S4, a fatia mínima do quadro Veredito está desenhada inteira.'},
+g:[{x:0,y:830,w:1340,h:320,t:'Como cada seção é aprovada',c:'shell',i:'O fluxo que você definiu no briefing, item 7.'}],
+n:[
+ {id:'pr1',x:15,y:880,w:172,h:100,l:'shell',t:'1 · Objetivo do módulo',s:'O que a seção resolve e para quem.'},
+ {id:'pr2',x:205,y:880,w:172,h:100,l:'shell',t:'2 · Telas do módulo',s:'Lista com códigos do inventário.'},
+ {id:'pr3',x:395,y:880,w:172,h:100,l:'shell',t:'3 · Wireframes comentados',s:'Desktop e mobile lado a lado, numeração no desenho.'},
+ {id:'pr4',x:585,y:880,w:172,h:100,l:'shell',t:'4 · Fluxos de navegação',s:'Os caminhos da seção, ligados ao quadro D5.'},
+ {id:'pr5',x:775,y:880,w:172,h:100,l:'shell',t:'5 · Decisões a validar',s:'Gravadas no mesmo registro do quadro D2.'},
+ {id:'pr6',x:965,y:880,w:172,h:100,l:'shell',t:'6 · Dúvidas, riscos e recomendações',s:'Com a alternativa recomendada.'},
+ {id:'pr7',x:1155,y:880,w:172,h:100,l:'accent',t:'7 · Sua aprovação ou comentários',s:'Silêncio não conta como aprovação.'},
+ {id:'pr8',x:965,y:1030,w:172,h:96,l:'ok',t:'Aprovado',s:'Registro a decisão e sigo para a próxima seção.'},
+ {id:'pr9',x:1155,y:1030,w:172,h:96,l:'ent',ghost:1,t:'Ajustes solicitados',s:'Atualizo as telas afetadas, explico o que mudou e volto ao passo 3.'}
+],
+e:[{f:'pr1',t:'pr2'},{f:'pr2',t:'pr3'},{f:'pr3',t:'pr4'},{f:'pr4',t:'pr5'},{f:'pr5',t:'pr6'},{f:'pr6',t:'pr7'},
+   {f:'pr7',t:'pr8',l:'aprovado'},{f:'pr7',t:'pr9',l:'ajustes',k:'d'}],
+k:[
+ {x:0,y:1190,w:655,c:'accent',b:'O que cada tela vai trazer',
+  h:'<b>A</b> Identificação: nome, seção, objetivo, segmento.<br><b>B</b> Objetivo da experiência: ação principal, ações secundárias, o que tem destaque.<br><b>C</b> Wireframe: desktop e mobile lado a lado, em blocos e com texto real.<br><b>D</b> Comentários numerados no desenho: função, posição, comportamento, relação com outros elementos.<br><b>E</b> Interações: clique, toque, arraste, atalhos e gestos. O que for simulado vem marcado.<br><b>F</b> Estados: vazio, carregando, carregado, seleção, edição, erro, aviso, processamento e sem conexão, como variações da mesma tela.<br><b>G</b> Adaptação: o que fica, o que muda de lugar, o que muda de comportamento.<br><b>H</b> Pontos de atenção e as decisões para você aprovar.'},
+ {x:685,y:1190,w:655,c:'core',b:'Convenções do wireframe',
+  h:'Cinza neutro, sem cor, fonte ou logo da marca. Rótulos de texto no lugar de ícones, porque a biblioteca de ícones ainda não existe. Texto real em português, nunca texto de preenchimento. Números em círculo ligando o desenho ao comentário. Interação simulada leva a marca <b>simulado</b>. Nada nos wireframes processa vídeo de verdade.'},
+ {x:0,y:1480,w:655,c:'shell',b:'Como aprovar esta entrega',
+  h:'Duas formas, que valem igual. No quadro D2, marque cada decisão. Ou me responda no chat: "escopo aprovado", ou a lista de ajustes. Quando a S0 estiver aprovada, começo a S1 e mudo o status aqui para Em elaboração.'},
+ {x:685,y:1480,w:655,c:'infra',b:'Os cinco status',
+  h:'<span class="stp nao_iniciado">Não iniciado</span> ainda não comecei.<br><span class="stp em_elaboracao">Em elaboração</span> estou desenhando.<br><span class="stp aguardando">Aguardando aprovação</span> entreguei e espero você.<br><span class="stp ajustes">Ajustes solicitados</span> você pediu mudanças.<br><span class="stp aprovado">Aprovado</span> você aprovou de forma explícita.'}
+],
+t:[
+ {x:0,y:200,w:1340,cap:'Ordem das seções',
+  h:['Seção','Conteúdo','Telas','Por que nesta posição','Depende de','Status'],
+  r:[['S0','Escopo e arquitetura da informação (esta entrega)','Quadros D1 a D7','Base de tudo. Nada é desenhado antes dela.','D01 a D12','<span data-sec="S0" data-def="aguardando"></span>'],
+     ['S1','Início, receitas e novo projeto','A1 A2 A3 A4 A5','Pequena e de baixo risco: calibra o formato do wireframe e dos comentários antes do editor.','D01 D02 D05 D06 D07 D12','<span data-sec="S1" data-def="nao_iniciado"></span>'],
+     ['S2','Estrutura do editor','B1 B2 B3 B4','Maior risco do produto. Tudo depende da divisão de áreas.','D04 D08 D09','<span data-sec="S2" data-def="nao_iniciado"></span>'],
+     ['S3','Legendas e remover fundo','B5 B6','Proposta central e coração da fatia mínima.','S2 aprovada','<span data-sec="S3" data-def="nao_iniciado"></span>'],
+     ['S4','Exportação e tarefas','C1 C2 C3 X1','Fecha o fluxo principal. Ao fim dela, a fatia mínima está desenhada inteira.','S2 aprovada','<span data-sec="S4" data-def="nao_iniciado"></span>'],
+     ['S5','Mídia e recursos','B7 B8','Painéis que alimentam a timeline.','S2 aprovada','<span data-sec="S5" data-def="nao_iniciado"></span>'],
+     ['S6','Timeline, propriedades e reprodução em detalhe','B3 B4 B9 B10','Profundidade de componente, depois da estrutura aprovada.','S2 e S5 aprovadas','<span data-sec="S6" data-def="nao_iniciado"></span>'],
+     ['S7','Segurança do trabalho: recuperação, conexão e erros','X2 X3 X4','Padrões transversais aplicados sobre tudo que já existe.','S1 a S6','<span data-sec="S7" data-def="nao_iniciado"></span>'],
+     ['S8','Conta, configurações, plano e consentimento','X5 X6 X7 X8 X9 X10','Depende de decisões comerciais ainda abertas.','D06 D10 L04','<span data-sec="S8" data-def="nao_iniciado"></span>']]}
+]
+});
+</script>
+<script>
 (function(){
 'use strict';
 const $ = s => document.querySelector(s);
@@ -1105,31 +1742,65 @@ const col = l => 'var(' + (COL[l] || '--l-infra') + ')';
 const LNAMES = {shell:'Casca de UI',core:'Núcleo de edição',render:'Motor de render',ai:'Inteligência',
   cat:'Catálogo',ent:'Acesso e cobrança',infra:'Plataforma',user:'Usuário',accent:'Decisão',
   ok:'Positivo',warn:'Atenção'};
+const TAGS = {req:'Requisito confirmado',arq:'Herdado da arquitetura',bb:'Brand book',hip:'Hipótese',
+  rec:'Recomendação',lac:'Lacuna',dec:'Decisão pendente',v2:'Fora da V1'};
+const TSHORT = {req:'requisito',arq:'arquitetura v0.1',bb:'brand book',hip:'hipótese',rec:'recomendação',
+  lac:'lacuna',dec:'decisão',v2:'v2'};
+const TDESC = {req:'você confirmou no briefing',arq:'proposto na v0.1, a validar',bb:'vem do brand book',
+  hip:'suposição minha, sem dado',rec:'o que eu sugiro',lac:'informação que falta',dec:'precisa da sua resposta'};
+const DST = {aguardando:'Aguardando aprovação',aprovado:'Aprovado',ajustes:'Ajustes solicitados'};
+const SST = {nao_iniciado:'Não iniciado',em_elaboracao:'Em elaboração',aguardando:'Aguardando aprovação',
+  ajustes:'Ajustes solicitados',aprovado:'Aprovado'};
+const GRP = {arq:'Arquitetura v0.1', des:'Design · Etapa 1'};
 
-let view = {x:60,y:40,k:1}, cur = 0, sel = null, nodeMap = {};
+BOARDS.forEach(b => { if (!b.grp) b.grp = 'arq'; });
+const DIDS = [];
+BOARDS.forEach(b => (b.n || []).forEach(n => { if (n.dcs) DIDS.push(n.dcs); }));
+
+let view = {x:60,y:40,k:1}, cur = 0, sel = null, nodeMap = {}, panelNode = null;
+let DB = null, ME = {owner:null, id:null}, DSTATE = {}, SSTATE = {};
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* ---------- legenda ---------- */
-$('#lkeys').innerHTML = ['shell','core','render','ai','cat','ent','infra','user']
-  .map(l => '<span><i style="background:' + col(l) + '"></i>' + LNAMES[l] + '</span>').join('');
+function legend(grp){
+  if (grp === 'des'){
+    $('#lhead').textContent = 'Etiquetas de origem';
+    $('#lkeys').innerHTML = ['req','arq','bb','hip','rec','lac','dec']
+      .map(t => '<span><em class="tg ' + t + '">' + TSHORT[t] + '</em>' + TDESC[t] + '</span>').join('');
+  } else {
+    $('#lhead').textContent = 'Camadas';
+    $('#lkeys').innerHTML = ['shell','core','render','ai','cat','ent','infra','user']
+      .map(l => '<span><i style="background:' + col(l) + '"></i>' + LNAMES[l] + '</span>').join('');
+  }
+}
 
 /* ---------- trilha ---------- */
+let lastG = null;
 BOARDS.forEach((b,i) => {
+  if (b.grp !== lastG){
+    const s = document.createElement('span');
+    s.className = 'rgrp'; s.textContent = GRP[b.grp] || b.grp;
+    rail.appendChild(s); lastG = b.grp;
+  }
   const btn = document.createElement('button');
-  btn.className = 'rb'; btn.type = 'button';
-  btn.innerHTML = '<em>' + b.num + '</em>' + b.nome;
+  btn.className = 'rb'; btn.type = 'button'; btn.dataset.i = i;
+  btn.innerHTML = '<em>' + b.num + '</em>' + esc(b.nome);
   btn.addEventListener('click', () => show(i));
   rail.appendChild(btn);
 });
 
-/* ---------- escape ---------- */
-const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-
 /* ---------- render de um quadro ---------- */
 function show(i, keepView){
   cur = i; const b = BOARDS[i];
-  [...rail.children].forEach((c,j) => c.setAttribute('aria-current', j === i ? 'true' : 'false'));
+  rail.querySelectorAll('.rb').forEach(c => {
+    const on = +c.dataset.i === i;
+    c.setAttribute('aria-current', on ? 'true' : 'false');
+    if (on) try { c.scrollIntoView({block:'nearest', inline:'nearest'}); } catch(e){}
+  });
   [...world.children].forEach(c => { if (c.id !== 'edges') c.remove(); });
   svg.innerHTML = ''; nodeMap = {}; closePanel();
+  legend(b.grp);
 
   if (b.head){
     const h = document.createElement('div');
@@ -1149,14 +1820,29 @@ function show(i, keepView){
     world.appendChild(d);
   });
 
+  (b.z || []).forEach(z => {
+    const d = document.createElement('div');
+    d.className = 'zfr';
+    d.style.cssText = 'left:' + z.x + 'px;top:' + z.y + 'px;width:' + z.w + 'px';
+    d.innerHTML = '<b>' + esc(z.t) + '</b><div class="zdev" style="height:' + z.h + 'px">' +
+      z.zones.map(q => '<div class="zz' + (q[6] ? ' hot' : '') + '" style="left:' + q[0] + '%;top:' + q[1] +
+        '%;width:' + q[2] + '%;height:' + q[3] + '%"><span>' + (q[5] ? '<em>' + q[5] + '</em>' : '') +
+        esc(q[4]) + '</span></div>').join('') + '</div>' + (z.c ? '<i>' + esc(z.c) + '</i>' : '');
+    world.appendChild(d);
+  });
+
   (b.n || []).forEach(n => {
     const el = document.createElement('button');
     el.type = 'button';
     el.className = 'n' + (n.dec ? ' dec' : '') + (n.term ? ' term' : '') + (n.ghost ? ' ghost' : '');
     el.style.cssText = 'left:' + n.x + 'px;top:' + n.y + 'px;width:' + n.w + 'px;min-height:' +
       n.h + 'px;--c:' + col(n.l);
-    el.innerHTML = (n.dec ? '<span class="tag">decisão</span>' : '') + '<b>' + esc(n.t) + '</b>' +
-      (n.s ? '<small>' + esc(n.s) + '</small>' : '');
+    const tags = [].concat(n.tag || []);
+    el.innerHTML = (tags.length ? '<span class="tags">' + tags.map(t => '<span class="tg ' + t + '">' +
+        TSHORT[t] + '</span>').join('') + '</span>' : '') +
+      (n.dec ? '<span class="tag">decisão</span>' : '') + '<b>' + esc(n.t) + '</b>' +
+      (n.s ? '<small>' + esc(n.s) + '</small>' : '') +
+      (n.dcs ? '<span class="stp" data-dcs="' + n.dcs + '"></span>' : '');
     el.addEventListener('click', e => { e.stopPropagation(); openPanel(n, el); });
     world.appendChild(el);
     nodeMap[n.id] = {el, n};
@@ -1181,7 +1867,8 @@ function show(i, keepView){
     world.appendChild(d);
   });
 
-  requestAnimationFrame(() => { drawEdges(b); if (!keepView) fit(); });
+  paintDecisions(); paintSections();
+  requestAnimationFrame(() => { drawEdges(b); if (!keepView) frameBoard(); });
   try { history.replaceState(null, '', '#' + b.id); } catch(e){}
 }
 
@@ -1249,28 +1936,113 @@ function drawEdges(b){
   svg.setAttribute('width', maxX + 200); svg.setAttribute('height', maxY + 200);
 }
 
+/* ---------- registro: decisões e seções ---------- */
+function when(iso){
+  if (!iso) return '';
+  try { return 'registrado em ' + new Date(iso).toLocaleString('pt-BR', {dateStyle:'short', timeStyle:'short'}); }
+  catch(e){ return ''; }
+}
+function paintDecisions(){
+  document.querySelectorAll('[data-dcs]').forEach(e => {
+    const st = (DSTATE[e.dataset.dcs] || {}).status;
+    const k = DST[st] ? st : 'aguardando';
+    e.className = 'stp ' + k; e.textContent = DST[k];
+  });
+  const c = document.getElementById('dcount');
+  if (c){
+    const ap = DIDS.filter(i => (DSTATE[i] || {}).status === 'aprovado').length;
+    const aj = DIDS.filter(i => (DSTATE[i] || {}).status === 'ajustes').length;
+    c.textContent = ap + ' aprovadas, ' + aj + ' com ajuste pedido, ' + (DIDS.length - ap - aj) +
+      ' aguardando, de ' + DIDS.length + '.' + (DB ? '' : ' Registro indisponível nesta visualização.');
+  }
+  if (panelNode && panelNode.dcs){
+    const s = DSTATE[panelNode.dcs] || {}, k = DST[s.status] ? s.status : 'aguardando';
+    const st = document.getElementById('apst'), wh = document.getElementById('apwhen');
+    if (st){ st.className = 'stp ' + k; st.textContent = DST[k]; }
+    if (wh) wh.textContent = when(s.em);
+  }
+}
+function paintSections(){
+  document.querySelectorAll('[data-sec]').forEach(e => {
+    const st = (SSTATE[e.dataset.sec] || {}).status;
+    const k = SST[st] ? st : (e.dataset.def || 'nao_iniciado');
+    e.className = 'stp ' + k; e.textContent = SST[k];
+  });
+}
+const canWrite = () => !!DB && ME.owner !== false;
+function approvalHTML(id){
+  const s = DSTATE[id] || {}, k = DST[s.status] ? s.status : 'aguardando';
+  return '<section class="appr"><h4>Sua decisão sobre ' + id + '</h4>' +
+    '<div class="stline"><span class="stp ' + k + '" id="apst">' + DST[k] + '</span><span id="apwhen">' +
+    when(s.em) + '</span></div>' +
+    '<label for="apnote">Nota para mim (opcional)</label>' +
+    '<textarea id="apnote" maxlength="2000" placeholder="Ex.: aprovo, mas quero ver a opção B desenhada na seção 2.">' +
+    esc(s.nota || '') + '</textarea>' +
+    '<div class="apb"><button type="button" class="pri" id="apok">Aprovar recomendação</button>' +
+    '<button type="button" id="apadj">Pedir ajuste</button>' +
+    '<button type="button" class="lnk" id="aprst">Voltar para aguardando</button></div>' +
+    '<p class="aph" id="aph"></p></section>';
+}
+function wireApproval(id){
+  const btns = ['apok','apadj','aprst'].map(x => document.getElementById(x));
+  const hint = t => { const h = document.getElementById('aph'); if (h) h.textContent = t; };
+  const sync = () => {
+    btns.forEach(b => { if (b) b.disabled = !canWrite(); });
+    if (!DB) hint('O registro não está disponível nesta visualização. Responda no chat citando ' + id + '.');
+    else if (ME.owner === false) hint('Só o dono desta página registra decisões.');
+  };
+  sync();
+  const save = async status => {
+    if (!canWrite()) return;
+    const ta = document.getElementById('apnote');
+    const nota = ta ? ta.value.trim().slice(0, 2000) : '';
+    btns.forEach(b => { if (b) b.disabled = true; });
+    hint('Salvando.');
+    try {
+      await DB.collection('decisoes').doc(id).set({status, nota, em:new Date().toISOString(), por:ME.id || null});
+      hint(status === 'aguardando' ? id + ' voltou para aguardando aprovação.'
+        : 'Registrado. Eu leio este registro antes de seguir para a próxima etapa.');
+    } catch(e){
+      hint(e && e.code === 'invalid_argument' ? 'Só o dono desta página registra decisões. Responda no chat citando ' + id + '.'
+        : 'Não deu para salvar agora. Sua nota continua no campo; tente de novo em instantes.');
+    } finally { sync(); }
+  };
+  if (btns[0]) btns[0].addEventListener('click', () => save('aprovado'));
+  if (btns[1]) btns[1].addEventListener('click', () => save('ajustes'));
+  if (btns[2]) btns[2].addEventListener('click', () => save('aguardando'));
+  panel._sync = sync;
+}
+
 /* ---------- painel ---------- */
 function openPanel(n, el){
   if (sel) sel.classList.remove('on');
-  sel = el; el.classList.add('on');
-  const d = n.d || {};
-  player.textContent = LNAMES[n.l] || '';
+  sel = el; el.classList.add('on'); panelNode = n;
+  const d = n.d || {}, tags = [].concat(n.tag || []);
+  player.textContent = tags.length ? tags.map(t => TAGS[t]).join(' · ') : (LNAMES[n.l] || '');
   player.style.setProperty('--c', col(n.l));
   ptitle.textContent = n.t;
   let h = '';
+  if (d.sec) d.sec.forEach(s => {
+    h += '<section><h4>' + esc(s[0]) + '</h4>' + (s[1].charAt(0) === '<' ? s[1] : '<p>' + s[1] + '</p>') + '</section>';
+  });
   if (d.q) h += '<section><h4>O que é</h4><p>' + d.q + '</p></section>';
   if (d.p) h += '<section><h4>Por que existe assim</h4><p>' + d.p + '</p></section>';
   if (d.te) h += '<section><h4>Tecnologia e critério</h4><p>' + d.te + '</p></section>';
   if (d.f) h += '<section><h4>Se falhar</h4><p class="fail">' + d.f + '</p></section>';
+  if (!d.sec && !d.q && n.s) h += '<section><h4>Resumo</h4><p>' + esc(n.s) + '</p></section>';
   if (d.k && d.k.length) h += '<section><h4>Referências</h4><div class="chips">' +
     d.k.map(k => '<span class="chip">' + esc(k) + '</span>').join('') + '</div></section>';
+  if (n.dcs) h += approvalHTML(n.dcs);
   pb.innerHTML = h || '<p>Sem detalhe adicional.</p>';
   pb.scrollTop = 0;
+  panel._sync = null;
+  if (n.dcs) wireApproval(n.dcs);
   panel.classList.add('open'); panel.setAttribute('aria-hidden','false');
 }
 function closePanel(){
   panel.classList.remove('open'); panel.setAttribute('aria-hidden','true');
   if (sel) { sel.classList.remove('on'); sel = null; }
+  panelNode = null; panel._sync = null;
 }
 $('#pclose').addEventListener('click', closePanel);
 
@@ -1279,7 +2051,7 @@ function apply(){
   world.style.transform = 'translate(' + view.x + 'px,' + view.y + 'px) scale(' + view.k + ')';
   $('#zlvl').textContent = Math.round(view.k * 100) + '%';
 }
-function fit(){
+function bounds(){
   let maxX = 0, maxY = 0, minX = 1e9, minY = 1e9;
   [...world.children].forEach(c => {
     if (c.id === 'edges') return;
@@ -1287,12 +2059,26 @@ function fit(){
     maxX = Math.max(maxX, c.offsetLeft + c.offsetWidth);
     maxY = Math.max(maxY, c.offsetTop + c.offsetHeight);
   });
-  if (minX > 1e8) return;
+  return minX > 1e8 ? null : {minX, minY, maxX, maxY};
+}
+function fit(){
+  const r = bounds(); if (!r) return;
   const pad = 56, vw = stage.clientWidth, vh = stage.clientHeight;
-  const k = Math.min((vw - pad*2) / (maxX - minX), (vh - pad*2) / (maxY - minY), 1.1);
+  const k = Math.min((vw - pad*2) / (r.maxX - r.minX), (vh - pad*2) / (r.maxY - r.minY), 1.1);
   view.k = Math.max(0.08, k);
-  view.x = pad - minX * view.k + (vw - pad*2 - (maxX-minX)*view.k) / 2;
-  view.y = pad - minY * view.k;
+  view.x = pad - r.minX * view.k + (vw - pad*2 - (r.maxX - r.minX)*view.k) / 2;
+  view.y = pad - r.minY * view.k;
+  apply();
+}
+/* quadro alto demais para caber legível: encaixa pela largura e começa do topo */
+function frameBoard(){
+  const r = bounds(); if (!r) return;
+  const pad = 56, vw = stage.clientWidth, vh = stage.clientHeight;
+  const kAll = Math.min((vw - pad*2) / (r.maxX - r.minX), (vh - pad*2) / (r.maxY - r.minY), 1.1);
+  if (kAll >= 0.5 || vw < 700) return fit();
+  view.k = Math.min((vw - pad*2) / (r.maxX - r.minX), 1);
+  view.x = pad - r.minX * view.k + (vw - pad*2 - (r.maxX - r.minX)*view.k) / 2;
+  view.y = pad - r.minY * view.k;
   apply();
 }
 function zoomAt(f, cx, cy){
@@ -1323,6 +2109,7 @@ stage.addEventListener('pointercancel', endDrag);
 stage.addEventListener('click', e => { if (!e.target.closest('.n, #panel')) closePanel(); });
 
 stage.addEventListener('wheel', e => {
+  if (e.target.closest('#panel, #legend')) return;
   e.preventDefault();
   const r = stage.getBoundingClientRect();
   if (e.ctrlKey || e.metaKey) zoomAt(e.deltaY < 0 ? 1.12 : 0.89, e.clientX - r.left, e.clientY - r.top);
@@ -1352,11 +2139,12 @@ stage.addEventListener('touchend', () => { pinch = null; }, {passive:true});
 
 /* ---------- teclado ---------- */
 document.addEventListener('keydown', e => {
+  const tg = e.target.tagName;
+  if (tg === 'INPUT' || tg === 'TEXTAREA') return;
   if (e.key === 'Escape') closePanel();
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (e.key === '0'){ fit(); }
-  if (e.key === 'ArrowRight' && e.altKey){ show(Math.min(BOARDS.length-1, cur+1)); }
-  if (e.key === 'ArrowLeft' && e.altKey){ show(Math.max(0, cur-1)); }
+  if (e.key === '0') fit();
+  if (e.key === 'ArrowRight' && e.altKey) show(Math.min(BOARDS.length-1, cur+1));
+  if (e.key === 'ArrowLeft' && e.altKey) show(Math.max(0, cur-1));
 });
 
 /* ---------- tema ---------- */
@@ -1373,11 +2161,42 @@ try {
   if (t) document.documentElement.setAttribute('data-theme', t);
 } catch(err){}
 
+/* ---------- registro persistente (db) ---------- */
+(async function initRegistro(){
+  const c = window.claude;
+  if (!c || typeof c.use !== 'function') return;
+  try {
+    const [db, user] = await Promise.all([c.use('db'), c.use('user')]);
+    if (user){
+      try { ME.owner = await user.isOwner(); ME.id = await user.id(); } catch(e){}
+    }
+    if (!db) { paintDecisions(); return; }
+    DB = db;
+    db.collection('decisoes').onSnapshot(s => {
+      const o = {}; s.docs.forEach(d => { if (d.exists) o[d.id] = d.data(); });
+      DSTATE = o; paintDecisions();
+    }, () => {});
+    db.collection('secoes').onSnapshot(s => {
+      const o = {}; s.docs.forEach(d => { if (d.exists) o[d.id] = d.data(); });
+      SSTATE = o; paintSections();
+    }, () => {});
+    paintDecisions();
+    if (typeof panel._sync === 'function') panel._sync();
+  } catch(e){}
+})();
+
 /* ---------- boot ---------- */
 let start = 0;
 const hash = (location.hash || '').replace('#','');
 if (hash){ const i = BOARDS.findIndex(b => b.id === hash); if (i >= 0) start = i; }
 show(start);
-let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => show(cur, false), 180); });
+/* link direto para outro quadro com a página já aberta */
+addEventListener('hashchange', () => {
+  const i = BOARDS.findIndex(b => b.id === (location.hash || '').slice(1));
+  if (i >= 0 && i !== cur) show(i);
+});
+/* teclado virtual dispara resize: nunca redesenhar com o painel aberto, para não perder a nota digitada */
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => {
+  if (panel.classList.contains('open')) return; drawEdges(BOARDS[cur]); frameBoard(); }, 180); });
 })();
 </script>

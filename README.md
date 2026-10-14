@@ -17,7 +17,7 @@ Alem dos clientes, este repositorio guarda os projetos da marca ICARUS em
 
 | Projeto | Entregavel | Status |
 |---|---|---|
-| EDITICARUS PRO | Arquitetura e fluxo de editor de video multiplataforma | Documento de arquitetura, sem codigo de produto |
+| EDITICARUS PRO | Arquitetura e design (Etapa 1: escopo) de editor de video multiplataforma | Escopo de design aguardando aprovacao, sem codigo de produto |
 
 **Criterio de separacao:** `clientes/` e trabalho pago com prazo e escopo acordados.
 `projetos/` e investimento proprio e compete por tempo com a prospeccao, entao cada
