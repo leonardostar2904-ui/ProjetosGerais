@@ -5,7 +5,7 @@ reversa do CapCut Pro 9.5.0.4050 (documento em `referencias/`).
 
 ## Entregavel
 
-`arquitetura/fluxo.html` — canvas navegavel (pan, zoom, painel de detalhe), 12 quadros:
+`arquitetura/fluxo.html`: canvas navegavel (pan, zoom, painel de detalhe), 12 quadros de arquitetura:
 
 | # | Quadro | O que responde |
 |---|---|---|
@@ -19,13 +19,13 @@ reversa do CapCut Pro 9.5.0.4050 (documento em `referencias/`).
 | 08 | Seguranca | OAuth2 + PKCE, onde cada segredo mora |
 | 09 | Plataformas | Decisao de framework e o que de fato compartilha |
 | 10 | Design System | Atomic design, escolha de biblioteca, o que e custom |
-| 11 | Carga e custo | Volumetria, dimensionamento e a conta de nuvem |
+| 11 | Carga, custo e viabilidade | Volumetria, conta de nuvem e a analise comprar, desenvolver ou hibrido para um time de 4 editores |
 | 12 | Veredito | Esforco real, custo de oportunidade e recomendacao |
 
 Abrir direto no navegador. Sem build, sem dependencia, arquivo unico.
 Deeplink por quadro: `fluxo.html#arquitetura`, `fluxo.html#veredito`, etc.
 
-## Design · Etapa 1 (em andamento)
+## Design · Etapa 1 (aprovada em 14/10/2026)
 
 Os mesmos arquivo e canvas ganharam um segundo grupo de quadros, D1 a D7, com a fase de
 entendimento do produto pedida antes de qualquer wireframe:
@@ -47,11 +47,35 @@ book, hipotese, recomendacao, lacuna ou decisao pendente.
 `decisoes`) e de cada secao (colecao `secoes`) no banco do proprio artefato. So o dono grava.
 Decisao sem resposta fica como aguardando aprovacao: silencio nao conta como aprovado.
 
-**Status atual:** S0 (escopo) aguardando aprovacao. S1 a S8 nao iniciadas.
+**Status:** S0 (escopo) e as decisoes D01 a D12 aprovadas pelo usuario em 14/10/2026. Os wireframes de
+baixa fidelidade foram pulados por decisao dele: S1 a S8 foram entregues direto em alta fidelidade
+(Etapa 2) e estao aguardando aprovacao.
 
 **Brand book ICARUS** (Brand OS 1.0, 26.09.2026) foi lido nesta etapa so para registrar
 restricoes e conflitos (decisao D03 e tabela de riscos no quadro D2). Nada da identidade foi
-aplicado. O PDF nao foi versionado aqui por ser documento de uso interno.
+aplicado na Etapa 1. O PDF nao foi versionado aqui por ser documento de uso interno.
+
+## Design · Etapa 2 (prototipo em alta fidelidade, aguardando aprovacao)
+
+Terceiro grupo de quadros, em modo pagina (sem canvas):
+
+| # | Quadro | O que tem |
+|---|---|---|
+| P1 | Prototipo | Desktop (1280 x 800) e celular (390 x 844) lado a lado com o mesmo estado, saltos para as 28 telas do inventario e variacoes, cenarios de teste (sem conexao, aparelho fraco, falha de exportacao) |
+| P2 | Telas | As 28 telas em miniatura viva, agrupadas por secao, com o status de aprovacao de cada secao |
+| P3 | Sistema visual | Cores, contraste calculado (WCAG 2.2), tipografia, componentes com estados, icones, logotipo e as propostas P01 a P08 com aprovacao |
+
+**O que funciona de verdade no prototipo:** navegacao, selecao, timeline magnetica (dividir, excluir,
+duplicar, reordenar, aparar), desfazer e refazer, edicao de legenda e texto, ajustes de imagem na
+previa, proporcao, busca, ordem, paginacao, lixeira, validacao de e-mail e atalhos de teclado.
+**O que e simulado e vem marcado:** reproducao (imagens paradas trocando no tempo), IA, exportacao,
+salvamento, download, servidor, conexao e dialogos do sistema.
+**O que nao existe:** decodificar ou renderizar video, arquivos reais, conta e cobranca.
+
+**Assets da marca.** Logotipos e fotos do banco ICARUS sao de uso interno e ficam fora do git
+(`arquitetura/assets/` esta no `.gitignore`). Para gerar de novo a partir do brand book:
+`python3 ferramentas/extrair_assets.py <brand-book.pdf> arquitetura/assets` (precisa de `pdfimages` e Pillow).
+Sem a pasta, o prototipo abre, mas sem fotos e logotipo.
 
 ## Decisao central
 
@@ -72,7 +96,8 @@ destruir a propria receita, porque a IA dele e server side por decisao de arquit
 
 ## Status
 
-Documento de arquitetura e escopo de design. **Nenhum codigo de produto foi escrito e nenhum wireframe foi desenhado ainda.**
+Documento de arquitetura, escopo de design e prototipo de interface. **Nenhum codigo de produto foi
+escrito:** o prototipo simula a interface e nao processa video.
 
 O quadro 12 sustenta por que: construir o produto completo sao 14 a 20 meses em
 tempo integral, com receita zero no caminho. A recomendacao e usar o material como
