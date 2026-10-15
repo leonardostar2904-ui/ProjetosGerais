@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Barbearia do Douglas · Plano de ajuste da v3</title>
+<style>
+@font-face{font-family:'Big Shoulders Display';font-weight:800;src:url(fonts-flat/big-shoulders-display-latin-800-normal.ttf) format('truetype')}
+@font-face{font-family:'Big Shoulders Display';font-weight:900;src:url(fonts-flat/big-shoulders-display-latin-900-normal.ttf) format('truetype')}
+@font-face{font-family:'Hanken Grotesk';font-weight:400;src:url(fonts-flat/hanken-grotesk-latin-400-normal.ttf) format('truetype')}
+@font-face{font-family:'Hanken Grotesk';font-weight:500;src:url(fonts-flat/hanken-grotesk-latin-500-normal.ttf) format('truetype')}
+@font-face{font-family:'Hanken Grotesk';font-weight:600;src:url(fonts-flat/hanken-grotesk-latin-600-normal.ttf) format('truetype')}
+@font-face{font-family:'Hanken Grotesk';font-weight:700;src:url(fonts-flat/hanken-grotesk-latin-700-normal.ttf) format('truetype')}
+:root{
+  --coal:#242224;--brown:#46413C;--akaroa:#D7C9AE;--whiterock:#EAE0D2;--barley:#A68763;
+  --khaki:#A69F91;--olive:#8F9289;--chocolate:#7B3F00;--whats:#25D366;--ouro:#C9A227;
+  --papel:#FFFFFF;--linha:#D9CFBF;
+  --display:'Big Shoulders Display','Arial Narrow',sans-serif;
+  --body:'Hanken Grotesk',Helvetica,Arial,sans-serif;
+  --mono:'DejaVu Sans Mono',monospace;
+}
+@page{size:A4;margin:16mm 15mm 17mm 15mm;
+  @bottom-left{content:"Barbearia do Douglas · Plano de ajuste da v3 · 15/10/2026";font:500 7.2pt 'Hanken Grotesk';color:#46413C}
+  @bottom-right{content:counter(page) " / " counter(pages);font:700 7.4pt 'Hanken Grotesk';color:#46413C}}
+@page :first{margin:0;@bottom-left{content:none}@bottom-right{content:none}}
+*{box-sizing:border-box}
+html{background:var(--papel)}
+body{margin:0;font:400 9.3pt/1.5 var(--body);color:var(--coal);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+h1,h2,h3,h4,p,ul,ol,figure,table,blockquote{margin:0}
+ul,ol{padding-left:1.15em}
+li{margin:.18em 0}
+a{color:var(--coal);text-decoration-color:var(--barley)}
+strong{font-weight:700}
+em{font-style:italic}
+
+/* ---------- capa ---------- */
+.capa{width:210mm;height:297mm;background:var(--coal);color:var(--whiterock);position:relative;overflow:hidden;break-after:page;padding:22mm 18mm 18mm}
+.capa::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(60% 40% at 85% 5%,rgba(166,135,99,.18),rgba(166,135,99,0) 70%),
+  radial-gradient(50% 50% at 0% 100%,rgba(12,11,12,.6),rgba(12,11,12,0) 70%)}
+.capa>*{position:relative}
+.capa .kicker{font:700 8.5pt/1 var(--body);letter-spacing:.2em;text-transform:uppercase;color:var(--khaki)}
+.capa .quina-capa{position:absolute;left:18mm;top:58mm;width:34mm;height:34mm;border-left:2.5px solid var(--barley);border-top:2.5px solid var(--barley)}
+.capa h1{margin-top:62mm;font:900 66pt/.92 var(--display);text-transform:uppercase;letter-spacing:-.005em;color:var(--whiterock)}
+.capa h1 span{display:block;color:var(--barley)}
+.capa .sub{margin-top:9mm;max-width:132mm;font:500 13pt/1.45 var(--body);color:var(--akaroa)}
+.capa .meta{position:absolute;left:18mm;right:18mm;bottom:18mm;display:grid;grid-template-columns:1fr 1fr;gap:6mm;padding-top:6mm;border-top:1px solid rgba(166,135,99,.5);font:500 8.5pt/1.5 var(--body);color:var(--akaroa)}
+.capa .meta b{display:block;font:700 7.5pt/1.3 var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--khaki);margin-bottom:1.5mm}
+
+/* ---------- estrutura ---------- */
+section.sec{break-before:page}
+.sec-cab{display:flex;align-items:baseline;gap:4mm;padding-top:3mm;padding-bottom:3mm;margin-bottom:5mm;border-bottom:2px solid var(--coal)}
+.sec-n{font:900 22pt/1 var(--display);color:var(--barley)}
+.sec-cab h2{font:900 23pt/1 var(--display);text-transform:uppercase;letter-spacing:.005em}
+h3{font:800 13pt/1.15 var(--display);text-transform:uppercase;letter-spacing:.02em;margin:4.5mm 0 2.5mm;padding-top:1.5mm}
+h3,h4{break-after:avoid}
+h4{font:700 9.6pt/1.3 var(--body);margin:3.5mm 0 1.5mm}
+p{margin:0 0 2.6mm}
+.lead{font-size:10.6pt;line-height:1.5;color:var(--brown);max-width:168mm;margin-bottom:4mm}
+.micro{font:700 7pt/1.3 var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--brown)}
+.nota{font-size:8.2pt;color:var(--brown)}
+.evita{break-inside:avoid}
+
+/* caixas */
+.caixa{border:1.5px solid var(--coal);padding:4mm 5mm;margin:0 0 4mm;break-inside:avoid}
+.caixa.escura{background:var(--coal);color:var(--whiterock);border-color:var(--coal)}
+.caixa.escura .micro{color:var(--khaki)}
+.caixa.areia{background:#F3EDE3;border-color:#E0D5C3}
+.caixa h4:first-child,.caixa p:first-child{margin-top:0}
+.caixa p:last-child,.caixa ul:last-child{margin-bottom:0}
+.lado{border-left:3px solid var(--barley);padding:1mm 0 1mm 4mm;margin:0 0 3.5mm;break-inside:avoid}
+.lado.choc{border-left-color:var(--chocolate)}
+
+/* tags de natureza da informação */
+.tag{display:inline-block;font:700 6.6pt/1 var(--body);letter-spacing:.14em;text-transform:uppercase;padding:1.2mm 1.6mm;border:1px solid currentColor;vertical-align:1px;margin-right:1.5mm;white-space:nowrap}
+.t-fato{color:var(--coal)}
+.t-inf{color:var(--chocolate)}
+.t-hip{color:#6F6A60}
+.t-rec{color:var(--coal);background:var(--akaroa);border-color:var(--akaroa)}
+
+/* veredito */
+.v{display:inline-block;font:700 7pt/1.25 var(--body);letter-spacing:.06em;text-transform:uppercase;padding:1mm 1.6mm;white-space:normal}
+.v-sim{background:var(--coal);color:var(--whiterock)}
+.v-parte{background:var(--akaroa);color:var(--coal)}
+.v-nao{background:#fff;color:var(--chocolate);border:1.2px solid var(--chocolate)}
+.v-pior{background:var(--chocolate);color:#fff}
+
+/* tabelas */
+table{width:100%;border-collapse:collapse;font-size:8.3pt;line-height:1.38;margin:0 0 4mm}
+thead th{font:700 6.9pt/1.3 var(--body);letter-spacing:.13em;text-transform:uppercase;text-align:left;color:var(--brown);padding:1.6mm 2mm 1.6mm 0;border-bottom:1.5px solid var(--coal);vertical-align:bottom}
+tbody td{padding:1.9mm 2mm 1.9mm 0;border-bottom:1px solid var(--linha);vertical-align:top}
+tbody tr{break-inside:avoid}
+td.n{font:800 10pt/1.2 var(--display);color:var(--barley);width:6mm}
+td b,th b{font-weight:700}
+.t-plano td:first-child{font-weight:600}
+.col-25{width:25%}.col-30{width:30%}.col-20{width:20%}.col-18{width:18%}.col-15{width:15%}.col-40{width:40%}.col-45{width:45%}.col-12{width:12%}
+
+/* números */
+.numeros{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;margin:0 0 4mm}
+.numero{border-top:2.5px solid var(--coal);padding-top:2mm}
+.numero b{display:block;font:900 20pt/1 var(--display);color:var(--coal)}
+.numero span{font-size:7.8pt;line-height:1.35;color:var(--brown)}
+.numero.alerta{border-top-color:var(--chocolate)}
+.numero.alerta b{color:var(--chocolate)}
+
+/* três movimentos */
+.tres{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin:0 0 4mm}
+.mov{border:1.5px solid var(--coal);padding:3.5mm 4mm;break-inside:avoid}
+.mov .quando{font:700 7pt/1 var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--chocolate)}
+.mov h4{font:800 12pt/1.1 var(--display);text-transform:uppercase;margin:2mm 0 1.6mm}
+.mov p{font-size:8.4pt;margin:0}
+
+/* evidências */
+.grade-ev{display:grid;grid-template-columns:1fr 1fr;gap:5mm 6mm}
+.ev{break-inside:avoid}
+.ev img{display:block;width:100%;border:1px solid #CFC5B5}
+.ev figcaption{font-size:7.9pt;line-height:1.4;color:var(--brown);padding-top:1.6mm}
+.ev figcaption b{color:var(--coal)}
+.ev-largo{grid-column:1/-1}
+.ev-mini img{max-height:86mm;width:auto;max-width:100%}
+
+/* lista numerada visual */
+.lista-n{list-style:none;padding:0;counter-reset:n}
+.lista-n>li{counter-increment:n;position:relative;padding-left:9mm;margin:0 0 2.8mm;break-inside:avoid}
+.lista-n>li::before{content:counter(n);position:absolute;left:0;top:-.5mm;font:900 13pt/1 var(--display);color:var(--barley)}
+
+/* princípios */
+.princ{display:grid;grid-template-columns:repeat(5,1fr);gap:3mm;margin:0 0 4mm}
+.pr{border-top:2.5px solid var(--barley);padding-top:2.2mm;break-inside:avoid}
+.pr b{display:block;font:800 11pt/1.05 var(--display);text-transform:uppercase;margin-bottom:1.4mm}
+.pr span{font-size:7.8pt;line-height:1.38;color:var(--brown);display:block}
+
+/* ideias */
+.ideias{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.ideia{border:1px solid #CFC5B5;padding:3.4mm 4mm;break-inside:avoid;background:#FBF8F3}
+.ideia .fato{font-size:7.8pt;color:var(--brown);margin-bottom:1.6mm}
+.ideia h4{margin:0 0 1.4mm;font:800 11.5pt/1.1 var(--display);text-transform:uppercase}
+.ideia p{font-size:8.4pt;margin:0 0 1.4mm}
+.ideia p:last-child{margin:0}
+
+/* mock: semana */
+.semana{display:grid;grid-template-columns:repeat(7,1fr);border:1.5px solid var(--coal);margin:2mm 0 1.6mm;break-inside:avoid}
+.dia{padding:2.4mm 2mm 2.6mm;border-right:1px solid rgba(36,34,36,.25);min-height:21mm}
+.dia:last-child{border-right:0}
+.dia b{display:block;font:900 13pt/1 var(--display)}
+.dia span{display:block;font:600 7pt/1.3 var(--body);margin-top:1.4mm}
+.dia small{display:block;font:500 6.6pt/1.3 var(--body);margin-top:.6mm;opacity:.85}
+.dia.aula{background:var(--chocolate);color:var(--whiterock)}
+.dia.loja{background:var(--coal);color:var(--whiterock)}
+.dia.loja span{color:var(--akaroa)}
+.dia.folga{background:#fff;color:var(--brown)}
+
+/* mock: quina */
+.quina-demo{display:grid;grid-template-columns:44mm 1fr;gap:6mm;align-items:center;margin:3mm 0 2mm;break-inside:avoid}
+.quina-demo svg{width:44mm;height:44mm;display:block}
+
+/* código */
+pre{font:400 7.2pt/1.38 var(--mono);background:#F6F2EB;border:1px solid #E0D5C3;padding:3.5mm 4mm;white-space:pre-wrap;word-break:break-word;margin:0 0 3mm}
+pre .c{color:#6F6A60}
+.bloco-cola{break-inside:auto}
+
+/* mensagens */
+.msg{background:#E7F5EC;border:1px solid #B9DFC6;border-radius:3mm 3mm 3mm .6mm;padding:3.6mm 4.2mm;font-size:8.8pt;line-height:1.5;margin:0 0 3.5mm;break-inside:avoid;max-width:150mm}
+.msg p{margin:0 0 1.8mm}
+.msg p:last-child{margin:0}
+.msg ol{margin:0 0 1.8mm;padding-left:1.2em}
+
+/* checklist */
+.check{list-style:none;padding:0}
+.check li{position:relative;padding-left:6.5mm;margin:0 0 2mm;break-inside:avoid}
+.check li::before{content:"";position:absolute;left:0;top:.8mm;width:3.2mm;height:3.2mm;border:1.3px solid var(--coal)}
+
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
+.duas>div{min-width:0}
+.fecho{margin-top:6mm;padding:5mm 6mm;background:var(--coal);color:var(--whiterock);break-inside:avoid}
+.fecho p{font:800 14pt/1.25 var(--display);text-transform:uppercase;letter-spacing:.01em;margin:0}
+.fecho small{display:block;margin-top:2mm;font:500 8pt/1.4 var(--body);color:var(--khaki);text-transform:none}
+.quebra{break-before:page}
+.refs .lista-n{display:grid;grid-template-columns:1fr 1fr;gap:0 6mm}
+.refs table{font-size:7.9pt;line-height:1.33}
+.refs tbody td{padding:1.2mm 2mm 1.2mm 0}
+.refs h3{margin-top:3mm}
+.apB tbody td{padding:1.3mm 2mm 1.3mm 0}
+.apB h3{margin-top:3.5mm}
+</style>
+</head>
+<body>
+
+<!-- ================= CAPA ================= -->
+<div class="capa">
+  <p class="kicker">Barbearia do Douglas · Mesquita, RJ</p>
+  <span class="quina-capa" aria-hidden="true"></span>
+  <h1>Plano de ajuste <span>da v3</span></h1>
+  <p class="sub">Avaliação do site testado no navegador, revisão da análise do Fable ponto a ponto e direção para uma v4 original, com o que pedir ao Douglas e onde buscar referências.</p>
+  <div class="meta">
+    <div><b>Data</b>15 de outubro de 2026<br>Documento de trabalho</div>
+    <div><b>Base</b>Zip da v3, BRIEFING, ESCOPO, análise estratégica de 11/10, prints do Instagram e testes no Chromium 141</div>
+  </div>
+</div>
+
+<!-- ================= 1. RESUMO ================= -->
+<section class="sec" style="break-before:auto">
+  <div class="sec-cab"><span class="sec-n">01</span><h2>Resumo em uma página</h2></div>
+
+  <div class="caixa escura">
+    <p class="micro">Veredito</p>
+    <p style="font-size:10.4pt;line-height:1.5;margin-top:1.5mm">A base técnica da v3 é boa e não precisa ser refeita. O que impede a publicação são <b>bugs que escondem informação</b> (os preços do /valores, a frase do Douglas no computador e o nome da barbearia no iPhone), <b>marcas de site inacabado</b> (o círculo vazio do emblema e dois textos “[a confirmar]”) e a falta de <b>qualquer foto real</b> do trabalho do Douglas. O que impede o site de ser original é outra coisa: ele foi montado com o repertório de “barbearia premium” que serve para qualquer barbearia do mundo, e quase nada nele vem da Rua Aurélia.</p>
+  </div>
+
+  <div class="numeros">
+    <div class="numero alerta"><b>0 de 17</b><span>valores aparecem na tabela do /valores (12 são preços em reais), do início ao fim da rolagem, no celular e no computador</span></div>
+    <div class="numero"><b>1,1 a 1,45 s</b><span>de LCP em 4G lento com processador 4x mais lento. Desempenho não é problema</span></div>
+    <div class="numero"><b>0,000 a 0,002</b><span>de CLS. As imagens já reservam espaço, ao contrário do que o Fable disse</span></div>
+    <div class="numero"><b>0 de 26</b><span>fotos de corte reais. Todas são as ilustrações que geramos por IA</span></div>
+  </div>
+
+  <h3>Os três movimentos</h3>
+  <div class="tres">
+    <div class="mov"><p class="quando">Hoje · 2 horas</p><h4>Consertar o que esconde informação</h4><p>Preços invisíveis no /valores, frase do Douglas incompleta no computador, nome da barbearia cortado no iPhone, menu pela metade, botão quebrado e os “[a confirmar]”. O texto pronto para o outro chat está no Apêndice A.</p></div>
+    <div class="mov"><p class="quando">Esta semana · 15 min</p><h4>Pedir o material real</h4><p>Fotos dos cortes (sem rosto e com autorização), uma foto do Douglas sem filtro e um áudio com as respostas que faltam. As duas mensagens estão prontas na seção 10.</p></div>
+    <div class="mov"><p class="quando">Com o material · v4</p><h4>Fazer o site ser dele</h4><p>Fotos reais no lugar das ilustrativas, a voz dele sem moldura de revista, um único sinal gráfico tirado do corte dele e movimento só onde explica alguma coisa.</p></div>
+  </div>
+
+  <div class="caixa areia">
+    <p class="micro">O que eu li e o que testei</p>
+    <ul style="margin-top:1.5mm">
+      <li><b>Li inteiros:</b> as 6 páginas HTML, o CSS (618 linhas), o JS (293 linhas), README, FOTOS.md, PESOS.md, vercel.json, BRIEFING, ESCOPO, PERGUNTAS-DOUGLAS e a análise estratégica (9 páginas).</li>
+      <li><b>Não li linha a linha:</b> o motion.js, que é a biblioteca Motion minificada numa linha só. Conferi a API que ela expõe (animate, stagger, inView, spring).</li>
+      <li><b>Testei no Chromium 141:</b> as 5 páginas em 9 larguras (320 a 1920 px), celular emulado (iPhone 13), navegação por teclado, “reduzir movimento”, 4G lento com CPU 4x e 3G com CPU 6x.</li>
+      <li><b>Não testei:</b> Safari num iPhone de verdade e o endereço publicado na Vercel. Usei a cópia do zip num servidor local sem compressão, então no ar os números tendem a ser um pouco melhores.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 2. FONTE DA VERDADE ================= -->
+<section class="sec">
+  <div class="sec-cab"><span class="sec-n">02</span><h2>O que é fato, de onde veio e o que falta</h2></div>
+  <p class="lead">Tudo que aparece no site precisa ter uma fonte. Esta tabela é a referência para a v4: se uma informação não está aqui, ela não entra no site.</p>
+  <table>
+    <thead><tr><th class="col-30">Informação</th><th class="col-25">Fonte</th><th>Situação</th></tr></thead>
+    <tbody>
+      <tr><td>Rua Aurélia, 895, Santa Terezinha, Mesquita, RJ, CEP 26553-495</td><td>Bio do Instagram</td><td><b>Confirmado</b></td></tr>
+      <tr><td>WhatsApp (21) 97954-4197</td><td>Bio, flyer e você</td><td><b>Confirmado.</b> A placa da porta, nas fotos do Google, mostra outro número: (21) 97196-6466</td></tr>
+      <tr><td>Terça a sábado, das 10h às 21h</td><td>Instagram e mini site</td><td><b>Confirmado</b></td></tr>
+      <tr><td>Feriados, das 10h às 16h</td><td>Flyer dele, confirmado por você</td><td><b>Confirmado.</b> Pendentes: Natal, Ano Novo e São Jorge (23/04, feriado estadual no RJ)</td></tr>
+      <tr><td>Ordem de chegada, sem agendar</td><td>Você, com o Douglas</td><td><b>Confirmado</b></td></tr>
+      <tr><td>Cartão ou Pix · tempo médio de 35 minutos · infantil a partir de 3 anos</td><td>Você, com o Douglas</td><td><b>Confirmado</b></td></tr>
+      <tr><td>Os 12 preços do flyer (o infantil não tem valor no flyer)</td><td>Flyer dele, confirmado por você</td><td><b>Confirmado</b></td></tr>
+      <tr><td>Alisamento, cacheados, tingimento de barba, pacote para noivos</td><td>Mini site youware (análise de 11/10)</td><td>Do perfil, sem confirmação direta. No site aparecem como “consulte”</td></tr>
+      <tr><td>Curso toda segunda, horário combinado</td><td>Você, com o Douglas</td><td><b>Confirmado</b></td></tr>
+      <tr><td>Aulas práticas, certificado, vagas limitadas</td><td>Flyer do curso e bio dele</td><td>Material dele. <b>Falta:</b> certificado de quê e quantas vagas por turma</td></tr>
+      <tr><td>“Você aprende na cadeira e já sai trabalhando.”</td><td>Aprovada pelo Douglas</td><td><b>Confirmado</b></td></tr>
+      <tr><td>Precisa ter experiência para o curso?</td><td>Ninguém respondeu</td><td><b>Pendente.</b> Hoje aparece “[a confirmar com o Douglas]” no /curso</td></tr>
+      <tr><td>História do Douglas</td><td>Áudio que ainda não veio</td><td><b>Pendente.</b> Hoje aparece “[a confirmar: história...]” no /sobre</td></tr>
+      <tr><td>Corte em troca de 1 kg de alimento, em 2023</td><td>Reel de 16/07/2023</td><td><b>Confirmado</b> pelo perfil</td></tr>
+      <tr><td>Fotos dos cortes</td><td>26 imagens geradas por IA no Canva</td><td>Ilustrativas. <b>Nenhuma foto real ainda</b></td></tr>
+      <tr><td>Retratos do Douglas (preto e branco e na cadeira)</td><td>Enviados por você</td><td>Têm cara de gerados por IA. O da fachada já saiu do site por mostrar poste e letreiro que não existem</td></tr>
+      <tr><td>“Está na porta da barbearia”, legenda da frase dele no /sobre</td><td>Um brief meu anterior, sem fonte registrada</td><td><b>Confirmar</b> com o Douglas antes de publicar</td></tr>
+    </tbody>
+  </table>
+
+  <h3>De onde vem cada frase de fé</h3>
+  <table>
+    <thead><tr><th class="col-40">Texto</th><th class="col-25">Onde está na v3</th><th>Origem</th></tr></thead>
+    <tbody>
+      <tr><td>“Que Deus abençoe cada cliente da família Barbearia do Douglas.”</td><td>Início e /sobre</td><td><span class="tag t-fato">Fato</span>Legenda dele em 01/10/2026</td></tr>
+      <tr><td>“Nunca foi sorte, sempre foi Deus.”</td><td>Rodapé das 6 páginas e /sobre</td><td><span class="tag t-fato">Fato</span>Frase dele, passada por você</td></tr>
+      <tr><td>Provérbios 22:6</td><td>Início</td><td><span class="tag t-fato">Fato</span>Ele usou no post do Dia dos Pais, 09/08/2026</td></tr>
+      <tr><td>Provérbios 22:29</td><td>/cortes</td><td>Sugestão minha neste chat, a seu pedido</td></tr>
+      <tr><td>Provérbios 27:17</td><td>/curso</td><td>Sugestão minha</td></tr>
+      <tr><td>Salmo 90:17</td><td>/sobre</td><td>Sugestão minha</td></tr>
+    </tbody>
+  </table>
+  <div class="lado choc"><p style="margin:0"><b>Leitura:</b> a fé é do Douglas e é verdadeira. O excesso veio de nós: 4 versículos, a bênção duas vezes e a frase repetida em todas as páginas. A correção é reduzir, e quem escolhe o que fica é ele.</p></div>
+</section>
+
+<!-- ================= 3. FABLE ================= -->
+<section class="sec">
+  <div class="sec-cab"><span class="sec-n">03</span><h2>A análise do Fable, ponto a ponto</h2></div>
+  <p class="lead">Testei cada afirmação em vez de aceitar. O Fable acertou o essencial e errou em detalhes que mudam a forma de corrigir. Os vereditos: <span class="v v-sim">Procede</span> <span class="v v-parte">Procede em parte</span> <span class="v v-nao">Não procede</span> <span class="v v-pior">Procede e é pior</span></p>
+  <table>
+    <thead><tr><th style="width:5mm">#</th><th class="col-25">O Fable disse</th><th>O que eu encontrei no código e no navegador</th><th class="col-15">Veredito</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td>Os preços podem ficar invisíveis se a pessoa rola rápido ou entra por âncora.</td><td>No /valores, <b>os 17 valores da tabela ficam invisíveis do início ao fim da rolagem</b>, no celular e no computador. Como a regra nunca encaixa, a velocidade da rolagem não muda nada. O JS marca cada lista com a classe <code>vista</code>, mas o CSS espera essa classe no bloco de fora (<code>.tabela-viva.vista</code>), então a regra nunca encaixa. Só quem ativou “reduzir movimento” vê os preços. Na home, nos meus testes, os preços apareceram rolando normalmente e pela âncora. Eles só somem numa captura de página inteira sem rolar, que é provavelmente o que o Fable viu.</td><td><span class="v v-pior">Procede e é pior</span></td></tr>
+      <tr><td class="n">2</td><td>A barra fixa cobre os links no fim de cada seção.</td><td>Conteúdo passando por baixo de uma barra fixa durante a rolagem é normal, e no fim da página o rodapé já reserva 104 px. Achei um caso real: navegando pelo teclado, o link “Ver todos os cortes” fica 10 px atrás da barra. A correção certa é <code>scroll-padding-bottom</code>. Padding no <code>main</code> não resolve.</td><td><span class="v v-parte">Procede em parte</span></td></tr>
+      <tr><td class="n">3</td><td>Placeholder publicado no /sobre.</td><td>Confirmado, e há mais dois: “[a confirmar com o Douglas]” na dúvida “Precisa ter experiência?” do /curso e o círculo tracejado no lugar do emblema, no topo e no rodapé de todas as páginas.</td><td><span class="v v-sim">Procede</span></td></tr>
+      <tr><td class="n">4</td><td>“Consultar valores no WhatsApp” quebra em 2 linhas.</td><td>Confirmado de 320 a 414 px, no card do curso da home e do /curso.</td><td><span class="v v-sim">Procede</span></td></tr>
+      <tr><td class="n">5</td><td>O menu do celular não ocupa a tela.</td><td>Confirmado: topo e menu juntos cobrem 57% da altura da tela, e o resto do hero, com a régua, aparece embaixo.</td><td><span class="v v-sim">Procede</span></td></tr>
+      <tr><td class="n">6</td><td>Fotos de banco com selo “Imagem ilustrativa”.</td><td>O efeito é esse, mas a origem é outra: são as 26 imagens que geramos por IA no Canva. O selo existe para não apresentar IA como trabalho dele. A solução é a mesma: fotos reais.</td><td><span class="v v-parte">Procede, origem errada</span></td></tr>
+      <tr><td class="n">7</td><td>Os retratos do Douglas têm cara de gerados.</td><td>Concordo. Eu já tinha apontado isso, e o próprio outro chat tirou a foto da fachada por mostrar poste e letreiro que não existem. Confirmar com o Douglas e trocar por foto real.</td><td><span class="v v-sim">Procede</span></td></tr>
+      <tr><td class="n">8</td><td>Seções numeradas 01 a 05 com filete e losango.</td><td>Concordo. É o esqueleto de landing editorial que se repete em todo site gerado.</td><td><span class="v v-sim">Procede</span></td></tr>
+      <tr><td class="n">9</td><td>Copy com ritmo de IA: “MUITA RÉGUA.”, “SEM AGENDAR.”</td><td>As palavras são dele: “Muita régua” é legenda do Instagram de 2023 e 2024, e a bênção é legenda de outubro. O que soa como modelo é a montagem: caixa alta, ponto final de efeito e bloco de citação. Manter as palavras e mudar a montagem.</td><td><span class="v v-parte">Procede em parte</span></td></tr>
+      <tr><td class="n">10</td><td>Dois versículos e a frase; se foi a IA preenchendo, fica forçado.</td><td>São 4 versículos, não 2. Provérbios 22:6 e a frase são dele; os outros três fui eu que sugeri. O volume pesa, a fé não. Ver a seção 02.</td><td><span class="v v-parte">Procede em parte</span></td></tr>
+      <tr><td class="n">11</td><td>A régua “NAVALHA 0 a 3” no hero não tem função.</td><td>Concordo: ocupa cerca de 50 px da primeira tela, contando o espaço acima dela, e fala a língua do barbeiro, não a do cliente.</td><td><span class="v v-sim">Procede</span></td></tr>
+      <tr><td class="n">12</td><td>Card do curso com cara de etiqueta e “Vagas limitadas” vazio.</td><td>“Vagas limitadas” e “certificado” vêm do flyer e da bio dele, não foram inventados. Mas sem número viram promessa genérica. A costura animada é decoração.</td><td><span class="v v-parte">Procede em parte</span></td></tr>
+      <tr><td class="n">13</td><td>Tabela AULAS / HORÁRIO / FORMATO / CERTIFICADO repetida.</td><td>Concordo. Na home basta uma linha.</td><td><span class="v v-sim">Procede</span></td></tr>
+      <tr><td class="n">14</td><td>Rodapé com frase em duas cores, padrão de template.</td><td>Isso é um bug. A frase aparece palavra por palavra conforme a rolagem; no computador a página termina antes e as últimas palavras ficam com 14% de opacidade nas 5 páginas: “sorte, sempre foi Deus.” em 1440x900 e “sempre foi Deus.” em 1280x720.</td><td><span class="v v-nao">Não procede: é bug</span></td></tr>
+      <tr><td class="n">15</td><td>Três famílias e 7 arquivos de fonte pesam no 4G.</td><td>Pesam pouco: 109 kB no total, com LCP de 1,1 a 1,45 s em 4G lento e CPU 4x. Tirar a Libre Caslon (27 kB) faz sentido quando as citações mudarem de estilo, não por desempenho.</td><td><span class="v v-parte">Procede pouco</span></td></tr>
+      <tr><td class="n">16</td><td>Imagens lazy sem width e height geram layout shift.</td><td>Todas as imagens têm width e height. CLS medido rolando a página inteira: de 0,000 a 0,002.</td><td><span class="v v-nao">Não procede</span></td></tr>
+      <tr><td class="n">17</td><td>O status depende do relógio, não considera feriado e aparece duplicado.</td><td>O código considera feriados (lista <code>FERIADOS</code>, que precisa ser atualizada todo ano) e calcula no fuso de São Paulo. A duplicação na home é real.</td><td><span class="v v-parte">Procede em parte</span></td></tr>
+      <tr><td class="n">18</td><td>Ordem de execução e mensagem ao Douglas.</td><td>Boa base. Ajustei a mensagem com autorização do cliente, sem rosto e sem tatuagem, e com as pendências do curso (seção 10).</td><td><span class="v v-sim">Procede</span></td></tr>
+      <tr><td class="n">19</td><td>O site vira case para vender o Site Estratégico.</td><td>Concordo, com uma condição: case precisa de resultado, e o GA4 ainda não está instalado. Sem medir cliques no WhatsApp, o case vira só um antes e depois.</td><td><span class="v v-sim">Procede</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================= 4. O QUE O FABLE NÃO VIU ================= -->
+<section class="sec">
+  <div class="sec-cab"><span class="sec-n">04</span><h2>O que o Fable não viu</h2></div>
+  <p class="lead">O Fable analisou só a 390 px. Testando em mais larguras, no computador e lendo o código, apareceram estes pontos.</p>
+  <ol class="lista-n">
+    <li><b>O nome da barbearia aparece cortado no celular.</b> De 320 a 390 px o nome não cabe. Em 390 px, a largura dos iPhones 12, 13 e 14, o topo mostra “BARBEARIA DO DOU…”; em 320 px, só metade do nome aparece. A causa é o círculo do emblema somado ao botão do WhatsApp e ao botão Menu. Só a partir de 414 px o nome cabe inteiro.</li>
+    <li><b>O círculo tracejado do emblema está em todas as páginas, e animado.</b> Ele se desenha ao carregar e gira quando o mouse passa. É um espaço vazio que chama atenção justamente para a falta do logo.</li>
+    <li><b>A frase do Douglas fica incompleta no computador.</b> É o ponto 14 da tabela anterior: “Nunca foi sorte, sempre foi Deus.” termina apagada no rodapé das 5 páginas.</li>
+    <li><b>O GA4 não está instalado.</b> Existe só o comentário “cole aqui o snippet do gtag”. Os eventos vão para o dataLayer, mas nada os lê. O ESCOPO exige GA4.</li>
+    <li><b>Sem domínio e sem imagem de compartilhamento.</b> <code>canonical</code> e <code>og:image</code> estão comentados e o sitemap aponta para “SEU-DOMINIO”. Um link mandado no WhatsApp sai sem imagem, e é por WhatsApp e Instagram que esse site vai circular.</li>
+    <li><b>Erros no console do computador.</b> A barra do celular, escondida no desktop, recebe animação mesmo assim, e o console registra erros “commitStyles”: 2 no início e 1 em /valores, /curso e /sobre, a 1440 px. No celular, nenhum.</li>
+    <li><b>O /cortes não mostra preço.</b> Quem vê o corte não vê quanto custa e precisa ir até o /valores.</li>
+    <li><b>“Ver mais no Instagram” leva a conteúdo antigo.</b> Pela análise de 11/10, o último post próprio de corte no feed é de setembro de 2024 e os fixados são de 2023.</li>
+    <li><b>Provérbios 22:29 termina com “não entre a plebe”.</b> Numa barbearia de bairro, isso pode soar como desprezo pelo próprio cliente. Fui eu que sugeri esse versículo; recomendo tirar.</li>
+    <li><b>Movimento demais.</b> São mais de 20 efeitos diferentes entre CSS e JS. Depois de carregar, a home tem 30 animações ativas e 4 em loop infinito: o brilho nos 3 botões do WhatsApp a cada 9 s e a costura do card do curso. Com a barbearia aberta, entra também o pulso do status.</li>
+    <li><b>Os 12 templates de post do ESCOPO ainda não começaram.</b> Eles dependem das mesmas fotos que o site.</li>
+  </ol>
+</section>
+
+<!-- ================= 5. EVIDÊNCIAS ================= -->
+<section class="sec">
+  <div class="sec-cab"><span class="sec-n">05</span><h2>Evidências</h2></div>
+  <p class="lead">Capturas feitas nos testes, com a v3 do zip.</p>
+  <div class="grade-ev">
+    <figure class="ev"><img src="img/ev-valores.jpg" alt=""><figcaption><b>/valores no iPhone (390 px), depois de rolar a página inteira.</b> 17 serviços listados, nenhum valor e nenhum pontilhado.</figcaption></figure>
+    <figure class="ev"><img src="img/ev-hero.jpg" alt=""><figcaption><b>Primeira tela no iPhone.</b> Nome cortado, círculo do emblema vazio e a régua ocupando espaço nobre. Nenhuma foto de corte na primeira tela.</figcaption></figure>
+    <figure class="ev ev-largo"><img src="img/ev-rodape.jpg" alt=""><figcaption><b>Rodapé no computador (1280x720), já no fim da página.</b> “Sempre foi Deus.” fica apagado e não há mais rolagem para completar a frase.</figcaption></figure>
+  </div>
+  <div class="grade-ev quebra" style="margin-top:0">
+    <figure class="ev ev-mini"><img src="img/ev-menu.jpg" alt=""><figcaption><b>Menu aberto.</b> Topo e menu cobrem 57% da tela e o hero continua aparecendo embaixo.</figcaption></figure>
+    <figure class="ev ev-mini"><img src="img/ev-cortes.jpg" alt=""><figcaption><b>/cortes.</b> Selo em cada imagem, inclusive nas miniaturas: 26 selos na página.</figcaption></figure>
+    <figure class="ev"><img src="img/ev-botao.jpg" alt=""><figcaption><b>Card do curso (390 px).</b> O botão quebra em duas linhas.</figcaption></figure>
+    <figure class="ev"><img src="img/ev-sobre.jpg" alt=""><figcaption><b>/sobre.</b> O texto provisório está publicado.</figcaption></figure>
+  </div>
+</section>
+
+<!-- ================= 6. POR QUE PARECE IA ================= -->
+<section class="sec">
+  <div class="sec-cab"><span class="sec-n">06</span><h2>Por que o site ainda parece feito por IA</h2></div>
+  <p class="lead">O Fable chamou isso de “essência IA”. Eu separo em três camadas, porque cada uma tem um remédio diferente e só uma delas se resolve com design.</p>
+  <table>
+    <thead><tr><th class="col-18">Camada</th><th>O que está acontecendo</th><th class="col-30">Remédio</th></tr></thead>
+    <tbody>
+      <tr><td><b>1. Conteúdo emprestado</b></td><td>26 imagens geradas, 2 retratos gerados, 3 versículos sugeridos por nós e dois textos provisórios. O visitante procura o trabalho do Douglas e encontra ilustração.</td><td>Material do Douglas. Nenhuma mudança de layout resolve essa camada.</td></tr>
+      <tr><td><b>2. Montagem de modelo</b></td><td>Índices numerados com filete e losango, títulos em caixa alta terminados em ponto, citações em serifa itálica com aspas gigantes, filetes de metal em degradê, moldura de couro com costura. Cada peça é bem feita; juntas, formam o repertório de “barbearia premium” que aparece em qualquer lugar do mundo.</td><td>Tirar a moldura e deixar o conteúdo dele organizar a página.</td></tr>
+      <tr><td><b>3. Efeito demais</b></td><td>Mais de 20 efeitos de movimento e 30 animações rodando na home. Quando tudo se mexe, nada se destaca, e dois desses efeitos escondem informação.</td><td>Ficar com três movimentos que explicam alguma coisa (seção 08).</td></tr>
+    </tbody>
+  </table>
+
+  <h3>O que está bom e fica</h3>
+  <div class="duas">
+    <div>
+      <ul class="check">
+        <li>Site estático, sem framework, com 5 páginas leves: LCP de 1,1 a 1,45 s em 4G lento.</li>
+        <li>Mensagem do WhatsApp diferente por assunto: barbearia, valores e curso.</li>
+        <li>Horário com feriados e “aberto agora” calculado no fuso certo.</li>
+        <li>Dados estruturados de barbearia (HairSalon) para o Google.</li>
+        <li>Imagens em WebP, em 3 larguras, com espaço reservado.</li>
+      </ul>
+    </div>
+    <div>
+      <ul class="check">
+        <li>Base de acessibilidade: atalho para o conteúdo, foco visível, contraste aprovado em todos os pares testados e respeito ao “reduzir movimento”.</li>
+        <li>Paleta C2 e Big Shoulders: funcionam e foram decisão sua.</li>
+        <li>Ícones em círculo dourado: vieram da referência que o próprio Douglas mandou.</li>
+        <li>O vocabulário de movimento tirado do ofício (degradê, navalha, régua). A ideia é boa; o problema foi a quantidade.</li>
+        <li>As duas portas, barbearia e curso.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 7. DIREÇÃO V4 ================= -->
+<section class="sec">
+  <div class="sec-cab"><span class="sec-n">07</span><h2>Direção para a v4: a barbearia da Rua Aurélia</h2></div>
+  <p class="lead">A v3 mostra uma barbearia premium. A v4 mostra a barbearia do Douglas: o corte dele, o preço dele, a semana dele e o jeito dele de falar. Neste projeto, a originalidade vem de material verdadeiro organizado com cuidado. Efeito ajuda pouco.</p>
+
+  <h3>Cinco princípios</h3>
+  <div class="princ">
+    <div class="pr"><b>Prova antes de promessa</b><span>A primeira tela mostra um corte real. Texto sobre qualidade só depois da foto.</span></div>
+    <div class="pr"><b>A voz dele, sem moldura</b><span>“Muita régua”, a bênção e a frase entram em texto corrido, sem caixa alta dramática e sem aspas gigantes.</span></div>
+    <div class="pr"><b>Um sinal gráfico só</b><span>A quina da régua, explicada abaixo. Saem losango, índice numerado, metal em degradê e costura.</span></div>
+    <div class="pr"><b>Informação nunca anima</b><span>Preço, horário, endereço e as frases dele aparecem prontos, sempre.</span></div>
+    <div class="pr"><b>Movimento só onde explica</b><span>Três movimentos ao todo, descritos na seção 08.</span></div>
+  </div>
+
+  <h3>O sinal gráfico: a quina</h3>
+  <div class="quina-demo">
+    <svg viewBox="0 0 120 120" aria-hidden="true">
+      <rect x="1" y="1" width="118" height="118" fill="#F3EDE3" stroke="#D9CFBF"/>
+      <path d="M22 98 V40 Q22 22 40 22 H98" fill="none" stroke="#C9BBA5" stroke-width="10" stroke-linecap="round"/>
+      <path d="M46 98 V62 H82 V46" fill="none" stroke="#242224" stroke-width="3.2" stroke-linejoin="miter"/>
+      <path d="M38 34 h0" stroke="#A68763"/>
+      <path d="M8 8 h22 M8 8 v22" stroke="#A68763" stroke-width="3"/>
+      <text x="60" y="114" text-anchor="middle" font-family="Hanken Grotesk" font-size="7.5" fill="#46413C">entrada na régua</text>
+    </svg>
+    <div>
+      <p><span class="tag t-inf">Inferência</span>Nos prints do Instagram que você mandou, quase todos os cortes do Douglas têm a entrada da têmpora fechada num ângulo reto. É a assinatura dele.</p>
+      <p>Na v4, esse ângulo vira o único detalhe gráfico do site: um canto em L de 2 px no topo esquerdo das fotos e nas divisões de seção. É simples de fazer, não pesa nada e nenhuma outra barbearia pode reivindicar, porque vem do corte dele.</p>
+      <p class="nota">Confirmar com o Douglas se ele se reconhece nisso antes de fechar.</p>
+    </div>
+  </div>
+
+  <h3>Ideias que saem de fatos, não de tendência</h3>
+  <div class="ideias">
+    <div class="ideia">
+      <p class="fato"><span class="tag t-fato">Fato</span>Fecha segunda e domingo. O curso é toda segunda.</p>
+      <h4>A semana da barbearia</h4>
+      <p>Uma faixa com os 7 dias resolve horário, curso e folga num olhar. Serve no início e no /curso.</p>
+      <div class="semana">
+        <div class="dia aula"><b>Seg</b><span>Aula</span><small>horário combinado</small></div>
+        <div class="dia loja"><b>Ter</b><span>Cortes</span><small>10h às 21h</small></div>
+        <div class="dia loja"><b>Qua</b><span>Cortes</span><small>10h às 21h</small></div>
+        <div class="dia loja"><b>Qui</b><span>Cortes</span><small>10h às 21h</small></div>
+        <div class="dia loja"><b>Sex</b><span>Cortes</span><small>10h às 21h</small></div>
+        <div class="dia loja"><b>Sáb</b><span>Cortes</span><small>10h às 21h</small></div>
+        <div class="dia folga"><b>Dom</b><span>Fechado</span></div>
+      </div>
+      <p>Frase candidata: <b>“Segunda a barbearia fecha pra cliente e abre pra aluno.”</b> <span class="nota">Confirmar se as aulas são na própria barbearia.</span></p>
+    </div>
+    <div class="ideia">
+      <p class="fato"><span class="tag t-inf">Inferência</span>Quase toda barbearia fecha o corte mostrando a nuca no espelho de mão. Confirmar se o Douglas faz assim.</p>
+      <h4>O espelho no /cortes</h4>
+      <p>A troca de vista que já existe (perfil, nuca, três quartos) vira esse gesto: “Toque para ver a nuca, como no espelho.” É o único movimento novo da v4, e ele explica alguma coisa.</p>
+    </div>
+    <div class="ideia">
+      <p class="fato"><span class="tag t-fato">Fato</span>O flyer dele já tem os 12 preços, com os nomes que ele mesmo escolheu.</p>
+      <h4>Tabela com cara de tabela de barbearia</h4>
+      <p>O /valores segue a mesma ordem e os mesmos nomes do flyer, com números grandes e sem animação. Quem já viu o flyer reconhece na hora.</p>
+    </div>
+    <div class="ideia">
+      <p class="fato"><span class="tag t-fato">Fato</span>É por ordem de chegada, sem agendamento.</p>
+      <h4>Quando vir</h4>
+      <p>Quem não agenda quer saber se vai esperar muito. Se o Douglas disser os dias e horários mais tranquilos, isso vira uma linha útil que nenhum site de modelo tem. E cada corte no /cortes mostra o preço ao lado do nome.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <h3 style="margin-top:0;padding-top:3mm">Página por página</h3>
+  <table>
+    <thead><tr><th class="col-12">Página</th><th class="col-40">Hoje, na v3</th><th>Na v4</th></tr></thead>
+    <tbody>
+      <tr><td><b>Topo</b></td><td>Círculo do emblema vazio e nome cortado no celular.</td><td>Só o nome, inteiro. O emblema entra quando chegar o arquivo.</td></tr>
+      <tr><td><b>Início</b></td><td>Título em caixa alta, régua de 0 a 3, nenhuma foto real na primeira tela.</td><td>Foto real de um corte, “Corte na régua, na Rua Aurélia”, preço a partir de, “sem agendar” e o botão do WhatsApp.</td></tr>
+      <tr><td><b>Seções do início</b></td><td>Índices 01 a 05, losangos, citação em serifa.</td><td>Títulos diretos: Cortes, Preços, Douglas, Curso, Endereço. A semana da barbearia no lugar da tabela do curso.</td></tr>
+      <tr><td><b>/cortes</b></td><td>26 selos, nenhum preço, versículo com “plebe”.</td><td>Fotos reais; selo só onde ainda for ilustração; preço ao lado do nome; o espelho na troca de vista.</td></tr>
+      <tr><td><b>/valores</b></td><td>Preços invisíveis e tabela animada.</td><td>Tabela parada, na ordem do flyer, com números grandes.</td></tr>
+      <tr><td><b>/curso</b></td><td>Especificação em tabela, costura animada e “[a confirmar]”.</td><td>A semana da barbearia, o que se aprende, quem pode fazer (com a resposta do Douglas) e foto real de aula, se houver.</td></tr>
+      <tr><td><b>/sobre</b></td><td>Texto provisório e três blocos de fé.</td><td>A história do áudio, em primeira pessoa e curta; a frase dele uma vez; o corte por alimento de 2023.</td></tr>
+      <tr><td><b>Rodapé</b></td><td>Frase animada que não termina no computador.</td><td>Endereço, telefone, horário, Instagram e a frase, parada.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Texto: as palavras ficam, a montagem muda</h3>
+  <p class="nota" style="margin-bottom:2.5mm">Rascunhos. A versão final sai do áudio do Douglas.</p>
+  <table>
+    <thead><tr><th class="col-40">Hoje</th><th>Proposta</th></tr></thead>
+    <tbody>
+      <tr><td>CORTE NA RÉGUA. (com a régua de 0 a 3 embaixo)</td><td>Corte na régua, na Rua Aurélia <span class="nota">(sem ponto final de efeito, com foto real ao lado)</span></td></tr>
+      <tr><td>MUITA RÉGUA. / Máquina, tesoura e navalha</td><td>Cortes <span class="nota">(título direto; “muita régua” vai para a legenda de uma foto, que é onde ele usa a expressão)</span></td></tr>
+      <tr><td>TABELA / Você já sai de casa sabendo quanto vai pagar.</td><td>Preços / O valor de cada serviço, igual ao da barbearia. Cartão ou Pix.</td></tr>
+      <tr><td>SEM AGENDAR. É SÓ CHEGAR.</td><td>Sem marcar horário: é por ordem de chegada, de terça a sábado, das 10h às 21h.</td></tr>
+      <tr><td>CURSO COM CERTIFICADO · VAGAS LIMITADAS</td><td>Toda segunda, aula na cadeira, com certificado. Turmas de [número que o Douglas disser].</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Decisões suas</h3>
+  <ul class="check">
+    <li><b>Os 3 versículos que eu sugeri.</b> Recomendo tirar e deixar o Douglas escolher um, para um lugar só.</li>
+    <li><b>Selo enquanto não houver foto real.</b> Recomendo selo só na foto grande de cada serviço e um aviso claro no topo do /cortes, em vez de 26 selos.</li>
+    <li><b>A régua “Navalha 0 a 3”.</b> Recomendo tirar do topo. Se quiser manter, ela pode explicar no /cortes a altura do degradê.</li>
+    <li><b>“Ver mais no Instagram” no /cortes.</b> Recomendo trocar por “Instagram do Douglas” no rodapé até ele voltar a postar cortes.</li>
+    <li><b>A palavra MESQUITA gigante.</b> Recomendo manter, parada. É orgulho de lugar, e lugar é o que diferencia.</li>
+    <li><b>Publicar antes das fotos reais ou esperar.</b> Recomendo deixar fora do Google até as fotos chegarem.</li>
+  </ul>
+</section>
+
+<!-- ================= 8. MOTION ================= -->
+<section class="sec">
+  <div class="sec-cab"><span class="sec-n">08</span><h2>Movimento: três ficam, o resto sai</h2></div>
+  <p class="lead">A v3 tem uma boa ideia de movimento: tirar os gestos do próprio ofício. O erro foi aplicar em tudo, inclusive em informação. A v4 fica com três.</p>
+  <table>
+    <thead><tr><th class="col-20">Movimento</th><th class="col-25">O que ele explica</th><th>Como</th><th class="col-20">Com “reduzir movimento”</th></tr></thead>
+    <tbody>
+      <tr><td><b>1. Disfarçado no título</b></td><td>O degradê, a assinatura do ofício</td><td>Máscara em degradê sobe de baixo para cima no título da primeira tela, uma vez só, em 0,7 s (hoje leva 1,5 s). Sem lâmina e sem marcador na régua.</td><td>Título aparece pronto</td></tr>
+      <tr><td><b>2. Espelho no /cortes</b></td><td>A troca de vista, como o espelho de mão no fim do corte</td><td>A foto troca em 0,25 s, com um leve deslocamento lateral, como quem vira a cabeça.</td><td>Troca direta</td></tr>
+      <tr><td><b>3. Resposta ao toque</b></td><td>Que o botão foi tocado e que o menu abriu</td><td>Botão afunda 3% ao toque. Menu abre em 0,2 s.</td><td>Sem animação</td></tr>
+    </tbody>
+  </table>
+
+  <div class="duas">
+    <div>
+      <h4>Saem</h4>
+      <ul>
+        <li>Brilho de navalha nos títulos</li>
+        <li>Brilho no botão do WhatsApp a cada 9 s</li>
+        <li>Pulso do “aberto agora”</li>
+        <li>Costura andando no card do curso</li>
+        <li>Círculo do emblema que se desenha e gira</li>
+        <li>Frases que aparecem palavra por palavra</li>
+        <li>Pontilhado e preço animados na tabela</li>
+        <li>MESQUITA andando de lado</li>
+        <li>Marcador correndo a régua</li>
+        <li>Cascata de entrada em todos os blocos e recorte das fotos ao rolar</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Regras para qualquer movimento novo</h4>
+      <ul>
+        <li>O estado inicial é sempre visível. A animação só acrescenta, nunca revela informação.</li>
+        <li>Nada em loop.</li>
+        <li>No máximo 0,7 s, e nada atrasa a leitura da primeira tela.</li>
+        <li>Tudo desliga com “reduzir movimento”. A v3 já faz isso bem.</li>
+        <li>Teste obrigatório: rolar rápido, entrar por âncora e capturar a página inteira sem rolar, no celular e no computador. Se algo some, está errado.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 9. REFERÊNCIAS ================= -->
+<section class="sec refs">
+  <div class="sec-cab"><span class="sec-n">09</span><h2>Onde buscar referências</h2></div>
+  <p class="lead">Referência de barbearia premium leva ao mesmo lugar da v3. Para chegar a um site original, a pesquisa precisa sair do nicho e entrar no mundo real do Douglas. Todas as fontes abaixo foram verificadas em 15/10/2026.</p>
+
+  <h3>Método</h3>
+  <ol class="lista-n">
+    <li><b>Monte três painéis:</b> Rua (o mundo real do Douglas), Tela (sites com boa tipografia e foto documental) e Movimento (interações que explicam alguma coisa).</li>
+    <li><b>No máximo 6 a 8 referências por painel.</b> Para cada uma, escreva uma linha: “o que eu pego dela”. Se a resposta for “é bonita”, descarte.</li>
+    <li><b>Não use outra barbearia como referência visual.</b> Elas se parecem entre si, e é disso que queremos fugir. Barbearia serve só como referência de conteúdo, do que elas informam.</li>
+    <li><b>Teste final:</b> se você tirar as referências da frente, a v4 continua fazendo sentido? Se não continua, ela está copiando. Composição, foto e texto de outro site nunca entram.</li>
+  </ol>
+
+  <table>
+    <thead><tr><th class="col-12">Painel</th><th class="col-25">Fonte</th><th class="col-25">Para que serve</th><th>Como buscar</th></tr></thead>
+    <tbody>
+      <tr><td><b>Rua</b></td><td><b>A própria Rua Aurélia</b></td><td>É a referência que nenhuma outra barbearia tem.</td><td>Fotografar fachada, placa, rua, comércio vizinho, a cadeira, a capa, o espelho e o que estiver escrito nas paredes, com autorização do Douglas.</td></tr>
+      <tr><td><b>Rua</b></td><td><b>Abridores de Letras de Pernambuco</b> (Blucher, 2013), de Fátima Finizola, Solange Coutinho e Damião Santana</td><td>Linguagem do letreiro popular brasileiro: números grandes, contraste forte, hierarquia de rua.</td><td>Amostra do livro no site da Blucher e a matéria da Revista Pesquisa FAPESP de 2026 sobre os abridores de letras.</td></tr>
+      <tr><td><b>Rua</b></td><td><b>“Temos letras”</b>, TCC de William Almeida (UFRJ, 2019)</td><td>Letreiros populares do Rio, registrados zona por zona.</td><td>PDF no repositório Pantheon da UFRJ.</td></tr>
+      <tr><td><b>Tela</b></td><td><b>Godly</b> (godly.website)</td><td>Tipografia, composição e ritmo.</td><td>Olhe a hierarquia e ignore os efeitos 3D e WebGL, comuns em site de agência e inúteis aqui.</td></tr>
+      <tr><td><b>Tela</b></td><td><b>SiteInspire</b> (siteinspire.com)</td><td>Sites filtrados por tipo, assunto e estilo.</td><td>Filtre por estilos tipográficos e sites de serviço.</td></tr>
+      <tr><td><b>Tela</b></td><td><b>Fonts In Use</b> (fontsinuse.com)</td><td>Tipografia aplicada no mundo real, organizada por fonte, formato e setor.</td><td>Procure sinalização, fachadas e fontes condensadas, como a Big Shoulders.</td></tr>
+      <tr><td><b>Tela</b></td><td><b>Pinterest</b></td><td>Banco grande, bom com termos em português.</td><td>“letreiro pintado à mão barbearia”, “tabela de preço barbearia parede”, “fachada barbearia de bairro”, “fotografia documental barbearia”.</td></tr>
+      <tr><td><b>Tela</b></td><td><b>Cosmos</b> (cosmos.so)</td><td>Onde montar os três painéis, sem anúncio.</td><td>Um painel por tema; compartilhe o link com o outro chat junto com o brief.</td></tr>
+      <tr><td><b>Movimento</b></td><td><b>motion.dev/examples</b></td><td>Exemplos oficiais da biblioteca que o site já usa.</td><td>Procure troca de imagem, transição de layout e estados de botão.</td></tr>
+      <tr><td><b>Movimento</b></td><td><b>scroll-driven-animations.style</b>, do Bramus (Google Chrome)</td><td>Demos de animação ligada à rolagem, em CSS puro.</td><td>Use para entender o limite: no site do Douglas, rolagem nunca deve controlar informação.</td></tr>
+      <tr><td><b>Movimento</b></td><td><b>Codrops</b> (tympanus.net/codrops)</td><td>Técnicas de revelação de imagem com clip-path.</td><td>Artigos “Double Image Hover Effects with Clip-Path Animations” e “Image Layer Animations with Clip-Path”, ambos de 2023.</td></tr>
+      <tr><td><b>Movimento</b></td><td><b>Emil Kowalski</b>, “The Magic of Clip Path”</td><td>Revelações leves, aceleradas pela placa de vídeo.</td><td>Base técnica para o movimento do espelho.</td></tr>
+      <tr><td><b>Movimento</b></td><td><b>Vídeos de barbeiro</b> no Instagram e no TikTok</td><td>O vocabulário de movimento do ofício: o degradê, a régua, o espelho de mão.</td><td>Busque “degradê câmera lenta”, “espelho barbeiro”, “régua navalha”. Anote gestos, não estilos de edição.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================= 10. MATERIAL DO DOUGLAS ================= -->
+<section class="sec">
+  <div class="sec-cab"><span class="sec-n">10</span><h2>O que pedir ao Douglas</h2></div>
+  <p class="lead">Duas mensagens. A primeira destrava o site; a segunda pode vir em áudio quando ele tiver tempo. O tom é o seu, para ele.</p>
+
+  <div class="duas">
+    <div>
+      <h4 style="margin-top:0">Protocolo de foto</h4>
+      <ul class="check">
+        <li>Sempre o mesmo cantinho, de dia, perto da porta ou da janela, sem flash.</li>
+        <li>3 fotos por cliente: de lado, de trás e meio de lado, com o celular na altura da cabeça.</li>
+        <li>Sem rosto e sem tatuagem aparecendo. Tatuagem identifica tanto quanto o rosto.</li>
+        <li>Perguntar ao cliente se pode usar a foto do cabelo no site. A resposta por WhatsApp fica como registro.</li>
+        <li>Criança: autorização do pai ou da mãe.</li>
+        <li>Meta: 8 cortes diferentes (disfarçado, máquina e tesoura, tesoura, nevou, reflexo, pigmentação, barba e um infantil).</li>
+        <li>Uma foto dele na barbearia, sem filtro, de preferência trabalhando.</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="margin-top:0">Mensagem 1 · fotos</h4>
+      <div class="msg">
+        <p>Fala, Douglas! O site tá quase pronto. Pra ficar com a sua cara de verdade, agora o mais importante é foto do seu trabalho. Pode ser no celular mesmo:</p>
+        <ol>
+          <li>Nos próximos cortes, tira 3 fotos de cada cliente: de lado, de trás e meio de lado. Sem mostrar o rosto e sem tatuagem aparecendo.</li>
+          <li>Sempre no mesmo cantinho, de dia, perto da porta, sem flash.</li>
+          <li>Antes, pergunta pro cliente se pode usar a foto do cabelo no site. Se for criança, pergunta pro pai ou pra mãe.</li>
+        </ol>
+        <p>Juntando uns 8 cortes diferentes (disfarçado, nevou, reflexo, pigmentação, barba e um infantil), já resolve. E me manda também uma foto sua aí na barbearia, sem filtro, de preferência trabalhando.</p>
+      </div>
+    </div>
+  </div>
+
+  <h4>Mensagem 2 · áudio</h4>
+  <div class="msg">
+    <p>Outra coisa: quando der, me manda um áudio respondendo do seu jeito, sem pressa.</p>
+    <ol>
+      <li>Como você começou a cortar?</li>
+      <li>O que você mais gosta de fazer na cadeira?</li>
+      <li>Sobre o curso: as aulas são aí na barbearia mesmo? Precisa já saber alguma coisa? Quantos alunos por vez? O certificado é de quê?</li>
+      <li>Qual frase sua você quer no site? E se fosse pra ter um versículo só, qual seria?</li>
+      <li>Qual dia e horário costuma ter menos fila?</li>
+      <li>Abre no Natal e no Ano Novo? E no dia de São Jorge?</li>
+    </ol>
+    <p>Ah, se tiver o arquivo da logo das navalhas com a coroa, me manda também. E vi que a placa da porta, nas fotos do Google, tá com outro número. Se não for mais o seu, vale trocar pra ninguém ligar no número errado.</p>
+  </div>
+  <p class="nota">Diferença para a mensagem do Fable: autorização do cliente, regra de rosto e tatuagem, criança com autorização dos pais e as pendências do curso, que travam o /curso.</p>
+</section>
+
+<!-- ================= 11. PLANO ================= -->
+<section class="sec">
+  <div class="sec-cab"><span class="sec-n">11</span><h2>Plano de execução</h2></div>
+  <table class="t-plano">
+    <thead><tr><th class="col-40">Tarefa</th><th class="col-25">Prazo estimado</th><th>Resultado esperado</th></tr></thead>
+    <tbody>
+      <tr><td>Colar o Apêndice A no outro chat e conferir com a mesma bateria de testes</td><td>Hoje, 1 bloco de 2 h</td><td>Nenhum preço, frase ou nome escondido; nenhum “[a confirmar]” no ar</td></tr>
+      <tr><td>Se você decidir esperar as fotos: deixar o site fora do Google até o lançamento</td><td>Hoje, 5 min (item 10 do Apêndice A)</td><td>Ninguém encontra a versão provisória numa busca</td></tr>
+      <tr><td>Mandar as duas mensagens ao Douglas</td><td>Hoje, 15 min</td><td>Fotos e áudio começam a chegar</td></tr>
+      <tr><td>Fechar as decisões da seção 07</td><td>Esta semana, 30 min</td><td>Direção da v4 travada antes de abrir o outro chat</td></tr>
+      <tr><td>Montar os três painéis de referência</td><td>Esta semana, 2 blocos de 1 h</td><td>De 18 a 24 referências, cada uma com “o que eu pego” anotado</td></tr>
+      <tr><td>Receber e organizar o material do Douglas</td><td>1 a 2 semanas, depende dele</td><td>8 cortes reais, 1 retrato e a história em áudio</td></tr>
+      <tr><td>Fazer a v4 com o material, seguindo as seções 07 e 08</td><td>2 a 3 blocos de 2 h, depois do material</td><td>Site com prova real, voz dele e três movimentos</td></tr>
+      <tr><td>Lançar: domínio, GA4, imagem de compartilhamento, Search Console, Google Meu Negócio e retirada do bloqueio de busca</td><td>1 bloco de 2 h</td><td>Site no ar, medindo cliques no WhatsApp</td></tr>
+      <tr><td>Os 12 templates de post do ESCOPO, com as mesmas fotos</td><td>Logo depois do lançamento</td><td>Instagram com prova recente, alinhado ao site</td></tr>
+      <tr><td>Ler os números</td><td>30 dias depois do lançamento</td><td>Cliques no WhatsApp por página, para o case do Site Estratégico</td></tr>
+    </tbody>
+  </table>
+  <p class="nota">Seu tempo estimado até o lançamento: de 11 a 13 horas, em blocos de 1 a 2 horas. O prazo real depende de quando o Douglas mandar o material.</p>
+
+  <h3>Critérios de pronto para lançar</h3>
+  <ul class="check">
+    <li>Nenhum preço, horário, endereço ou frase depende de animação para aparecer. Testado rolando rápido, por âncora e em captura de página inteira, no celular e no computador.</li>
+    <li>Nenhum texto provisório e nenhum espaço vazio de logo.</li>
+    <li>Nome completo no topo, de 320 a 1920 px.</li>
+    <li>Pelo menos 6 serviços com foto real, sem rosto e com autorização.</li>
+    <li>Todo fato do site está na tabela da seção 02.</li>
+    <li>LCP de até 2,5 s em 4G lento, CLS de até 0,1, nenhuma rolagem lateral e nenhum erro no console.</li>
+    <li>GA4 registrando o clique no WhatsApp e prévia do link com imagem no WhatsApp.</li>
+    <li>O Douglas viu e aprovou.</li>
+  </ul>
+</section>
+
+<!-- ================= 12. ESCOPO ================= -->
+<section class="sec">
+  <div class="sec-cab"><span class="sec-n">12</span><h2>Escopo e dinheiro</h2></div>
+  <div class="lado"><p style="margin:0"><span class="tag t-fato">Fato</span>O ESCOPO vendeu um site de página única e 12 templates de post. Até aqui foram 3 versões de um site de 5 páginas, 26 imagens, paleta e wireframes. Os 12 templates ainda não começaram. O acordo comercial (valor, uso como portfólio, depoimento e rodadas de ajuste) continua em aberto no BRIEFING.</p></div>
+  <div class="lado choc"><p style="margin:0"><span class="tag t-inf">Inferência</span>Você já está entregando bem acima do vendido. Isso pode ser uma boa decisão se o objetivo for portfólio, mas precisa ser uma decisão, e não um acúmulo de rodadas.</p></div>
+  <div class="lado"><p style="margin:0 0 1.6mm"><span class="tag t-rec">Recomendação</span></p>
+    <ol style="margin:0">
+      <li>Defina um teto de horas até o lançamento: as 11 a 13 horas do plano.</li>
+      <li>Antes do lançamento, feche com o Douglas o uso como portfólio, o depoimento escrito e, se for o caso, o valor.</li>
+      <li>Trate as fotos como o centro do projeto. Elas resolvem o site, o Instagram e os 12 templates de uma vez. Mais uma rodada de design sem foto real não muda o resultado.</li>
+    </ol>
+  </div>
+  <div class="fecho">
+    <p>Se o Douglas mandar as fotos amanhã, o que mais falta para você chamar esse site de entregue?</p>
+    <small>Vale responder antes de abrir a v4. Se a resposta for “nada”, o plano acima é suficiente. Se aparecer uma lista nova, ela é escopo novo.</small>
+  </div>
+</section>
+
+<!-- ================= APÊNDICE A ================= -->
+<section class="sec">
+  <div class="sec-cab"><span class="sec-n">A</span><h2>Texto para colar no outro chat</h2></div>
+  <p class="lead">Só os consertos de hoje. O item 10 só vale se você decidir esperar as fotos (seção 07).</p>
+<pre class="bloco-cola">TAREFA: corrigir os bugs da v3 sem mudar layout, cores, fontes ou textos além do
+que está pedido aqui. Se algo não estiver claro, pergunte antes de mudar.
+
+1. PREÇOS INVISÍVEIS (o mais grave)
+Em /valores os 17 valores da tabela nunca aparecem: o JS coloca a classe .vista em cada &lt;dl&gt;,
+mas o CSS exige .tabela-viva.vista no bloco de fora. Corrija tirando a animação:
+• site.css: apague o bloco "complemento · tabela" (as 4 regras com .tabela-viva).
+• site.js: apague o bloco "tabela: pontilhado se desenha e o preço aparece no fim"
+  (o IntersectionObserver ioTab e o setProperty --d).
+Regra daqui em diante: preço, horário, endereço e frases nunca dependem de
+animação para aparecer.
+
+2. FRASE DO RODAPÉ INCOMPLETA NO COMPUTADOR
+.frase-viva liga a opacidade de cada palavra à rolagem. No desktop a página acaba
+antes e as últimas palavras ("sempre foi Deus.") ficam com 14% de opacidade.
+Tire o efeito:
+• site.css: apague a regra ".js-motion .frase-viva .palavra{...}".
+• site.js: dentro de rola(), apague só o laço frases.forEach que calcula --p.
+  O trecho do MESQUITA (parallax) fica como está.
+
+3. NOME CORTADO NO TOPO E CÍRCULO DO EMBLEMA
+O nome aparece cortado no topo de 320 a 390 px. Remova o .marca-slot (círculo
+tracejado) do topo e do rodapé nas 6 páginas até chegar o arquivo do emblema.
+Sem o círculo, o nome ganha 44 px e cabe inteiro a partir de 375 px.
+Abaixo de 375 px, deixe o nome quebrar em 2 linhas (white-space:normal;
+line-height:.95) em vez de usar reticências.
+
+4. MENU DO CELULAR
+Topo e menu cobrem só 57% da tela e o hero aparece embaixo. Faça o menu ocupar a
+altura toda abaixo do topo (position:fixed; top:var(--topo); bottom:0;
+overflow:auto) e trave a rolagem da página enquanto ele estiver aberto.
+
+5. BOTÃO DO CURSO
+"Consultar valores no WhatsApp" quebra em 2 linhas de 320 a 414 px no card do
+curso (início e /curso). Troque por "Consultar valores", igual à barra.
+
+6. TEXTOS PROVISÓRIOS
+• /sobre: esconda o parágrafo "[a confirmar: história do Douglas...]".
+• /curso: esconda a dúvida "Precisa ter experiência?" até o Douglas responder.
+
+7. STATUS DUPLICADO NO INÍCIO
+Mantenha "Aberto agora / Fechado agora" só no hero. Tire o [data-status] do
+título "Horário" da seção "Onde e quando" do início.
+
+8. FOCO ATRÁS DA BARRA
+Em telas menores que 900 px:
+html{scroll-padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+
+9. ERRO NO CONSOLE DO COMPUTADOR
+Em aplicaBarra(), só chame M.animate(barra,...) se
+getComputedStyle(barra).display !== 'none'.
+
+10. FORA DO GOOGLE ATÉ O LANÇAMENTO
+No vercel.json, no bloco "source": "/(.*)", acrescente o cabeçalho
+X-Robots-Tag: noindex. Ele sai no dia do lançamento.
+
+CONFERÊNCIA ANTES DE ME DEVOLVER
+Rode a mesma bateria de antes (320 a 1920 px e "reduzir movimento") e confirme:
+• os 17 valores do /valores visíveis, sem depender de rolagem;
+• a frase do rodapé inteira no desktop, em 1440x900 e 1280x720, no fim da página;
+• nome completo no topo em 320, 360, 375 e 390 px;
+• nenhum "[a confirmar" no texto visível de nenhuma página;
+• nenhum erro no console.
+Me devolva a lista do que mudou, arquivo por arquivo.</pre>
+</section>
+
+<!-- ================= APÊNDICE B ================= -->
+<section class="sec apB">
+  <div class="sec-cab"><span class="sec-n">B</span><h2>Números dos testes e fontes</h2></div>
+  <h3 style="margin-top:0">Desempenho medido (iPhone 13 emulado, servidor local sem compressão)</h3>
+  <table>
+    <thead><tr><th class="col-15">Página</th><th>LCP em 4G lento + CPU 4x</th><th>LCP em 3G + CPU 6x</th><th>CLS (pior caso)</th><th>Peso inicial (4G)</th><th>Peso após rolar tudo (4G)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Início</b></td><td>1,31 s</td><td>2,36 s</td><td>0,002</td><td>479 kB</td><td>586 kB</td></tr>
+      <tr><td><b>/cortes</b></td><td>1,45 s</td><td>2,68 s</td><td>0,001</td><td>619 kB</td><td>1,8 MB</td></tr>
+      <tr><td><b>/valores</b></td><td>1,10 s</td><td>2,18 s</td><td>0,001</td><td>174 kB</td><td>174 kB</td></tr>
+      <tr><td><b>/curso</b></td><td>1,12 s</td><td>2,21 s</td><td>0,001</td><td>250 kB</td><td>250 kB</td></tr>
+      <tr><td><b>/sobre</b></td><td>1,29 s</td><td>2,64 s</td><td>0,001</td><td>231 kB</td><td>231 kB</td></tr>
+    </tbody>
+  </table>
+  <p class="nota">4G lento: 1,6 Mbps e 150 ms de latência. 3G: 750 kbps e 300 ms. Na Vercel, HTML, CSS e JS saem comprimidos (de 60 a 80 kB a menos por página, medido com gzip), então os números reais tendem a ser melhores. Em 3G, /cortes e /sobre ficam um pouco acima de 2,5 s, o que é aceitável para essa rede.</p>
+
+  <h3>Outros resultados</h3>
+  <table>
+    <thead><tr><th class="col-30">Teste</th><th>Resultado</th></tr></thead>
+    <tbody>
+      <tr><td>Rolagem lateral, 5 páginas, 9 larguras</td><td>Nenhuma, de 320 a 1920 px</td></tr>
+      <tr><td>Nome no topo</td><td>Cortado em 320 (87 de 168 px visíveis), 360, 375 e 390 px. Inteiro a partir de 414 px</td></tr>
+      <tr><td>Preços com “reduzir movimento”</td><td>Os 17 aparecem. Sem essa opção, nenhum aparece no /valores</td></tr>
+      <tr><td>Frase do rodapé no fim da página</td><td>Inteira no celular. No computador, 4 das 6 palavras ficam em 14% de opacidade em 1440x900, e 3 em 1280x720</td></tr>
+      <tr><td>Erros no console, rolando a página inteira</td><td>1440 px: 2 no início, 1 em /valores, /curso e /sobre, nenhum em /cortes. 390 px: nenhum</td></tr>
+      <tr><td>Contraste de texto (WCAG)</td><td>Todos os pares usados passam no nível AA. O menor é Barley sobre Coal, com 4,71:1</td></tr>
+      <tr><td>Nós no DOM</td><td>Início 443, /cortes 320, /valores 247, /curso 193, /sobre 156</td></tr>
+      <tr><td>Animações ativas após carregar</td><td>Início 30 (4 infinitas), /cortes 18, /curso 11, /sobre 10, /valores 8. Medido à noite, com a barbearia fechada</td></tr>
+      <tr><td>Fontes</td><td>7 arquivos, 109 kB no total; a Libre Caslon sozinha tem 27 kB</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Fontes consultadas</h3>
+  <ul class="nota" style="font-size:7.9pt">
+    <li>Do projeto: BRIEFING.md, ESCOPO.md, PERGUNTAS-DOUGLAS.md, “Análise estratégica: Barbearia do Douglas” (11/10/2026), prints do Instagram enviados por você e o zip da v3.</li>
+    <li>Abridores de letras de Pernambuco, amostra (Blucher): storage.blucher.com.br/book/pdf_preview/9788521207986-amostra.pdf</li>
+    <li>Revista Pesquisa FAPESP, “Abridores de letras inserem sotaque próprio no espaço público”: revistapesquisa.fapesp.br/abridores-de-letras-inserem-sotaque-proprio-no-espaco-publico/</li>
+    <li>“Temos letras”, William Almeida, UFRJ: pantheon.ufrj.br/bitstream/11422/11062/1/WRCAlmeida.pdf</li>
+    <li>Godly: godly.website · SiteInspire: siteinspire.com · Fonts In Use: fontsinuse.com · Cosmos: cosmos.so</li>
+    <li>Motion: motion.dev/examples · Bramus: scroll-driven-animations.style</li>
+    <li>Codrops: tympanus.net/codrops/2023/03/01/double-image-hover-effects-with-clip-path-animations/ e tympanus.net/codrops/2023/10/31/image-layer-animations-with-clip-path</li>
+    <li>Emil Kowalski, “The Magic of Clip Path”: emilkowal.ski/ui/the-magic-of-clip-path</li>
+  </ul>
+</section>
+
+</body>
+</html>
