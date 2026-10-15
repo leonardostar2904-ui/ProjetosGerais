@@ -9,6 +9,7 @@ Repositorio dos projetos de cliente. Um diretorio por cliente.
 | Barbearia do Douglas | Site + 12 templates de post | Em briefing |
 | Pereira & Martins Contabilidade | Site + branding basico + 15 templates de post | Nao iniciado |
 | BiblioMaison | Site + 7 templates de post | Nao iniciado |
+| Unique Energy | Ideia de projeto: atendimento com IA + CRM + ClickUp (PDF) | Em prospeccao |
 
 ## Estrutura por cliente
 

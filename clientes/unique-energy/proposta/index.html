@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>ICARUS × Unique Energy · Do primeiro contato ao projeto em operação</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+  /* ============ TOKENS · ICARUS BRAND OS 1.0 ============ */
+  :root{
+    --papel:#EAE6DF; --azul:#0D1B2A; --egeu:#4F6F8E; --brasa:#B8391F;
+    --maricario:#8EB1C7; --aurora:#E7AE8E; --nevoa:#DAD5CC; --grafite:#4A4E55; --ouro:#BBAA7D;
+    --alta:'Archivo'; --filo:'Instrument Serif'; --mono:'IBM Plex Mono'; --texto:'Archivo';
+  }
+  @page{ size:A4; margin:0; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ background:#fff; }
+  body{ font-family:var(--texto); font-weight:400; color:var(--azul); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+  .page{ position:relative; width:210mm; height:297mm; overflow:hidden; background:var(--papel); color:var(--azul);
+         padding:16mm 14mm 25mm 14mm; display:flex; flex-direction:column; page-break-after:always; break-after:page; }
+  .page:last-child{ page-break-after:auto; break-after:auto; }
+  .page.azul{ background:var(--azul); color:var(--papel); }
+  .page.azul::after{ content:""; position:absolute; inset:0; background:url('assets/grao.png') repeat; opacity:.35; pointer-events:none; }
+  .page > *{ position:relative; z-index:1; }
+
+  /* ============ MOLDURA EDITORIAL ============ */
+  .cab{ position:absolute; top:10mm; left:14mm; right:14mm; display:flex; justify-content:space-between;
+        font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--grafite);
+        padding-bottom:7px; border-bottom:1px solid var(--azul); }
+  .azul .cab{ color:var(--nevoa); border-bottom-color:rgba(234,230,223,.5); }
+  .rod{ position:absolute; bottom:9mm; left:14mm; right:14mm; display:flex; justify-content:space-between; align-items:flex-end;
+        font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--grafite); }
+  .azul .rod{ color:var(--nevoa); }
+
+  /* ============ VOZES ============ */
+  .alta{ font-family:var(--alta); font-stretch:75%; font-weight:800; text-transform:uppercase; letter-spacing:-.01em; line-height:.9; }
+  .alta .pt{ color:var(--egeu); }
+  .azul .alta .pt{ color:var(--aurora); }
+  .filo{ font-family:var(--filo); font-weight:400; line-height:1.15; }
+  .filo i, .filo em{ font-style:italic; }
+  .mono{ font-family:var(--mono); font-weight:400; }
+  .rotulo{ font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--grafite); }
+  .azul .rotulo{ color:var(--nevoa); }
+  .rotulo.acento{ color:var(--egeu); }
+  .azul .rotulo.acento{ color:var(--aurora); }
+  h2.alta{ font-size:58px; margin:8px 0 8px; }
+  h3{ font-family:var(--texto); font-weight:600; font-size:18px; line-height:1.25; }
+  p{ font-size:14px; line-height:1.55; }
+  p + p{ margin-top:8px; }
+  .lead{ font-family:var(--filo); font-size:27px; line-height:1.18; max-width:155mm; margin:6px 0 0; }
+  .fundo, .secao.fundo{ margin-top:auto; }
+  .secao{ margin-top:22px; }
+  .filete{ height:1px; background:var(--azul); margin:14px 0 10px; }
+  .azul .filete{ background:rgba(234,230,223,.4); }
+  .num{ font-family:var(--mono); font-weight:500; font-size:11px; color:var(--egeu); letter-spacing:.06em; }
+  .azul .num{ color:var(--aurora); }
+  .sec{ font-size:13px; line-height:1.55; color:var(--grafite); }
+  .azul .sec{ color:var(--nevoa); }
+
+  /* ============ CAPA ============ */
+  .capa{ padding:16mm 16mm 16mm; display:flex; flex-direction:column; }
+  .lockup{ display:flex; align-items:center; gap:22px; }
+  .lockup .ic{ height:128px; }
+  .lockup .sep{ width:1px; height:96px; background:rgba(234,230,223,.45); }
+  .lockup .un{ height:40px; }
+  .capa .meio{ flex:1; display:flex; flex-direction:column; justify-content:flex-end; padding-bottom:18mm; }
+  .capa .titulo{ font-size:92px; max-width:170mm; margin:14px 0 22px; }
+  .capa .sub{ font-size:30px; max-width:160mm; }
+  .capa .base{ display:flex; justify-content:space-between; align-items:flex-end; }
+  .capa .base .l{ font-size:13px; line-height:1.5; }
+  .capa .base .l b{ font-weight:600; }
+
+  /* ============ CARDS E GRIDS ============ */
+  .g3{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .g2{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+  .card{ border:1px solid var(--azul); padding:16px 16px 18px; }
+  .azul .card{ border-color:rgba(234,230,223,.35); }
+  .card .num{ display:block; margin-bottom:10px; }
+  .card h3{ margin-bottom:7px; }
+  .card p{ font-size:13.5px; }
+  .bloco{ border-top:1px solid var(--azul); padding-top:10px; }
+  .azul .bloco{ border-top-color:rgba(234,230,223,.4); }
+  .bloco .rotulo{ display:block; margin-bottom:6px; }
+
+  /* ============ TABELA · LEITURA ============ */
+  table{ width:100%; border-collapse:collapse; }
+  th{ text-align:left; font-family:var(--mono); font-weight:400; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase;
+      color:var(--grafite); padding:0 10px 7px 0; border-bottom:1px solid var(--azul); }
+  td{ vertical-align:top; padding:13px 10px 13px 0; border-bottom:1px solid var(--nevoa); font-size:13.5px; line-height:1.5; }
+  td.n{ width:34px; padding-right:0; }
+  td.a{ width:92px; font-weight:600; }
+  td.q{ width:255px; }
+  td.p{ color:var(--grafite); }
+
+  /* ============ FLUXO · AZUL ============ */
+  .fluxo{ position:relative; margin-top:16px; }
+  .fluxo .linha{ position:absolute; left:19px; top:14px; bottom:26px; width:1px; background:var(--aurora); }
+  .etapa{ position:relative; display:grid; grid-template-columns:40px 1fr 122px; gap:0 14px; padding:0 0 34px; }
+  .etapa .pin{ width:11px; height:11px; border:1px solid var(--aurora); background:var(--azul); margin-left:14px; margin-top:4px; }
+  .etapa.on .pin{ background:var(--aurora); }
+  .etapa h3{ color:var(--papel); font-size:17px; margin-bottom:5px; }
+  .etapa h3 span{ font-family:var(--mono); font-weight:500; font-size:11px; color:var(--aurora); margin-right:8px; letter-spacing:.06em; }
+  .etapa p{ font-size:14px; color:var(--nevoa); max-width:120mm; }
+  .chip{ justify-self:end; align-self:start; font-family:var(--mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+         border:1px solid rgba(234,230,223,.5); color:var(--papel); padding:4px 8px; white-space:nowrap; }
+  .volta{ display:flex; align-items:center; gap:14px; margin-top:4px; }
+  .volta .seta{ width:40px; display:flex; justify-content:center; }
+  .volta .seta div{ width:11px; height:11px; border:1px solid var(--aurora); transform:rotate(45deg); margin-left:0; }
+  .volta p{ font-family:var(--filo); font-size:24px; line-height:1.15; color:var(--papel); }
+
+  /* ============ CAMADAS ============ */
+  .camadas{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:14px; }
+  .camada{ border:1px solid var(--azul); padding:14px 15px 15px; }
+  .camada .top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+  .camada h3{ font-size:16px; }
+  .camada .tag{ font-family:var(--mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--egeu); white-space:nowrap; }
+  .camada dl{ font-size:13px; line-height:1.5; }
+  .camada dt{ font-family:var(--mono); font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--grafite); margin-top:6px; }
+  .camada dd{ margin:0; }
+  .camada.cheia{ grid-column:1 / -1; }
+
+  /* ============ LINHA DO TEMPO ============ */
+  .tl{ margin-top:14px; }
+  .tl .ev{ display:grid; grid-template-columns:122px 1fr; gap:14px; padding:14px 0; border-top:1px solid var(--nevoa); }
+  .tl .ev:first-child{ border-top:1px solid var(--azul); }
+  .tl .ev .q{ font-family:var(--mono); font-weight:500; font-size:11px; letter-spacing:.06em; color:var(--egeu); line-height:1.5; }
+  .tl .ev .q small{ display:block; font-weight:400; color:var(--grafite); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; margin-top:2px; }
+  .tl .ev p{ font-size:13.5px; }
+
+  /* ============ PRÓXIMO PASSO ============ */
+  .passos{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:14px; }
+  .contato{ display:flex; justify-content:space-between; align-items:flex-end; gap:20px; }
+  .contato .ic{ height:84px; }
+  .contato .dados{ font-family:var(--mono); font-size:11px; line-height:1.8; letter-spacing:.04em; }
+  .contato .dados b{ font-family:var(--texto); font-weight:600; font-size:14px; letter-spacing:0; display:block; }
+
+  /* ============ CONTRACAPA ============ */
+  .fim{ display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+  .fim .lockup{ gap:30px; }
+  .fim .tese{ font-size:38px; margin-top:54px; max-width:150mm; }
+  .fim .rod{ justify-content:center; gap:26px; }
+</style>
+</head>
+<body>
+
+<!-- ================= 01 · CAPA ================= -->
+<section class="page azul capa">
+  <div class="lockup">
+    <img class="ic" src="assets/icarus-assinatura-dourado.png" alt="ICARUS">
+    <div class="sep"></div>
+    <img class="un" src="assets/unique-horizontal-escuro.png" alt="Unique Energy">
+  </div>
+  <div class="meio">
+    <div class="rotulo acento">Ideia de projeto · Outubro 2026 · Para conversar</div>
+    <h1 class="alta titulo">Do primeiro contato ao projeto em operação<span class="pt">.</span></h1>
+    <p class="filo sub">Um fluxo só. <i>Uma ideia para conversar, não um escopo fechado.</i></p>
+  </div>
+  <div class="base">
+    <div class="l">Preparado por <b>Kleber Leonardo</b>, ICARUS<br>para <b>Marcos</b>, Unique Energy</div>
+    <div class="mono rotulo">15.10.2026 · v1</div>
+  </div>
+</section>
+
+<!-- ================= 02 · POUSO ================= -->
+<section class="page">
+  <div class="cab"><span>ICARUS · Unique Energy · Ideia de projeto</span><span>01 · Pouso</span></div>
+
+  <div class="rotulo acento">01 · Pouso · De onde partimos</div>
+  <h2 class="alta">De onde partimos<span class="pt">.</span></h2>
+  <p class="lead">Em fevereiro, desenhei um primeiro fluxo de CRM para a Unique. <i>Esta é a mesma ideia, revista e ampliada.</i></p>
+
+  <div class="secao">
+    <div class="rotulo" style="margin-bottom:10px">O que lembro da conversa</div>
+    <div class="g3">
+      <div class="card">
+        <span class="num">01</span>
+        <h3>ClickUp como centro da operação</h3>
+        <p>Ampliar o uso do ClickUp para além do que já rodava, com o projeto inteiro visível num lugar só.</p>
+      </div>
+      <div class="card">
+        <span class="num">02</span>
+        <h3>CRM conectado ao ClickUp</h3>
+        <p>O que chega no CRM se conecta ao ClickUp. Quando um cliente fecha, o projeto nasce pronto para ser acompanhado.</p>
+      </div>
+      <div class="card">
+        <span class="num">03</span>
+        <h3>Atendimento com IA</h3>
+        <p>Um atendimento inteligente que integrasse tudo, do primeiro contato ao acompanhamento do projeto.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="secao" style="margin-top:26px">
+    <div class="g3">
+      <div class="bloco">
+        <span class="rotulo">O que este documento é</span>
+        <p class="sec">Um mapa para conversar. Parte disso pode já existir. Parte pode ter mudado. Nenhuma etapa aqui é obrigatória e nenhuma ferramenta está decidida.</p>
+      </div>
+      <div class="bloco">
+        <span class="rotulo">O que ele não é</span>
+        <p class="sec">Não é escopo, não é cronograma e não é orçamento. Esses três saem da conversa, depois de entender o que já roda hoje.</p>
+      </div>
+      <div class="bloco">
+        <span class="rotulo">Onde o fluxo começa</span>
+        <p class="sec">Site, tráfego e redes seguem como estão. O fluxo começa no momento em que alguém chama a Unique e termina com o projeto acompanhado até a operação.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="secao fundo">
+    <div class="filete"></div>
+    <p class="filo" style="font-size:28px;max-width:150mm">Primeiro entender o que existe. <i>Depois desenhar o que falta.</i></p>
+  </div>
+
+  <div class="rod"><span>Para quem volta.</span><span>02 / 08</span></div>
+</section>
+
+<!-- ================= 03 · LEITURA ================= -->
+<section class="page">
+  <div class="cab"><span>ICARUS · Unique Energy · Ideia de projeto</span><span>02 · Leitura</span></div>
+
+  <div class="rotulo acento">02 · Leitura · O que precisa ser confirmado</div>
+  <h2 class="alta">Antes de desenhar, entender<span class="pt">.</span></h2>
+  <p class="lead">Seis perguntas. <i>As respostas definem o tamanho certo do fluxo.</i></p>
+
+  <div class="secao">
+    <table>
+      <thead><tr><th></th><th>Área</th><th>Pergunta</th><th>Por que importa</th></tr></thead>
+      <tbody>
+        <tr><td class="n num">01</td><td class="a">Entrada</td><td class="q">Por onde os contatos chegam hoje? WhatsApp, formulário, Instagram, indicação?</td><td class="p">Define onde a IA entra e o que precisa ser centralizado.</td></tr>
+        <tr><td class="n num">02</td><td class="a">Qualificação</td><td class="q">Quem responde, em quanto tempo, e como separa investidor, empresa e assinatura?</td><td class="p">Cada perfil tem um caminho e uma pergunta de abertura diferente.</td></tr>
+        <tr><td class="n num">03</td><td class="a">CRM</td><td class="q">Qual CRM está em uso, quais etapas existem e o que acontece quando um negócio fecha?</td><td class="p">É a ponte entre comercial e projeto. Se ela já existe, a gente só ajusta.</td></tr>
+        <tr><td class="n num">04</td><td class="a">ClickUp</td><td class="q">O que roda no ClickUp hoje? Só projetos, ou também comercial? Existe template por tipo de usina?</td><td class="p">Evita refazer o que funciona e mostra onde a automação encaixa.</td></tr>
+        <tr><td class="n num">05</td><td class="a">Projeto</td><td class="q">Quais são as fases reais de uma usina, da análise à operação, e quem responde por cada uma?</td><td class="p">O template do projeto precisa espelhar a obra, e não o contrário.</td></tr>
+        <tr><td class="n num">06</td><td class="a">Cliente</td><td class="q">Como o cliente acompanha o andamento hoje? Por onde recebe status e documentos?</td><td class="p">Acompanhamento claro reduz cobrança, retrabalho e ansiedade do investidor.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="secao fundo">
+    <div class="g2">
+      <div class="bloco">
+        <span class="rotulo">Como respondemos</span>
+        <p class="sec">Dá para responder em 30 minutos, por aqui ou numa ligação. Não precisa preparar nada. O que você não souber de cabeça, a gente confirma depois.</p>
+      </div>
+      <div class="bloco">
+        <span class="rotulo">O que sai disso</span>
+        <p class="sec">Um desenho do fluxo com as ferramentas que vocês já usam, as fases reais do projeto e a ordem de entrada de cada camada.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="rod"><span>Para quem volta.</span><span>03 / 08</span></div>
+</section>
+
+<!-- ================= 04 · VOO · O FLUXO ================= -->
+<section class="page azul">
+  <div class="cab"><span>ICARUS · Unique Energy · Ideia de projeto</span><span>03 · Voo</span></div>
+
+  <div class="rotulo acento">03 · Voo · O fluxo proposto</div>
+  <h2 class="alta">Um fluxo só<span class="pt">.</span></h2>
+  <p class="lead">Do contato ao projeto entregue, <i>sem trocar de sistema no meio do caminho.</i></p>
+
+  <div class="fluxo">
+    <div class="linha"></div>
+
+    <div class="etapa on">
+      <div class="pin"></div>
+      <div><h3><span>01</span>Entrada</h3><p>Todo contato num lugar só. WhatsApp, formulário, Instagram e indicação caem no mesmo fluxo, com origem registrada.</p></div>
+      <div class="chip">Canais atuais</div>
+    </div>
+
+    <div class="etapa on">
+      <div class="pin"></div>
+      <div><h3><span>02</span>Atendimento com IA</h3><p>Responde em minutos, a qualquer hora, com o tom da Unique. Entende se é investidor, empresa ou assinatura. Coleta o básico, agenda e passa para uma pessoa quando o assunto pede.</p></div>
+      <div class="chip">Agente no WhatsApp</div>
+    </div>
+
+    <div class="etapa on">
+      <div class="pin"></div>
+      <div><h3><span>03</span>CRM</h3><p>O contato nasce qualificado e na etapa certa, com o resumo da conversa. Follow-up automático até a decisão. Nada fica sem resposta.</p></div>
+      <div class="chip">CRM atual</div>
+    </div>
+
+    <div class="etapa on">
+      <div class="pin"></div>
+      <div><h3><span>04</span>Fechamento</h3><p>Proposta aceita vira gatilho. O projeto é criado no ClickUp a partir de um template, com fases, prazos, responsáveis e dependências já no lugar.</p></div>
+      <div class="chip">CRM para ClickUp</div>
+    </div>
+
+    <div class="etapa on">
+      <div class="pin"></div>
+      <div><h3><span>05</span>Projeto</h3><p>O time conduz a obra no ClickUp. Riscos, marcos e dependências visíveis. Você enxerga o portfólio inteiro numa tela, sem pedir relatório.</p></div>
+      <div class="chip">ClickUp</div>
+    </div>
+
+    <div class="etapa on">
+      <div class="pin"></div>
+      <div><h3><span>06</span>Cliente e operação</h3><p>O cliente recebe status e documentos a cada marco, sem precisar cobrar. Depois da entrega, o relacionamento continua: operação, assinatura e indicação.</p></div>
+      <div class="chip">WhatsApp e e-mail</div>
+    </div>
+
+    <div class="volta">
+      <div class="seta"><div></div></div>
+      <p>Quem foi bem atendido indica. <i>E o fluxo recomeça.</i></p>
+    </div>
+  </div>
+
+  <div class="rod"><span>Para quem volta.</span><span>04 / 08</span></div>
+</section>
+
+<!-- ================= 05 · VOO · CAMADAS ================= -->
+<section class="page">
+  <div class="cab"><span>ICARUS · Unique Energy · Ideia de projeto</span><span>03 · Voo</span></div>
+
+  <div class="rotulo acento">03 · Voo · As camadas</div>
+  <h2 class="alta">Cada camada entra quando faz sentido<span class="pt">.</span></h2>
+  <p class="lead">Ordem sugerida, não obrigatória. <i>Cada uma funciona sozinha e ganha força com as outras.</i></p>
+
+  <div class="camadas">
+    <div class="camada">
+      <div class="top"><h3><span class="num">01 </span>Atendimento com IA</h3><span class="tag">Começa sozinha</span></div>
+      <dl>
+        <dt>Resolve</dt><dd>Tempo de resposta, qualificação do contato, agendamento.</dd>
+        <dt>Depende de</dt><dd>Um número de WhatsApp da Unique e o roteiro de perguntas por perfil.</dd>
+      </dl>
+    </div>
+    <div class="camada">
+      <div class="top"><h3><span class="num">02 </span>CRM conectado</h3><span class="tag">Começa sozinha</span></div>
+      <dl>
+        <dt>Resolve</dt><dd>Contato perdido, follow-up manual, falta de visão do funil.</dd>
+        <dt>Depende de</dt><dd>O CRM atual e as etapas comerciais definidas.</dd>
+      </dl>
+    </div>
+    <div class="camada">
+      <div class="top"><h3><span class="num">03 </span>Ponte CRM para ClickUp</h3><span class="tag">Pede a 02</span></div>
+      <dl>
+        <dt>Resolve</dt><dd>Projeto que nasce atrasado, cadastro em dobro, informação que se perde na passagem.</dd>
+        <dt>Depende de</dt><dd>A camada 02 e um template de projeto por tipo de usina.</dd>
+      </dl>
+    </div>
+    <div class="camada">
+      <div class="top"><h3><span class="num">04 </span>Acompanhamento do cliente</h3><span class="tag">Pede a 03</span></div>
+      <dl>
+        <dt>Resolve</dt><dd>Cliente cobrando status, canal disperso, documento que ninguém acha.</dd>
+        <dt>Depende de</dt><dd>A camada 03 e os marcos definidos do projeto.</dd>
+      </dl>
+    </div>
+    <div class="camada cheia">
+      <div class="top"><h3><span class="num">05 </span>Painel e governança</h3><span class="tag">Começa com o que existe</span></div>
+      <dl>
+        <dt>Resolve</dt><dd>Decisão sem dado e reunião sem pauta. Funil comercial e portfólio de projetos na mesma tela, com reunião de ajuste em ritmo combinado.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="secao fundo">
+    <div class="bloco">
+      <span class="rotulo">Como isso conversa com o que a ICARUS oferece</span>
+      <p class="sec">As camadas 01, 02 e 05 são a Operação Comercial Inteligente: agente de IA no WhatsApp, integração com CRM, qualificação automática, agenda, follow-up, transferência para atendimento humano e painel com histórico. As camadas 03 e 04 são a ampliação pensada para a Unique: o projeto acompanhado no ClickUp e o cliente informado até a operação.</p>
+    </div>
+  </div>
+
+  <div class="rod"><span>Para quem volta.</span><span>05 / 08</span></div>
+</section>
+
+<!-- ================= 06 · VOO · NA PRÁTICA ================= -->
+<section class="page">
+  <div class="cab"><span>ICARUS · Unique Energy · Ideia de projeto</span><span>03 · Voo</span></div>
+
+  <div class="rotulo acento">03 · Voo · Na prática</div>
+  <h2 class="alta">Um contato, do começo ao fim<span class="pt">.</span></h2>
+  <p class="lead">Cenário ilustrativo. <i>Os nomes, as fases e os prazos reais saem da conversa.</i></p>
+
+  <div class="tl">
+    <div class="ev">
+      <div class="q">Dia 01 · 22:14<small>Entrada e IA</small></div>
+      <p>Um diretor de operações de uma rede de varejo chama no WhatsApp depois de ver um post. O agente responde em segundos, entende o perfil, pergunta sobre consumo e unidades e oferece um horário para conversar.</p>
+    </div>
+    <div class="ev">
+      <div class="q">Dia 02 · 09:00<small>CRM</small></div>
+      <p>O contato já está no CRM, na etapa Diagnóstico agendado, com o resumo da conversa. O time da Unique recebe o aviso e entra na reunião sabendo o contexto.</p>
+    </div>
+    <div class="ev">
+      <div class="q">Dia 09<small>Proposta</small></div>
+      <p>Proposta enviada pelo CRM. Follow-up automático em intervalos combinados, com o tom da Unique, até a resposta. Se o cliente responder, uma pessoa assume.</p>
+    </div>
+    <div class="ev">
+      <div class="q">Dia 15<small>Fechamento</small></div>
+      <p>Proposta aceita. O negócio muda de etapa e o ClickUp cria o projeto a partir do template: fases, prazos, responsáveis e dependências. Ninguém cadastra nada de novo.</p>
+    </div>
+    <div class="ev">
+      <div class="q">Dia 16 em diante<small>Projeto</small></div>
+      <p>O cliente recebe o status por WhatsApp a cada marco: análise, projeto, homologação, obra, comissionamento. Sem precisar perguntar. O time trabalha no ClickUp e o cliente vê o resultado.</p>
+    </div>
+    <div class="ev">
+      <div class="q">Entrega + 30<small>Operação</small></div>
+      <p>Usina em operação. O fluxo pergunta como foi a experiência, entrega os documentos finais e abre espaço para indicação.</p>
+    </div>
+  </div>
+
+  <div class="secao fundo">
+    <div class="filete"></div>
+    <p class="filo" style="font-size:26px;max-width:160mm">Cada passo acima é um ponto de ajuste. <i>O que a Unique já faz bem continua. O fluxo só tira o que estava no caminho.</i></p>
+  </div>
+
+  <div class="rod"><span>Para quem volta.</span><span>06 / 08</span></div>
+</section>
+
+<!-- ================= 07 · PRÓXIMO PASSO ================= -->
+<section class="page">
+  <div class="cab"><span>ICARUS · Unique Energy · Ideia de projeto</span><span>04 · Próximo passo</span></div>
+
+  <div class="rotulo acento">04 · Próximo passo</div>
+  <h2 class="alta">O próximo passo é pequeno<span class="pt">.</span></h2>
+  <p class="lead">Uma conversa, um desenho ajustado, <i>uma camada para começar.</i></p>
+
+  <div class="passos">
+    <div class="card">
+      <span class="num">01</span>
+      <h3>Conversa de 30 minutos</h3>
+      <p>Por aqui ou numa ligação. Respondemos as seis perguntas da Leitura e eu entendo o que já roda hoje.</p>
+    </div>
+    <div class="card">
+      <span class="num">02</span>
+      <h3>Fluxo ajustado</h3>
+      <p>Em até uma semana depois da conversa, volto com o desenho real: ferramentas, fases do projeto e o que já existe.</p>
+    </div>
+    <div class="card">
+      <span class="num">03</span>
+      <h3>Começar por uma camada</h3>
+      <p>Escolhemos a que resolve a dor mais cara hoje. Pouco feito vale mais que muito planejado.</p>
+    </div>
+  </div>
+
+  <div class="secao" style="margin-top:26px">
+    <div class="g2">
+      <div class="bloco">
+        <span class="rotulo">Sobre valores</span>
+        <p class="sec">Sem número neste documento, de propósito. O investimento depende do que já existe e de por onde começamos. Esse ajuste a gente faz na conversa, com o fluxo na mesa.</p>
+      </div>
+      <div class="bloco">
+        <span class="rotulo">Por que eu</span>
+        <p class="sec">Você acompanhou de perto como eu conduzo projeto. ClickUp, automação e integração fazem parte do meu dia a dia. A diferença agora é o foco: só a operação da Unique.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="secao fundo">
+    <div class="filete"></div>
+    <div class="contato">
+      <div class="dados">
+        <b>Kleber Leonardo</b>
+        ICARUS · instagram.com/voe.icarus<br>
+        WhatsApp: o mesmo desta conversa
+      </div>
+      <img class="ic" src="assets/icarus-assinatura-azul.png" alt="ICARUS">
+    </div>
+  </div>
+
+  <div class="rod"><span>Para quem volta.</span><span>07 / 08</span></div>
+</section>
+
+<!-- ================= 08 · CONTRACAPA ================= -->
+<section class="page azul fim">
+  <div class="lockup">
+    <img class="ic" src="assets/icarus-assinatura-dourado.png" alt="ICARUS" style="height:150px">
+    <div class="sep"></div>
+    <img class="un" src="assets/unique-horizontal-escuro.png" alt="Unique Energy" style="height:40px">
+  </div>
+  <p class="filo tese">Pouco feito vale mais <i>que muito planejado.</i></p>
+  <div class="rod"><span>ICARUS × Unique Energy</span><span>Ideia de projeto · 15.10.2026</span><span>@voe.icarus</span></div>
+</section>
+
+</body>
+</html>
