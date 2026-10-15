@@ -21,7 +21,9 @@
 
 `proposta/ICARUS-x-Unique-Energy-Fluxo-de-Operacao.pdf` (8 paginas, A4, marca ICARUS com as duas logos).
 
-Estrutura: Capa, 01 Pouso (de onde partimos), 02 Leitura (seis perguntas a confirmar), 03 Voo (fluxo em seis etapas, cinco camadas, cenario ilustrativo), 04 Proximo passo, Contracapa.
+Estrutura (v2, escrita com o cliente como leitor): Capa, 01 O que a Unique ganha, 02 O que mapeamos (seis pontos, sem licao de casa), 03 O fluxo (seis etapas), 04 As camadas (cinco, ordem livre), 05 Na pratica (cenario ilustrativo), 06 Proximo passo (levantamento de 20 min, desenho final em ate uma semana, primeira camada no ar), Contracapa.
+
+Regras de texto: uma chamada so (levantamento de 20 minutos), sem a palavra "conversa", sem "passo pequeno" e sem "pouco feito vale mais que muito planejado". A ideia de comeco aparece como primeiro degrau: comeca simples, vai longe.
 
 Relacao com a oferta: camadas 01, 02 e 05 = Operacao Comercial Inteligente. Camadas 03 e 04 = ampliacao especifica para a Unique (ponte CRM para ClickUp e acompanhamento do cliente).
 
@@ -37,5 +39,5 @@ Fonte do documento: `proposta/index.html`. Fontes (Archivo, Instrument Serif, IB
 ## Proximos passos
 
 1. Enviar o PDF para o Marcos pelo WhatsApp.
-2. Conversa de 30 minutos para responder as seis perguntas da Leitura.
+2. Levantamento de 20 minutos por chamada para mapear os seis pontos.
 3. Voltar com o fluxo ajustado ao que ja existe e escolher uma camada para comecar.
