@@ -1,0 +1,12 @@
+Pasta opcional para artes próprias.
+
+Por padrão a Fila de Disparo desenha a arte sozinha, com os textos e as cores do config.js.
+Se quiser usar imagens feitas por você (Canva, Figma, Photoshop):
+
+1. Salve aqui cada imagem em 1080 x 1350, em JPG, com o nome <nicho>-<modelo>.jpg
+   Exemplos: clinica-A.jpg, clinica-B.jpg, clinica-C.jpg, studio-A.jpg ...
+   (<nicho> é a chave do nicho no config.js; <modelo> é A, B ou C)
+2. No config.js, em arte, troque imagensProprias para true.
+3. Ajuste arte.posicaoNome: x, y, tamanho e largura de onde o "PARA: NOME" é escrito.
+4. Abra a página por um servidor local (veja o guia). Aberta direto do arquivo,
+   o navegador bloqueia a cópia da imagem.

@@ -1,0 +1,1493 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fila de Disparo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,400..800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Layout: bancada de trabalho. Fila à esquerda, um lead por vez à direita, passos em sequência.
+   Cores da interface: troque os valores abaixo. Cores da arte e da proposta: config.js (marca). */
+:root{
+  --papel:#F4F3EF; --surface:#ECEAE4; --surface-2:#E3E0D8; --ink:#1E2329; --ink-2:#5A6069;
+  --line:rgba(30,35,41,.18); --line-strong:#1E2329; --accent:#1D4ED8; --cool:#475569; --on-ink:#F4F3EF; --ok:#15803D;
+  --f-display:'Archivo','Arial Narrow',sans-serif; --f-text:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-serif:'Instrument Serif',Georgia,'Times New Roman',serif; --f-mono:'IBM Plex Mono',ui-monospace,'Courier New',monospace;
+  --navh:46px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --papel:#14171B; --surface:#1B1F24; --surface-2:#23282E; --ink:#E8E6E1; --ink-2:#A9ADB3;
+  --line:rgba(232,230,225,.18); --line-strong:#E8E6E1; --accent:#8AB4FF; --cool:#A5B4C8; --on-ink:#14171B; --ok:#7BD3A0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --papel:#14171B; --surface:#1B1F24; --surface-2:#23282E; --ink:#E8E6E1; --ink-2:#A9ADB3;
+  --line:rgba(232,230,225,.18); --line-strong:#E8E6E1; --accent:#8AB4FF; --cool:#A5B4C8; --on-ink:#14171B; --ok:#7BD3A0; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(var(--navh) + 14px)}
+body{margin:0;padding-top:var(--navh);background:var(--papel);color:var(--ink);font-family:var(--f-text);font-size:15.5px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+h1,h2,h3,p{margin:0}
+a{color:inherit}
+img{max-width:100%}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:18px 56px;display:flex;flex-direction:column;gap:18px}
+.mono{font-family:var(--f-mono);font-weight:500;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase}
+.muted{color:var(--ink-2)}
+
+.aviso{border:2px solid var(--accent);padding:10px 14px;font-size:14.5px}
+.aviso b{color:var(--accent)}
+.top{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;justify-content:space-between;border-bottom:2px solid var(--line-strong);padding-bottom:14px}
+.top h1{font-family:var(--f-display);font-stretch:62%;font-weight:800;text-transform:uppercase;font-size:clamp(34px,7vw,56px);line-height:.86;letter-spacing:-.01em;text-wrap:balance}
+.top .sub{font-family:var(--f-serif);font-size:20px;line-height:1.15;margin-top:8px}
+.meters{display:flex;gap:22px;flex-wrap:wrap}
+.meter{min-width:150px;display:flex;flex-direction:column;gap:5px}
+.meter b{font-family:var(--f-mono);font-weight:500;font-size:26px;line-height:1}
+.meter b small{font-size:14px;color:var(--ink-2)}
+.bar{height:6px;background:var(--surface-2);border:1px solid var(--line)}
+.bar i{display:block;height:100%;width:0;background:var(--ink);transition:width .3s}
+.meter.warn b{color:var(--accent)} .meter.warn .bar i{background:var(--accent)}
+
+.bench{display:grid;grid-template-columns:minmax(0,330px) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:880px){.bench{grid-template-columns:minmax(0,1fr)} .queue{order:2}}
+
+.queue{display:flex;flex-direction:column;gap:10px;min-width:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{font:500 11.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;background:none;color:var(--ink);border:1px solid var(--line);padding:7px 10px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.oferta{border:1px solid var(--line-strong);background:var(--surface);padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:14.5px}
+.oferta .mono{color:var(--ink-2)} .oferta b{font-weight:600} .oferta p{margin:0}
+.oferta .tier{font:500 10.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line-strong);padding:2px 6px;margin-left:6px}
+.pace{font-size:13px;color:var(--ink-2)} .pace.warn{color:var(--accent);font-weight:600}
+.filters select{font-size:14px;padding:7px 8px}
+.filters .count{grid-column:1 / -1;font-size:12.5px;color:var(--ink-2)}
+.chip.dono{border-color:var(--ink);color:var(--ink)}
+.review{display:flex;flex-direction:column;gap:10px;border-top:2px solid var(--line-strong);padding-top:16px}
+.rev-head{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:flex-end;justify-content:space-between}
+.rev-head h2{font-family:var(--f-display);font-stretch:62%;font-weight:800;text-transform:uppercase;font-size:clamp(26px,5vw,36px);line-height:.9;margin-top:4px}
+.rev-head .field{min-width:220px}
+.rev-sum{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px}
+.rev-sum b{font-family:var(--f-mono);font-weight:500;font-size:17px;margin-right:5px}
+.review table{min-width:1060px}
+.btn:disabled{opacity:.5;cursor:default}
+.review td{vertical-align:middle}
+.review td select{font-size:13.5px;padding:6px 8px;min-width:170px}
+.review .nm{background:none;border:0;padding:0;font:600 14.5px var(--f-text);color:var(--ink);cursor:pointer;text-align:left;text-decoration:underline;text-underline-offset:3px}
+.review .mt{display:block;font-size:12.5px;color:var(--ink-2)}
+.review .when{font-family:var(--f-mono);font-size:12.5px;white-space:nowrap}
+.review tr.done td{opacity:.62}
+.review tr.done td:last-child{opacity:1}
+.review .btn{padding:6px 10px;font-size:13px}
+#msg2{min-height:190px}
+.list{display:flex;flex-direction:column;border-top:1px solid var(--line-strong);max-height:640px;overflow-y:auto}
+@media (max-width:880px){.list{max-height:none}}
+.item{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:8px;align-items:baseline;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 6px;color:var(--ink);font:inherit;cursor:pointer;width:100%}
+.item:hover{background:var(--surface)}
+.item[aria-current="true"]{background:var(--surface-2)}
+.item .n{font-family:var(--f-mono);font-size:12px;color:var(--ink-2)}
+.item .nm{font-weight:600;overflow-wrap:anywhere}
+.item .mt{display:block;font-size:12.5px;color:var(--ink-2);font-weight:400}
+.chip{font:500 10.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);padding:2px 6px;white-space:nowrap}
+.chip.dor{border-color:var(--accent);color:var(--accent)}
+.chip.enviado{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.chip.respondeu{border-color:var(--ok);color:var(--ok)}
+.chip.pulado{color:var(--ink-2)}
+.empty{padding:22px 6px;color:var(--ink-2);border-bottom:1px solid var(--line)}
+
+.work{min-width:0;display:flex;flex-direction:column;gap:16px}
+.lead-head{display:flex;flex-direction:column;gap:6px}
+.lead-head h2{font-family:var(--f-serif);font-weight:400;font-size:clamp(30px,5vw,44px);line-height:1;text-wrap:balance;overflow-wrap:anywhere}
+.facts{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;color:var(--ink-2)}
+.facts a{text-underline-offset:3px}
+.signal{border-left:3px solid var(--accent);padding:4px 0 4px 12px;font-size:14.5px}
+.signal b{display:block;color:var(--accent)}
+.cols{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:640px){.cols{grid-template-columns:minmax(0,1fr)}}
+.art{display:flex;flex-direction:column;gap:10px;min-width:0}
+.art img{display:block;width:100%;max-width:100%;height:auto;aspect-ratio:4/5;background:var(--surface-2);border:1px solid var(--line)}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--line-strong)}
+.seg button{font:500 11.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;background:none;color:var(--ink);border:0;border-right:1px solid var(--line-strong);padding:8px 4px;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--on-ink)}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+input[type=text],input[type=tel],select,textarea{font:400 15px var(--f-text);color:var(--ink);background:var(--surface);border:1px solid var(--line);padding:9px 10px;width:100%;min-width:0;border-radius:0}
+textarea{min-height:210px;resize:vertical;line-height:1.5}
+.steps{display:flex;flex-direction:column;gap:14px;min-width:0}
+.step{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start}
+.step .num{font-family:var(--f-display);font-stretch:62%;font-weight:800;font-size:30px;line-height:.9}
+.step .body{display:flex;flex-direction:column;gap:8px;min-width:0}
+.step h3{font-size:15.5px;font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font:600 14px var(--f-text);padding:10px 14px;border:1px solid var(--line-strong);background:none;color:var(--ink);cursor:pointer;text-decoration:none;border-radius:0}
+.btn:hover{background:var(--surface)}
+.btn.solid{background:var(--ink);color:var(--on-ink)}
+.btn.solid:hover{opacity:.9}
+.btn.quiet{border-color:var(--line);font-weight:500}
+.hint{font-size:13px;color:var(--ink-2)}
+.phone{font-family:var(--f-mono);font-size:14px;user-select:all}
+.check{display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+.check input{width:17px;height:17px;accent-color:var(--ink);margin:0}
+.tbl{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 11.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+td b{font-weight:600}
+details.add{border-top:1px solid var(--line);padding-top:12px}
+details.add summary{cursor:pointer;font-weight:600}
+.addgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px;align-items:end}
+.foot{font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--line);padding-top:12px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--on-ink);padding:10px 16px;font-weight:600;font-size:14px;max-width:calc(100% - 32px);z-index:50}
+.decide{border-left:3px solid var(--accent);padding:6px 0 6px 12px;font-size:14.5px;max-width:78ch}
+.decide b{color:var(--accent)}
+/* ---------- pendências quentes ---------- */
+.pend{display:flex;flex-direction:column;gap:12px;border-top:2px solid var(--line-strong);padding-top:16px}
+.pend h2{font-family:var(--f-display);font-stretch:62%;font-weight:800;text-transform:uppercase;font-size:clamp(26px,5vw,36px);line-height:.9;margin-top:4px;text-wrap:balance}
+.pd-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:12px;align-items:start}
+.pd{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);background:var(--papel);padding:14px;min-width:0}
+.pd.p1{border-color:var(--accent)}
+.pd-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.pd h3{font-family:var(--f-serif);font-weight:400;font-size:24px;line-height:1.05;overflow-wrap:anywhere}
+.pd .mt{font-size:12.5px;color:var(--ink-2)}
+.pd p{font-size:14px}
+.pd .ctx{color:var(--ink-2)}
+.pd textarea{min-height:150px;font-size:14px}
+.pd-done{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.pd-done div{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--ink-2)}
+.rot{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:14px;margin-top:12px}
+.rot > div{display:flex;flex-direction:column;gap:6px;min-width:0}
+.rot h3{font-size:15px;font-weight:600}
+.rot textarea{min-height:170px;font-size:14px}
+/* ---------- navegação: caixas recolhíveis, barra fixa, pergunta de registro ---------- */
+details.box{border:1px solid var(--line-strong);background:var(--surface)}
+details.box>summary{cursor:pointer;padding:12px 16px;display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;list-style:none}
+details.box>summary::-webkit-details-marker{display:none}
+details.box>summary .t{font-family:var(--f-display);font-stretch:62%;font-weight:800;text-transform:uppercase;font-size:22px;line-height:.9}
+details.box>summary .s{font-size:13.5px;color:var(--ink-2)}
+details.box>summary::after{content:'abrir';font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;margin-left:auto;color:var(--ink-2)}
+details.box[open]>summary::after{content:'fechar'}
+.stick{position:fixed;top:var(--navh);left:0;right:0;z-index:40;background:var(--papel);border-bottom:2px solid var(--line-strong);padding:8px 16px;display:flex;gap:8px;align-items:center;overflow-x:auto;white-space:nowrap}
+.stick .nm{font-family:var(--f-serif);font-size:20px;line-height:1;margin-right:auto;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.stick .btn{padding:7px 10px;font-size:13px;flex:none}
+.stick .k{font-family:var(--f-mono);font-size:12px;color:var(--ink-2);flex:none}
+.ask{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--papel);border:2px solid var(--accent);padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;max-width:calc(100% - 32px);font-size:14.5px;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.ask b{font-weight:600}
+.funil{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--ink-2);width:100%}
+.funil b{font-family:var(--f-mono);font-weight:500;color:var(--ink);margin-right:3px}
+.funil .hot b{color:var(--accent)}
+select.etapa{font-size:13px;padding:5px 7px;min-width:170px;width:auto}
+.pd select.etapa{width:100%}
+.livro{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:16px;margin-top:12px}
+.livro>div{border-top:2px solid var(--ink);padding-top:10px;display:flex;flex-direction:column;gap:7px;min-width:0}
+.livro h3{font-size:15.5px;font-weight:600}
+.livro h3 small{font-weight:400;color:var(--ink-2);font-size:13px}
+.livro p,.livro li{font-size:14px}
+.livro ul,.livro ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+.livro .q{font-family:var(--f-serif);font-size:17px;line-height:1.2}
+.livro .c{font-size:12px;color:var(--ink-2)}
+.kbd{font:500 11px var(--f-mono);border:1px solid var(--line);padding:1px 5px;white-space:nowrap}
+.metodo .rot textarea{min-height:140px}
+/* ---------- barra de seções fixa e cronograma recolhível (só o bloco da hora fica aberto) ---------- */
+.secnav{position:fixed;top:0;left:0;right:0;z-index:45;height:var(--navh);background:var(--papel);border-bottom:2px solid var(--line-strong);display:flex;align-items:center;gap:4px;padding:0 12px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.secnav::-webkit-scrollbar{display:none}
+.secnav a{flex:none;text-decoration:none;font:500 12.5px var(--f-mono);letter-spacing:.04em;text-transform:uppercase;border:1px solid transparent;padding:6px 9px;display:inline-flex;gap:6px;align-items:baseline}
+.secnav a b{font-weight:600}
+.secnav a:hover{border-color:var(--line)}
+.secnav a[aria-current="true"]{background:var(--ink);color:var(--on-ink)}
+.secnav a.now{border-color:var(--accent);color:var(--accent);font:600 13.5px var(--f-text);text-transform:none;letter-spacing:0;max-width:min(46vw,380px);overflow:hidden;text-overflow:ellipsis;display:inline-block}
+.cron{border:2px solid var(--line-strong);background:var(--surface);font-size:17.5px;line-height:1.5}
+.cron-h{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:flex-end;justify-content:space-between;padding:18px 18px 15px;border-bottom:2px solid var(--line-strong)}
+.cron-h h2{font-family:var(--f-display);font-stretch:62%;font-weight:800;text-transform:uppercase;font-size:clamp(32px,6.4vw,48px);line-height:.88;margin-top:5px}
+.cron-h .sub{font-family:var(--f-serif);font-size:23px;line-height:1.18;margin-top:10px;max-width:58ch}
+.cron-score{display:flex;flex-direction:column;gap:6px;min-width:200px}
+.cron-score b{font-family:var(--f-mono);font-weight:500;font-size:30px;line-height:1}
+.cron-score b small{font-size:17px;color:var(--ink-2)}
+.cron-score .hint{font-size:14px}
+.cron-rules{display:grid;gap:9px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.cron-rules p{font-size:16.5px;border-left:3px solid var(--accent);padding:2px 0 2px 12px}
+.cron-rules p b{color:var(--accent);font-weight:600}
+.cron-nav{display:flex;flex-wrap:wrap;gap:7px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.cron-nav a{text-decoration:none;border:1px solid var(--line);padding:7px 11px;font:500 13.5px var(--f-mono);letter-spacing:.03em;display:inline-flex;gap:7px;align-items:baseline}
+.cron-nav a:hover{background:var(--surface-2)}
+.cron-nav a b{font-weight:600}
+.cron-nav a.ja{color:var(--ink-2)}
+.cron-nav a.ag{border-color:var(--accent);color:var(--accent);font-weight:600}
+details.cb{border-bottom:1px solid var(--line);scroll-margin-top:calc(var(--navh) + 10px)}
+details.cb>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:136px minmax(0,1fr) auto auto;gap:4px 16px;align-items:center;padding:15px 18px}
+details.cb>summary::-webkit-details-marker{display:none}
+details.cb>summary::after{content:'+';font:500 22px/1 var(--f-mono);color:var(--ink-2);width:18px;text-align:center}
+details.cb[open]>summary::after{content:'\2212'}
+details.cb>summary:hover{background:var(--surface-2)}
+details.cb.ag{background:var(--papel);box-shadow:inset 5px 0 0 var(--accent)}
+details.cb.feito .cb-t{text-decoration:line-through;opacity:.5}
+details.cb.passou:not(.feito) .cb-t{opacity:.72}
+.cb-when{display:flex;flex-direction:column;gap:2px}
+.cb-when .hh{font:500 18px/1.2 var(--f-mono);white-space:nowrap}
+.cb-when .dur{font:500 11.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.cb-t{font-size:20.5px;font-weight:600;line-height:1.22}
+.cb-t .n{font-family:var(--f-mono);font-weight:500;font-size:14px;color:var(--ink-2);margin-right:9px}
+.cb .st{font:500 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border:1px solid var(--line);white-space:nowrap}
+.cb .st:empty{display:none}
+.cb .st.ag{border-color:var(--accent);color:var(--accent);font-weight:600}
+.cb .st.ok{border-color:var(--ok);color:var(--ok)}
+.cb-body{display:flex;flex-direction:column;gap:11px;min-width:0;padding:0 18px 18px 170px}
+@media (max-width:700px){
+  details.cb>summary{grid-template-columns:minmax(0,1fr) auto auto}
+  details.cb>summary .cb-when{grid-column:1/-1;flex-direction:row;gap:10px;align-items:baseline}
+  .cb-body{padding:0 18px 18px}
+}
+.cb ol,.cb ul{margin:0;padding-left:23px;display:flex;flex-direction:column;gap:8px;font-size:17px}
+.cb ol li::marker{font-family:var(--f-mono);font-size:14px;color:var(--ink-2)}
+.cb .por{font-size:16px;color:var(--ink-2)}
+.cb .res{font-size:16.5px;border-left:3px solid var(--ink);padding:3px 0 3px 12px}
+.cb .res b{font-weight:600}
+.cb .alerta{font-size:16.5px;border-left:3px solid var(--accent);padding:3px 0 3px 12px}
+.cb .alerta b{color:var(--accent);font-weight:600}
+.cb .ck{display:flex;gap:10px;align-items:center;font-size:16px;cursor:pointer;font-weight:600;border-top:1px solid var(--line);padding-top:11px}
+.cb .ck input{width:22px;height:22px;accent-color:var(--ink);margin:0}
+.cb textarea{min-height:150px;font-size:16px}
+.cb .field label{font-size:12px}
+.cb .btn{font-size:15px}
+.cb .mono{font-size:12px}
+.estr{padding:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:16px}
+.estr .lead-e{font-family:var(--f-serif);font-size:22px;line-height:1.2;max-width:64ch}
+.estr-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:18px}
+.estr-g>div{border-top:2px solid var(--ink);padding-top:10px;display:flex;flex-direction:column;gap:7px;min-width:0}
+.estr-g h3{font-size:17.5px;font-weight:600;line-height:1.3}
+.estr-g .dado{font-size:15px;color:var(--ink-2)}
+.estr-g .faz{font-size:15.5px;border-left:3px solid var(--accent);padding-left:10px}
+.estr-g .faz b{color:var(--accent);font-weight:600}
+.estr .teste{border:1px solid var(--line-strong);background:var(--papel);padding:14px 16px;display:flex;flex-direction:column;gap:8px;font-size:15.5px}
+.estr .teste h3{font-size:17px;font-weight:600}
+.estr .teste table{min-width:520px;font-size:15px}
+.estr .fontes{font-size:13px;color:var(--ink-2)}
+.estr .fontes a{text-underline-offset:3px}
+@media (max-width:640px){.stick .nm{font-size:17px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="secnav" id="secnav" aria-label="Seções da página"><a class="now" id="snNow" href="#cronBox">Agora</a><a href="#cronBox" data-spy="cronBox">Cronograma</a><a href="#estrBox" data-spy="estrBox">Boas práticas</a><a href="#pendBox" data-spy="pendBox">Pendências <b id="jPend">0</b></a><a href="#bench" data-spy="bench">Bancada</a><a href="#revBox" data-spy="revBox">Revisão <b id="jRev">0</b></a><a href="#rotBox" data-spy="rotBox">Roteiros</a><a href="#metodoBox" data-spy="metodoBox">Método</a><a href="#priceBox" data-spy="priceBox">Valores</a></nav>
+<div class="wrap">
+  <p class="aviso" id="aviso" hidden><b>Template ainda não configurado.</b> Abra o arquivo config.js, troque "Seu Nome", a empresa, os produtos e os preços de exemplo, e recarregue a página.</p>
+  <header class="top">
+    <div>
+      <span class="mono muted" id="kicker">Prospecção no WhatsApp</span>
+      <h1>Fila de disparo</h1>
+      <p class="sub">Um lead por vez: imagem com o nome, mensagem pronta, WhatsApp Web aberto.</p>
+    </div>
+    <div class="meters">
+      <div class="meter" id="mTotal"><span class="mono muted">Enviados hoje</span><b><span id="kTotal">0</span><small> / <span data-lim="total">50</span></small></b><div class="bar"><i id="bTotal"></i></div></div>
+      <div class="meter" id="mWa"><span class="mono muted">Novos no WhatsApp hoje</span><b><span id="kWa">0</span><small> / <span data-lim="wa">20</span></small></b><div class="bar"><i id="bWa"></i></div><span class="hint" id="waNote"></span></div>
+    </div>
+  </header>
+
+  <!-- ==================================================================
+       CRONOGRAMA DO DIA (exemplo)
+       Cada bloco é um <details class="cb">. Horário em minutos desde a meia-noite:
+       data-mi = início, data-mf = fim (ex.: 10h00 = 600, 14h30 = 870).
+       O bloco da hora abre sozinho; as marcações zeram a cada dia.
+       Para mudar, edite, copie ou apague os blocos abaixo.
+       ================================================================== -->
+  <section class="cron" id="cronBox" aria-label="Cronograma do dia">
+    <div class="cron-h">
+      <div>
+        <span class="mono muted">Exemplo de dia de prospecção · edite os blocos no index.html</span>
+        <h2>Cronograma do dia</h2>
+        <p class="sub">Primeiro quem já conversa com você, depois os números novos, depois telefone e rede. O bloco da hora abre sozinho.</p>
+      </div>
+      <div class="cron-score">
+        <span class="mono muted">Blocos concluídos</span>
+        <b><span id="cronDone">0</span><small> / <span id="cronAll">7</span></small></b>
+        <div class="bar"><i id="cronBar"></i></div>
+        <span class="hint" id="cronNow">Procurando o bloco de agora.</span>
+      </div>
+    </div>
+    <div class="cron-rules">
+      <p><b>Alguém respondeu? Largue o bloco e responda em até 15 minutos.</b> Velocidade de resposta é o que mais pesa para quem acabou de demonstrar interesse.</p>
+      <p><b>Respeite o teto de números novos do dia.</b> Mais volume aumenta o risco para o seu número sem aumentar na mesma proporção a chance de fechar.</p>
+    </div>
+    <nav class="cron-nav" id="cronNav" aria-label="Pular para um bloco" hidden></nav>
+  <details class="cb" id="cbA" data-cb="A" data-mi="570" data-mf="600" data-nav="Quem já falou com você">
+    <summary><span class="cb-when"><span class="hh">09h30–10h00</span><span class="dur">30 min</span></span><span class="cb-t"><span class="n">01</span>Quem já falou com você</span><span class="st"></span></summary>
+    <div class="cb-body">
+      <p class="por">Antes de qualquer número novo, responda as conversas abertas. Use as Pendências quentes e o filtro "Pessoa respondeu" da Revisão dos enviados.</p>
+      <ol>
+        <li>Responda cada conversa aberta terminando com uma pergunta de avanço: quem decide, qual horário, qual o próximo passo.</li>
+        <li>Quem pediu preço por escrito recebe preço por escrito, com o próximo passo no fim.</li>
+        <li>Marque o Onde parou de cada uma.</li>
+      </ol>
+      <p class="res"><b>Resultado esperado:</b> nenhuma conversa aberta sem resposta.</p>
+      <label class="ck"><input type="checkbox" data-cron="A"> Bloco concluído</label>
+    </div>
+  </details>
+  <details class="cb" id="cbB" data-cb="B" data-mi="600" data-mf="660" data-nav="Números novos, um por vez">
+    <summary><span class="cb-when"><span class="hh">10h00–11h00</span><span class="dur">60 min</span></span><span class="cb-t"><span class="n">02</span>Números novos, um por vez</span><span class="st"></span></summary>
+    <div class="cb-body">
+      <p class="por">Na Bancada: imagem, mensagem, WhatsApp, registrar. Intercale os tipos de negócio e espere uns minutos entre um envio e outro.</p>
+      <ol>
+        <li>Confira o nome do negócio na arte e na mensagem antes de colar.</li>
+        <li>Cole a imagem com Ctrl+V na conversa: o texto vai como legenda.</li>
+        <li>Registre o envio na hora (tecla E). O próximo lead já aparece.</li>
+      </ol>
+      <p class="res"><b>Resultado esperado:</b> o teto de números novos do dia, sem rajada.</p>
+      <label class="ck"><input type="checkbox" data-cron="B"> Bloco concluído</label>
+    </div>
+  </details>
+  <details class="cb" id="cbC" data-cb="C" data-mi="660" data-mf="690" data-nav="Segunda mensagem para quem só devolveu robô">
+    <summary><span class="cb-when"><span class="hh">11h00–11h30</span><span class="dur">30 min</span></span><span class="cb-t"><span class="n">03</span>Segunda mensagem para quem só devolveu robô</span><span class="st"></span></summary>
+    <div class="cb-body">
+      <ol>
+        <li>Abra a <b>Revisão dos enviados</b> com o filtro <b>Voltou resposta automática</b>.</li>
+        <li>Toque em <b>Preparar</b>: a segunda mensagem aparece pronta no passo 4, já no tipo certo.</li>
+        <li>Uma segunda mensagem só. Nunca uma terceira sem resposta.</li>
+      </ol>
+      <p class="res"><b>Resultado esperado:</b> todo mundo que devolveu robô ontem com a segunda mensagem enviada.</p>
+      <label class="ck"><input type="checkbox" data-cron="C"> Bloco concluído</label>
+    </div>
+  </details>
+  <details class="cb" id="cbD" data-cb="D" data-mi="840" data-mf="900" data-nav="Telefone para quem só devolveu robô">
+    <summary><span class="cb-when"><span class="hh">14h00–15h00</span><span class="dur">60 min</span></span><span class="cb-t"><span class="n">04</span>Telefone para quem só devolveu robô</span><span class="st"></span></summary>
+    <div class="cb-body">
+      <p class="alerta"><b>Por que trocar de canal.</b> A resposta automática prova que o número funciona e que ninguém leu a sua mensagem. Uma terceira mensagem cai no mesmo robô e ainda conta contra o seu número. Uma ligação em horário comercial tem mais chance de chegar numa pessoa.</p>
+      <ol>
+        <li>Na <b>Revisão dos enviados</b>, filtro <b>Voltou resposta automática</b>, escolha 10. Primeiro os que têm o nome do dono no negócio.</li>
+        <li>Ligue. O objetivo não é vender: é sair com <b>o nome de quem decide e um horário</b>. Preço nunca na recepção.</li>
+        <li>Anote na hora: atendeu, nome do decisor, horário marcado ou não atendeu. Quem não atender, tente de novo no dia seguinte.</li>
+      </ol>
+      <div class="field"><label class="mono muted" for="cxLig">Roteiro da ligação</label><textarea id="cxLig" data-fill spellcheck="true">RECEPÇÃO (30 segundos)
+"Oi, boa tarde! Aqui é o {vendedor}, da {empresa}. É rapidinho: quem cuida do WhatsApp e dos agendamentos aí?"
+"E essa pessoa costuma estar em qual horário? Queria falar 5 minutos sobre o atendimento no WhatsApp."
+"Pode me passar o nome, para eu não incomodar ninguém à toa?"
+
+SE CAIR COM QUEM DECIDE (2 minutos)
+"Uma pergunta só: mensagem que chega depois do horário ou no fim de semana, quem responde hoje?"
+[ouça até o fim, sem interromper]
+"É exatamente isso que a gente monta: um atendente no WhatsApp que responde na hora e já marca na agenda. Posso te mostrar em 10 minutos como ficaria aí? Amanhã de manhã ou à tarde?"</textarea><div class="row"><button class="btn" type="button" data-rcopy="cxLig">Copiar</button></div></div>
+      <p class="res"><b>Resultado esperado:</b> 10 ligações, alguns nomes de decisor e uma conversa marcada.</p>
+      <label class="ck"><input type="checkbox" data-cron="D"> Bloco concluído</label>
+    </div>
+  </details>
+  <details class="cb" id="cbE" data-cb="E" data-mi="900" data-mf="960" data-nav="Rede quente: quem já confia em você">
+    <summary><span class="cb-when"><span class="hh">15h00–16h00</span><span class="dur">60 min</span></span><span class="cb-t"><span class="n">05</span>Rede quente: quem já confia em você</span><span class="st"></span></summary>
+    <div class="cb-body">
+      <p class="por">Contato frio abre porta; quem já te conhece costuma aceitar conversa e proposta com muito mais facilidade. Esta hora costuma render mais que outro lote frio.</p>
+      <ol>
+        <li><b>Dez pessoas</b> que já trabalharam com você ou te conhecem bem. Uma mensagem a cada 3 minutos, cada uma com o nome e uma linha pessoal no começo.</li>
+        <li><b>Três convites de parceria:</b> um designer, um gestor de tráfego ou social media, e um contador. Cada um atende dezenas de pequenos negócios que vivem de WhatsApp.</li>
+      </ol>
+      <div class="field"><label class="mono muted" for="cxRede">Rede quente · oferta e indicação</label><textarea id="cxRede" data-fill spellcheck="true">Oi, [nome]! Tô com agenda aberta pra começar um projeto essa semana e lembrei de você. Faço site com WhatsApp e Google Meu Negócio por {preco1}, e atendente com IA no WhatsApp, que responde e agenda sozinho.
+Você ou alguém que você conhece precisa disso agora? Uma indicação tua vale muito.</textarea><div class="row"><button class="btn" type="button" data-rcopy="cxRede">Copiar</button></div></div>
+      <div class="field"><label class="mono muted" for="cxParc">Parceria · designer, tráfego, social media, contador</label><textarea id="cxParc" data-fill spellcheck="true">Oi, [nome], tudo bem? Aqui é o {vendedor}, da {empresa}.
+Você atende vários pequenos negócios, e muitos perdem cliente porque demoram a responder no WhatsApp.
+A gente monta o atendente com IA e o site, e você continua dono da relação com o seu cliente.
+Para cada indicação que fechar, você recebe [x]% do valor do projeto.
+*Faz sentido conversarmos 15 minutos essa semana?*</textarea><div class="row"><button class="btn" type="button" data-rcopy="cxParc">Copiar</button></div></div>
+      <p class="res"><b>Resultado esperado:</b> 10 mensagens pessoais e 3 convites de parceria.</p>
+      <label class="ck"><input type="checkbox" data-cron="E"> Bloco concluído</label>
+    </div>
+  </details>
+  <details class="cb" id="cbF" data-cb="F" data-mi="960" data-mf="990" data-nav="Próxima rodada: abrir com a dor deles">
+    <summary><span class="cb-when"><span class="hh">16h00–16h30</span><span class="dur">30 min</span></span><span class="cb-t"><span class="n">06</span>Próxima rodada: abrir com a dor deles</span><span class="st"></span></summary>
+    <div class="cb-body">
+      <p class="por">Abrir com "vi no Google, 4,8 estrelas" soa igual a toda prospecção em massa. Uma abertura com um fato do próprio negócio, tirado das avaliações públicas, se destaca.</p>
+      <ol>
+        <li>Na <b>Bancada</b>, abra "Ver no Google Maps" de 15 leads da fila. Leia as avaliações de 1 a 3 estrelas e procure: WhatsApp, resposta, demora, não atendem, agendamento.</li>
+        <li>Só entra na lista quem tiver pelo menos uma reclamação desse tipo. Aí a dor foi dita por um cliente deles, não por você.</li>
+        <li>Anote a reclamação, sem o nome de quem escreveu, e deixe a mensagem pronta para a próxima rodada.</li>
+      </ol>
+      <div class="field"><label class="mono muted" for="cxProva">Abertura com prova · texto pronto</label><textarea id="cxProva" data-fill spellcheck="true">Oi, tudo bem? Aqui é o {vendedor}, da {empresa}.
+Li as avaliações de [negócio] no Google: o atendimento é muito elogiado, e [uma ou duas] pessoas comentaram demora para conseguir resposta no WhatsApp.
+É exatamente isso que a gente resolve: um atendente que responde na hora, tira as dúvidas mais comuns e marca na agenda, inclusive à noite e no fim de semana.
+*Faz sentido eu te mostrar em 10 minutos como ficaria aí?*</textarea><div class="row"><button class="btn" type="button" data-rcopy="cxProva">Copiar</button></div></div>
+      <p class="res"><b>Resultado esperado:</b> 15 leads com a dor comprovada e a mensagem pronta.</p>
+      <label class="ck"><input type="checkbox" data-cron="F"> Bloco concluído</label>
+    </div>
+  </details>
+  <details class="cb" id="cbG" data-cb="G" data-mi="1050" data-mf="1080" data-nav="Registro: onde cada conversa parou">
+    <summary><span class="cb-when"><span class="hh">17h30–18h00</span><span class="dur">30 min</span></span><span class="cb-t"><span class="n">07</span>Registro: onde cada conversa parou</span><span class="st"></span></summary>
+    <div class="cb-body">
+      <ol>
+        <li>Na <b>Revisão dos enviados</b> e nas <b>Pendências</b>, marque o retorno e o Onde parou de cada conversa que você tocou hoje.</li>
+        <li>Marque como sem interesse quem recusou com clareza. Lista limpa é lista que anda.</li>
+        <li>Escreva três números: respostas de pessoas, nomes de decisor conseguidos e conversas marcadas. Esse é o placar de amanhã cedo.</li>
+      </ol>
+      <p class="res"><b>Resultado esperado:</b> o dia registrado, e a lista de amanhã menor e mais limpa.</p>
+      <label class="ck"><input type="checkbox" data-cron="G"> Bloco concluído</label>
+    </div>
+  </details>
+  </section>
+
+  <details class="box" id="estrBox">
+    <summary><span class="t">Boas práticas</span><span class="s">O que costuma funcionar na prospecção pelo WhatsApp, com fontes</span></summary>
+    <div class="estr">
+      <p class="lead-e">Mensagem fria abre porta, mas raramente chega a proposta sozinha. Velocidade com quem responde, telefone para quem só devolve robô e a sua rede costumam pesar mais. Os pontos abaixo misturam pesquisas públicas e prática de campo: confira as fontes e meça na sua própria Revisão dos enviados.</p>
+      <div class="estr-g">
+        <div><h3>1. O seu número tem um limite que não aparece</h3>
+          <p class="dado">Há relatos, desde outubro de 2025, de que o WhatsApp testa um teto mensal para mensagens sem resposta enviadas a quem não é seu contato. O número exato não foi divulgado pela Meta, e uma resposta zera o contador daquela conversa.</p>
+          <p class="faz"><b>Faça:</b> poucos números novos por dia, nunca uma terceira mensagem sem resposta, e segunda mensagem só uma vez.</p></div>
+        <div><h3>2. Quem só devolve robô recebe ligação</h3>
+          <p class="dado">A resposta automática mostra que o número funciona e que nenhuma pessoa leu. Mais texto cai no mesmo lugar.</p>
+          <p class="faz"><b>Faça:</b> ligação curta, para sair com o nome e o horário de quem decide. O roteiro está no bloco 04 do cronograma.</p></div>
+        <div><h3>3. Abra com a dor deles, não com elogio</h3>
+          <p class="dado">"4,8 estrelas, parabéns pelo trabalho" é a abertura de qualquer prospecção em massa. Uma reclamação real de cliente sobre demora no WhatsApp prova a dor com as palavras de outra pessoa.</p>
+          <p class="faz"><b>Faça:</b> filtre leads pelas avaliações de 1 a 3 estrelas. O passo a passo está no bloco 06.</p></div>
+        <div><h3>4. Velocidade é o seu argumento e a sua régua</h3>
+          <p class="dado">Numa auditoria com 2.241 empresas publicada na Harvard Business Review em 2011, 23% nunca responderam a um contato e 24% levaram mais de 24 horas. No estudo de Oldroyd com a InsideSales (2007), quem foi contatado em até 5 minutos teve 21 vezes mais chance de ser qualificado do que em 30 minutos. O estudo mede qualificação, não venda, e usa dados de fornecedor. No Brasil, uma pesquisa indica que 60% esperam resposta em até 1 hora no WhatsApp.</p>
+          <p class="faz"><b>Faça:</b> use esses números na conversa de 10 minutos, e responda quem te responder em até 15 minutos.</p></div>
+        <div><h3>5. A rede fecha, a fria abre</h3>
+          <p class="dado">Quem já conhece o seu trabalho aceita conversa e proposta com muito mais facilidade que um contato frio. Compare na sua Revisão dos enviados quantas propostas saíram de cada origem.</p>
+          <p class="faz"><b>Faça:</b> mensagens de rede e convites de parceria todo dia, antes de qualquer lote frio.</p></div>
+        <div><h3>6. Vídeo só depois da resposta</h3>
+          <p class="dado">Os ganhos de resposta com vídeo personalizado vêm de quem vende a ferramenta, e esses mesmos fornecedores recomendam abrir com texto e deixar o vídeo para o retorno.</p>
+          <p class="faz"><b>Faça:</b> texto primeiro. Vídeo só se pedirem.</p></div>
+      </div>
+      <div class="teste">
+        <h3>Teste de 3 dias, com decisão no quarto dia</h3>
+        <div class="tbl"><table>
+          <thead><tr><th>Canal</th><th>Por dia</th><th>O que medir</th></tr></thead>
+          <tbody>
+            <tr><td>Fria comum (texto padrão)</td><td>10</td><td>Respostas de pessoas</td></tr>
+            <tr><td>Fria com prova (avaliação do Google)</td><td>10</td><td>Respostas de pessoas</td></tr>
+            <tr><td>Ligação para quem devolveu robô</td><td>10</td><td>Nomes de decisor e conversas marcadas</td></tr>
+            <tr><td>Rede quente e parceiros</td><td>13</td><td>Indicações e conversas marcadas</td></tr>
+          </tbody>
+        </table></div>
+        <p><b>Critério:</b> o canal com mais conversas com quem decide, por hora gasta, vira o principal na semana seguinte. Se nenhum passar de 1 conversa com decisor por dia, o problema provavelmente não é o canal, é a oferta: revise preço e escopo com os dados na mão.</p>
+      </div>
+      <p class="fontes">Fontes: limite do WhatsApp para mensagens sem resposta, <a href="https://green-api.com/en/blog/2025/whatsapp-introduces-new-restrictions-on-unanswered-messages/" target="_blank" rel="noopener">Green API</a> e <a href="https://www.storyboard18.com/digital/whatsapp-cracks-down-on-spam-with-new-monthly-message-limit-for-unanswered-chats-82882.htm" target="_blank" rel="noopener">Storyboard18</a> (cobertura secundária, sem número oficial da Meta). Auditoria de 2.241 empresas, <a href="https://scholarsarchive.byu.edu/facpub/9711" target="_blank" rel="noopener">Oldroyd, McElheran e Elkington, HBR 2011</a>. Estudo dos 5 minutos, <a href="https://www.mortech.com/hs-fs/hub/25649/file-13535879-pdf/docs/mit_study.pdf" target="_blank" rel="noopener">Oldroyd e InsideSales, 2007</a>, e a ressalva sobre a atribuição em <a href="https://ainora.lt/blog/lead-response-time-statistics-every-study-2026" target="_blank" rel="noopener">Ainora</a>. Expectativa de 1 hora no WhatsApp, <a href="https://consumidormoderno.com.br/whatsapp-business-24h-atendimento/" target="_blank" rel="noopener">Consumidor Moderno, pesquisa eLife</a>. Vídeo em prospecção, <a href="https://blog.sendspark.com/ai-personalized-video-reply-rates" target="_blank" rel="noopener">Sendspark</a> (fornecedor).</p>
+    </div>
+  </details>
+
+  <section class="pend" id="pendBox" aria-label="Pendências quentes">
+    <div class="rev-head">
+      <div><span class="mono muted">Quem já conversou com você</span><h2>Pendências quentes</h2></div>
+      <p class="rev-sum" id="pdSum"></p>
+      <p class="funil" id="funil"></p>
+    </div>
+    <div class="pd-list" id="pdList"><p class="empty">Carregando as pendências.</p></div>
+    <div class="pd-done" id="pdDone" hidden></div>
+  </section>
+
+  <div class="bench" id="bench">
+    <aside class="queue" aria-label="Fila de leads">
+      <div class="tabs" id="tabs"></div>
+      <div class="filters">
+        <div class="field"><label class="mono muted" for="fReg">Região</label><select id="fReg"></select></div>
+        <div class="field"><label class="mono muted" for="fNicho">Tipo de negócio</label><select id="fNicho"></select></div>
+        <div class="field"><label class="mono muted" for="fBairro">Bairro ou cidade</label><select id="fBairro"></select></div>
+        <div class="field"><label class="mono muted" for="fDono">Quem atende</label><select id="fDono"><option value="todos">Todos</option><option value="dono">Dono no nome</option><option value="recepcao">Recepção ou equipe</option></select></div>
+        <span class="count" id="fCount"></span>
+      </div>
+      <div class="list" id="list"><p class="empty">Carregando a fila salva.</p></div>
+    </aside>
+
+    <section class="work" id="work" aria-live="polite">
+      <p class="empty" id="workEmpty">Assim que a fila carregar, o primeiro lead aparece aqui com a imagem e a mensagem prontas.</p>
+      <div id="workBody" hidden>
+        <div class="work">
+          <div class="lead-head">
+            <span class="mono muted" id="leadKicker"></span>
+            <h2 id="leadName"></h2>
+            <div class="facts" id="leadFacts"></div>
+          </div>
+          <div class="signal" id="leadSignal" hidden><b class="mono">Por que este lead, só para você</b><span id="leadSignalTxt"></span></div>
+          <div class="oferta" id="oferta" hidden></div>
+          <div class="cols">
+            <div class="art">
+              <div class="seg" id="seg" role="group" aria-label="Modelo da arte">
+                <button type="button" data-v="C">C Ficha</button><button type="button" data-v="A">A Jornal</button><button type="button" data-v="B">B Capa</button>
+              </div>
+              <img id="artImg" alt="Arte com o nome do lead" width="1080" height="1350">
+              <div class="field"><label class="mono muted" for="artName">Nome que vai na arte</label><input type="text" id="artName" maxlength="40" autocomplete="off"></div>
+            </div>
+            <div class="steps">
+              <div class="step"><span class="num">1</span><div class="body">
+                <h3>Pegue a imagem</h3>
+                <div class="row"><button class="btn solid" type="button" id="btnCopyImg">Copiar imagem</button><button class="btn" type="button" id="btnSaveImg">Salvar imagem</button></div>
+                <p class="hint">Se o botão não copiar, clique com o botão direito na imagem e escolha Copiar imagem.</p>
+              </div></div>
+              <div class="step"><span class="num">2</span><div class="body">
+                <h3>Abra a conversa com a mensagem escrita</h3>
+                <div class="field"><label class="mono muted" for="fmt">Para quem vai a mensagem</label><select id="fmt"><option value="dono">Dono ou dona lê o WhatsApp</option><option value="recepcao">Recepção ou atendente: pedir o contato de quem decide</option><option value="direct">Direct do Instagram, sem imagem</option></select></div>
+                <div class="field"><label class="mono muted" for="msg">Mensagem, pode editar</label><textarea id="msg" spellcheck="true"></textarea></div>
+                <label class="check" for="optSite"><input type="checkbox" id="optSite" checked> <span id="optSiteTxt"></span></label>
+                <div class="row"><a class="btn solid" id="btnWa" target="wa" rel="noopener">Abrir WhatsApp Web</a><button class="btn" type="button" id="btnCopyMsg">Copiar mensagem</button></div>
+                <p class="pace" id="pace" hidden></p>
+                <p class="hint">Número: <span class="phone" id="leadPhone"></span>. A conversa abre sempre na mesma aba do WhatsApp, com o texto escrito. Cole a imagem com Ctrl+V: o texto vai como legenda. Confira e aperte Enter. Teclas: <span class="kbd">C</span> copia a imagem, <span class="kbd">W</span> abre a conversa, <span class="kbd">E</span> registra o envio, <span class="kbd">P</span> pula, <span class="kbd">J</span> e <span class="kbd">K</span> andam na fila.</p>
+              </div></div>
+              <div class="step"><span class="num">3</span><div class="body">
+                <h3>Registre e siga para o próximo</h3>
+                <div class="row"><button class="btn solid" type="button" id="btnSentWa">Enviei no WhatsApp</button><button class="btn" type="button" id="btnSentIg">Enviei no Instagram</button><button class="btn quiet" type="button" id="btnSkip">Pular</button></div>
+                <div class="row" id="afterRow" hidden><button class="btn" type="button" id="btnReplied">Respondeu</button><button class="btn quiet" type="button" id="btnBack">Voltar para a fila</button></div>
+              </div></div>
+              <div class="step" id="followStep" hidden><span class="num">4</span><div class="body">
+                <h3>Segunda mensagem</h3>
+                <div class="field"><label class="mono muted" for="f2Tipo">O que aconteceu depois do envio</label><select id="f2Tipo"><option value="auto">Voltou só a resposta automática</option><option value="silencio">Ficou sem resposta por 2 dias</option><option value="exemplo">Pediu para ver: exemplo de conversa</option><option value="audio">Áudio de 30 segundos (texto para gravar)</option></select></div>
+                <div class="field"><label class="mono muted" for="msg2">Mensagem, pode editar</label><textarea id="msg2" spellcheck="true"></textarea></div>
+                <label class="check" for="optVagas"><input type="checkbox" id="optVagas" checked> <span id="optVagasTxt"></span></label>
+                <div class="row"><a class="btn solid" id="btnWa2" target="wa" rel="noopener">Abrir WhatsApp Web</a><button class="btn" type="button" id="btnCopy2">Copiar mensagem</button><button class="btn" type="button" id="btnSent2">Enviei a 2ª mensagem</button></div>
+                <p class="hint" id="f2Hint"></p>
+              </div></div>
+              <div class="step" id="propStep" hidden><span class="num">5</span><div class="body">
+                <h3>Proposta em PDF, para quando pedirem</h3>
+                <div class="field"><label class="mono muted" for="propDe">Seu nome na proposta</label><input type="text" id="propDe" maxlength="40" autocomplete="off"></div>
+                <div class="row"><button class="btn solid" type="button" id="btnProp">Gerar proposta em PDF</button></div>
+                <p class="hint" id="propHint"></p>
+              </div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="review" id="revBox" aria-label="Revisão dos enviados">
+    <div class="rev-head">
+      <div><span class="mono muted">Depois do envio</span><h2>Revisão dos enviados</h2></div>
+      <div class="field"><label class="mono muted" for="rvShow">Mostrar</label><select id="rvShow"><option value="todos">Todos os enviados</option><option value="falta">Falta revisar</option><option value="auto">Voltou resposta automática</option><option value="sem">Sem retorno</option><option value="pessoa">Pessoa respondeu</option><option value="nao">Sem interesse</option></select></div>
+    </div>
+    <p class="rev-sum" id="rvSum"></p>
+    <div class="tbl"><table>
+      <thead><tr><th>Enviado em</th><th>Negócio</th><th>Número</th><th>Retorno</th><th>Onde parou</th><th>2ª mensagem</th><th>Proposta</th><th>Revisado</th></tr></thead>
+      <tbody id="rvBody"></tbody>
+    </table></div>
+    <p class="hint">Abra a conversa pelo número, veja o que voltou e marque o retorno. Toque em Preparar e a segunda mensagem aparece pronta no passo 4, logo acima, já no tipo certo: quem devolveu resposta automática recebe o texto da automática, quem está sem retorno recebe o de silêncio. Quando pedirem valores, toque em Gerar PDF na coluna Proposta. Segunda mensagem em conversa já aberta não conta no limite de <span data-lim="wa">20</span> números novos por dia.</p>
+  </section>
+
+  <!-- ROTEIROS: textos prontos para copiar. {vendedor}, {empresa} e {preco1} são trocados
+       pelo config.js ao abrir a página. [colchetes] você completa na hora. -->
+  <details class="add" id="rotBox">
+    <summary>Roteiros: indicação, parceria, demonstração, fechamento, proposta parada e última tentativa</summary>
+    <div class="rot">
+      <div><h3>Pedido de indicação (rede quente)</h3><textarea id="rt1" data-fill spellcheck="true">Oi, [nome], tudo bem? Aqui é o {vendedor}.
+Agora estou com a {empresa}: montamos sites e atendentes com IA no WhatsApp para pequenos negócios responderem o cliente na hora, inclusive à noite e no fim de semana.
+Estou com algumas vagas abertas este mês.
+*Você conhece alguém com clínica, studio, imobiliária ou outro negócio que vive de WhatsApp e poderia aproveitar?* Uma indicação sua vale muito agora.</textarea><div class="row"><button class="btn" type="button" data-rcopy="rt1">Copiar</button></div></div>
+      <div><h3>Convite de parceria (designer, tráfego, social media, contador)</h3><textarea id="rt2" data-fill spellcheck="true">Oi, [nome], tudo bem? Aqui é o {vendedor}, da {empresa}.
+Você atende vários pequenos negócios, e muitos perdem cliente porque demoram a responder no WhatsApp.
+A gente monta o atendente com IA e o site, e você continua dono da relação com o seu cliente.
+Para cada indicação que fechar, você recebe [x]% do valor do projeto.
+*Faz sentido conversarmos 15 minutos essa semana?*</textarea><div class="row"><button class="btn" type="button" data-rcopy="rt2">Copiar</button></div></div>
+      <div><h3>Depois que responderem: convite para a demonstração</h3><textarea id="rt3" data-fill spellcheck="true">Que bom! Para você ver funcionando de verdade, gravo um vídeo de 1 minuto com o atendente respondendo como se fosse um cliente de vocês.
+*Me conta só duas coisas: qual é a pergunta que mais chega no WhatsApp e qual é o horário de atendimento?*</textarea><div class="row"><button class="btn" type="button" data-rcopy="rt3">Copiar</button></div></div>
+      <div><h3>Fechamento com entrada</h3><textarea id="rt4" data-fill spellcheck="true">Perfeito, [nome]! Para reservar a sua vaga, a entrada é de [x]% no aceite, e o restante fica para a entrega, com parcelamento no cartão.
+Assim que a entrada for confirmada, marcamos a conversa de mapeamento e o prazo começa a contar.
+*Prefere Pix ou cartão para a entrada?*</textarea><div class="row"><button class="btn" type="button" data-rcopy="rt4">Copiar</button></div><p class="hint">Defina uma regra de entrada e use a mesma com todo mundo. Valor diferente para cada lead derruba a confiança quando eles comparam.</p></div>
+      <div><h3>Resposta para "vou pensar"</h3><textarea id="rt5" data-fill spellcheck="true">Justo! Para eu te ajudar a decidir sem pressão:
+*o que pesa mais agora: o valor, o escopo ou o momento?*
+Se for o valor, dá para começar por uma parte e somar o restante depois, sem refazer nada.</textarea><div class="row"><button class="btn" type="button" data-rcopy="rt5">Copiar</button></div></div>
+      <div><h3>Resposta para "sem interesse no momento"</h3><textarea id="rt6" data-fill spellcheck="true">Tranquilo, obrigado pelo retorno! Posso te procurar de novo daqui a uns dois meses?
+E se lembrar de alguém que vive de WhatsApp e está perdendo cliente, *pode me indicar?*</textarea><div class="row"><button class="btn" type="button" data-rcopy="rt6">Copiar</button></div></div>
+      <div><h3>Proposta parada há mais de 3 dias</h3><textarea id="rt7" data-fill spellcheck="true">Oi, [nome], tudo bem? Aqui é o {vendedor}, da {empresa}.
+Não quero ser inconveniente, então vou direto: a proposta está de pé e eu prefiro saber a sua opinião sincera, inclusive se for um não.
+Se o valor pesou, dá para começar por uma parte e somar o restante depois, sem refazer nada.
+*O que pesa mais agora: o valor, o escopo ou o momento?*</textarea><div class="row"><button class="btn" type="button" data-rcopy="rt7">Copiar</button></div></div>
+      <div><h3>Terceira e última tentativa, com porta de saída</h3><textarea id="rt8" data-fill spellcheck="true">Oi, [nome]! {vendedor}, da {empresa}.
+Para não te incomodar mais, deixo só uma pergunta:
+*você quer um site, um atendente com IA no WhatsApp, ou prefere que eu não te procure mais?*
+Qualquer resposta está ótima para mim.</textarea><div class="row"><button class="btn" type="button" data-rcopy="rt8">Copiar</button></div><p class="hint">Dar a saída costuma trazer mais resposta do que insistir, e um "não" explícito libera a sua cabeça e a sua lista. Use no terceiro toque, nunca antes.</p></div>
+      <div><h3>Quando confundem com agência de tráfego ou de redes</h3><textarea id="rt9" data-fill spellcheck="true">Opa, [nome], boa tarde! Tudo bem, e você?
+Acho que não fui claro, foi mal. Não trabalhamos com tráfego nem com anúncio.
+O que montamos é o atendimento: um assistente que responde no WhatsApp de vocês na hora, [o que ele faz nesse negócio], inclusive à noite e no fim de semana.
+*Hoje, as mensagens que chegam fora do horário conseguem ser respondidas na hora, ou acabam ficando para o dia seguinte?*</textarea><div class="row"><button class="btn" type="button" data-rcopy="rt9">Copiar</button></div><p class="hint">Essa é objeção de leitura, não de necessidade: a pessoa recusou o que achou que você vendia. Nunca diga que ela entendeu errado. Diga o que não é, diga o que é em uma frase concreta e devolva uma pergunta. Se ela repetir o não, agradeça e peça indicação.</p></div>
+    </div>
+  </details>
+
+  <details class="add metodo" id="metodoBox">
+    <summary>Método: o que SPIN Selling, um manual de vendas e A Arte da Guerra mudam na conversa</summary>
+    <div class="livro">
+      <div>
+        <h3>Onde o funil costuma perder <small>· diagnóstico pelos três livros</small></h3>
+        <p>O funil comum é Abertura (imagem e mensagem), depois Demonstração (vídeo) e Proposta (PDF). A etapa de Investigação, em que o cliente conta o problema e diz que quer resolver, costuma não existir. Pelo SPIN (cap. 3 e 4), proposta enviada antes de uma necessidade explícita vira proposta muda. Pelo Manual (cap. 4), sem pergunta aberta e paráfrase não há rapport nem sinal de compra para fechar. Pela Arte da Guerra (XIII.6), a informação vem de pessoas, não de pesquisa de mesa: a primeira pergunta no WhatsApp vale mais que dez minutos no Google.</p>
+        <p class="c">É uma leitura aplicada dos livros, não uma regra. O campo Onde parou, nas Pendências e na Revisão, existe para confirmar ou derrubar essa leitura com os seus dados.</p>
+      </div>
+      <div>
+        <h3>Regras do dia <small>· uma por livro, em ordem de uso</small></h3>
+        <ul>
+          <li><b>Nenhum vídeo ou PDF antes de 3 perguntas</b> (SPIN, cap. 5: "não demonstre capacidades logo no início"). Problema, Implicação, Necessidade. Só depois a demonstração, e ela repete o que a pessoa disse.</li>
+          <li><b>Toda mensagem termina pedindo uma ação do cliente</b> (SPIN, cap. 2, Avanço x Continuação). "Me manda quantas mensagens ficaram sem resposta semana passada" é avanço. "Qualquer coisa estou à disposição" é continuação.</li>
+          <li><b>Fechar sem técnica, mas fechar</b> (SPIN, cap. 2): checar dúvidas, resumir o que o cliente falou, propor o próximo passo mais realista. Proposta parada é fechamento que não foi pedido.</li>
+          <li><b>Pergunte com "o que" e "qual", nunca com "por quê"</b> (Manual, cap. 4). "Por que não respondeu" faz a pessoa se justificar e quebra o rapport.</li>
+          <li><b>Cada follow-up traz um "e se"</b> (Manual, cap. 4, acordo condicional), não uma cobrança. "E se a gente começar só pelo site agora?"</li>
+          <li><b>Objeção é pedido de informação</b> (Manual, cap. 4; SPIN, cap. 6: objeção de preço é valor não construído). Responda com uma conta, não com desconto.</li>
+          <li><b>As conversas que podem devolver "não" vêm primeiro</b> (Arte da Guerra, VII.28: o ânimo é mais agudo de manhã). Material e pesquisa só depois, se sobrar tempo.</li>
+          <li><b>Porta aberta, entre depressa</b> (XI.65). Quem responde recebe retorno em até 15 minutos em horário comercial. Proposta falada no mesmo dia do diagnóstico.</li>
+          <li><b>Não sitiar cidade murada</b> (III.4). Lead frio que não respondeu a duas mensagens é arquivado no terceiro toque, com porta de saída. A energia vai para quem já falou com você.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Como medir se está funcionando <small>· controláveis, não resultado</small></h3>
+        <ul>
+          <li>Conversas com Onde parou preenchido: todas, até o fim do dia.</li>
+          <li>Perguntas de Implicação feitas por dia: meta 5. Pelo SPIN (cap. 4), é a pergunta que menos se faz e a que mais vende.</li>
+          <li>"Nãos" recebidos por dia: meta 5. Zero "não" significa que você não pediu nada.</li>
+          <li>Mensagens que terminaram com pedido de ação concreta: todas.</li>
+          <li>Tempo de resposta a quem voltou: até 15 minutos.</li>
+        </ul>
+        <p class="q">"A rapidez é a essência da guerra."</p><p class="c">Sun Tzu, XI.19. O cliente não é o inimigo. O inimigo é o WhatsApp sem resposta do cliente e a própria procrastinação. Conhecer o inimigo é diagnóstico honesto; vencer sem lutar é desqualificar cedo, não truque de fechamento.</p>
+      </div>
+    </div>
+    <div class="rot">
+      <div><h3>Conversa de 10 minutos (roteiro SPIN, para ligação ou áudio)</h3><textarea id="mt1" data-fill spellcheck="true">ABERTURA (30 segundos): "Obrigado pelo tempo. Antes de te mostrar qualquer coisa, posso te fazer umas perguntas rápidas para entender se faz sentido para vocês?"
+
+SITUAÇÃO (1 pergunta só): "Hoje, quem responde o WhatsApp de vocês, e em quanto tempo em média?"
+
+PROBLEMA (2 perguntas): "Mensagem que chega depois do horário ou no fim de semana, o que acontece com ela?" / "Quantas, por semana, ficam sem resposta ou são respondidas só no dia seguinte?"
+
+IMPLICAÇÃO (2 perguntas): "Quem espera até o dia seguinte ainda fecha, ou já procurou outro lugar?" / "Se forem [número que a pessoa disse] por semana e metade viraria cliente, quanto isso dá por mês?"
+
+NECESSIDADE (1 pergunta): "Se cada contato saísse com horário marcado em um minuto, inclusive de noite, o que mudava para você?"
+
+DEMONSTRAÇÃO (2 minutos): mostre o atendente respondendo exatamente o caso que a pessoa descreveu. Use as palavras dela.
+
+FECHAMENTO (1 minuto): "Ficou alguma dúvida que eu não respondi?" / "Resumindo o que você me falou: [problema] e [consequência]. É isso que o atendente cobre." / "O próximo passo é a entrada para reservar a vaga, e a gente começa a configuração amanhã. Pix ou cartão?"</textarea><div class="row"><button class="btn" type="button" data-rcopy="mt1">Copiar</button></div><p class="hint">SPIN, cap. 2 a 5. Situação no mínimo: o livro mostra que ela entedia o cliente. Implicação é onde a venda grande acontece. Se a pessoa não disser que quer resolver, não mande proposta: combine outro avanço.</p></div>
+      <div><h3>Perguntas SPIN · clínica</h3><textarea id="mt2" data-fill spellcheck="true">P: Mensagem que chega depois das 18h ou no sábado, quem responde hoje?
+I: Das que ficam para segunda, quantas você acha que já marcaram em outro lugar?
+N: Se cada contato saísse com horário marcado em um minuto, o que mudava na agenda?</textarea><div class="row"><button class="btn" type="button" data-rcopy="mt2">Copiar</button></div></div>
+      <div><h3>Perguntas SPIN · studio de pilates</h3><textarea id="mt3" data-fill spellcheck="true">P: Quando pedem valor do plano ou experimental no meio da aula, dá para responder na hora?
+I: Quem espera duas horas por resposta ainda está quente, ou já esfriou?
+N: Quantas matrículas a mais por mês fariam diferença de verdade?</textarea><div class="row"><button class="btn" type="button" data-rcopy="mt3">Copiar</button></div></div>
+      <div><h3>Perguntas SPIN · imobiliária e corretor</h3><textarea id="mt4" data-fill spellcheck="true">P: Contato do portal que chega de madrugada ou no domingo, quem atende e em quanto tempo?
+I: Se demora e a pessoa já visitou com outra imobiliária, o anúncio que você pagou serviu para quem?
+N: Se o contato chegasse no corretor já qualificado e com visita marcada, quanto tempo ele ganhava por semana?</textarea><div class="row"><button class="btn" type="button" data-rcopy="mt4">Copiar</button></div></div>
+      <div><h3>Proposta parada: pergunta aberta mais um "e se"</h3><textarea id="mt5" data-fill spellcheck="true">[Nome], boa tarde! Tudo bem?
+Vou direto, sem rodeio: a proposta está contigo desde [dia] e eu prefiro a sua opinião sincera, inclusive se for um não.
+*O que ficou mais distante do que você imaginava: o valor, o escopo ou o momento?*
+Se for o momento, e se a gente começar só por [parte menor, com valor] agora e o restante entrar quando [resultado da parte menor]? Nada precisa ser refeito.</textarea><div class="row"><button class="btn" type="button" data-rcopy="mt5">Copiar</button></div><p class="hint">Manual, cap. 4 (perguntas com "o que", acordo condicional com "e se"). Não é cobrança: é uma pergunta que a pessoa consegue responder em uma linha.</p></div>
+      <div><h3>Resposta para "está caro"</h3><textarea id="mt6" data-fill spellcheck="true">Entendo, e quero ficar do seu lado nessa conta.
+Caro comparado a quê? Se for ao custo de uma pessoa na recepção, o atendente sai bem mais em conta e não tira folga.
+*Me ajuda com um número: quantos contatos por semana chegam fora do horário aí?* Com isso eu te devolvo quanto está custando não responder, e aí você decide com número na mão.</textarea><div class="row"><button class="btn" type="button" data-rcopy="mt6">Copiar</button></div><p class="hint">SPIN, cap. 6: objeção de preço é sintoma de valor não construído; se resolve com pergunta de Implicação, não com desconto.</p></div>
+      <div><h3>Segunda mensagem com pergunta de Implicação (em vez de lembrete)</h3><textarea id="mt7" data-fill spellcheck="true">Oi, tudo bem? {vendedor}, da {empresa}. Mandei uma mensagem há alguns dias e imagino que a rotina aí esteja corrida.
+Uma pergunta só, que ajuda a saber se faz sentido continuar: *quando chega mensagem fora do horário, a pessoa costuma esperar a resposta ou já chama o concorrente?*
+Se a resposta for "espera", a gente não precisa conversar. Se for "chama outro", vale 10 minutos.</textarea><div class="row"><button class="btn" type="button" data-rcopy="mt7">Copiar</button></div><p class="hint">SPIN, cap. 4. Termina com um critério claro para a pessoa decidir se responde. Use no filtro Sem retorno quando quiser variar do texto padrão do passo 4.</p></div>
+      <div><h3>Fechamento em áudio (quatro ações do SPIN)</h3><textarea id="mt8" data-fill spellcheck="true">[Nome], ficou alguma dúvida que eu não respondi?
+Resumindo o que você me falou: [problema que a pessoa descreveu] e [consequência que ela admitiu]. A proposta cobre exatamente isso.
+O próximo passo é simples: a entrada reserva a sua vaga e a gente começa a configuração amanhã. Prefere Pix ou cartão?</textarea><div class="row"><button class="btn" type="button" data-rcopy="mt8">Copiar</button></div><p class="hint">SPIN, cap. 2: checar dúvidas, resumir os benefícios que o cliente declarou, propor o compromisso mais realista. Nunca "última chance" nem "ou/ou" de pressão: em venda cara isso derruba o fechamento.</p></div>
+    </div>
+    <p class="hint">Base: SPIN Selling (Neil Rackham), Manual de Vendas para Novos Vendedores (Jefferson Cavalcante Ferreira, IFRN, 2011) e A Arte da Guerra (Sun Tzu). O SPIN estuda vendas B2B grandes; aplica-se a serviços com implantação e mensalidade, que são decisões com relacionamento contínuo. As perguntas acima são adaptação, não citação.</p>
+  </details>
+
+  <details class="add" id="priceBox">
+    <summary>Valores para responder quando perguntarem</summary>
+    <div class="tbl"><table>
+      <thead><tr><th>Solução</th><th>Valor</th><th>Entrega</th><th>O que inclui</th></tr></thead>
+      <tbody id="priceBody"></tbody>
+    </table></div>
+    <p class="hint">Vem de config.js (produtos). Use sempre estes valores: valor diferente para cada lead derruba a confiança quando eles comparam.</p>
+  </details>
+
+  <details class="add" id="addBox">
+    <summary>Adicionar um lead à fila</summary>
+    <form id="addForm" class="addgrid" novalidate>
+      <div class="field"><label class="mono muted" for="aNome">Nome do negócio</label><input type="text" id="aNome" maxlength="40" required></div>
+      <div class="field"><label class="mono muted" for="aFone">WhatsApp com DDD</label><input type="tel" id="aFone" placeholder="21 99999-9999" required></div>
+      <div class="field"><label class="mono muted" for="aNicho">Tipo de negócio</label><select id="aNicho"></select></div>
+      <div class="field"><label class="mono muted" for="aReg">Região</label><select id="aReg"></select></div>
+      <div class="field"><label class="mono muted" for="aCidade">Cidade</label><input type="text" id="aCidade" maxlength="40"></div>
+      <button class="btn solid" type="submit">Adicionar</button>
+    </form>
+    <p class="hint" id="addErr" hidden></p>
+  </details>
+
+  <p class="foot">Dica para montar a fila: negócios do Google Maps com nota a partir de 4,5, celular no perfil e horário de atendimento (que entra na mensagem). Priorize os que levam o nome do dono, porque neles a chance de uma pessoa responder é maior. Confira o nome e o número antes de enviar. Envie um a um, sem lista de transmissão.</p>
+</div>
+<div class="stick" id="stick" hidden aria-label="Lead atual"><span class="nm" id="stName"></span><span class="k" id="stK"></span><button class="btn" type="button" id="stImg">Copiar imagem</button><a class="btn solid" id="stWa" target="wa" rel="noopener">WhatsApp</a><button class="btn" type="button" id="stSent">Enviei</button><a class="btn quiet" href="#work">Ver lead</a></div>
+<div class="ask" id="ask" hidden role="dialog" aria-live="polite"><span id="askTxt"></span><button class="btn solid" type="button" id="askYes">Sim, mandei</button><button class="btn quiet" type="button" id="askNo">Ainda não</button></div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script src="config.js"></script>
+<script>
+const CFG = window.CONFIG || {};
+const VEND = CFG.vendedor || {};
+const NICHOS = CFG.nichos || {};
+const NICHO_KEYS = Object.keys(NICHOS);
+const LIM = Object.assign({ totalDia: 50, novosWhatsappDia: 20, minutosEntreEnvios: 2 }, CFG.limites || {});
+const FUSO = CFG.fuso || 'America/Sao_Paulo';
+const REG = CFG.regioes && Object.keys(CFG.regioes).length ? CFG.regioes : { geral: 'Geral' };
+const regOf = l => (l.regiao && REG[l.regiao]) ? l.regiao : Object.keys(REG)[0];
+const nichoKey = l => NICHOS[l.nicho] ? l.nicho : NICHO_KEYS[0];
+const NICHO = l => NICHOS[nichoKey(l)];
+const ROT = k => (NICHOS[k] && NICHOS[k].rotulo) || k || '';
+const VAR_LABEL = { A:'A Jornal', B:'B Capa', C:'C Ficha' };
+const LS = 'fila-disparo-v1';
+const ETAPAS = [['','Onde parou?'],['decisor','Falei com quem decide'],['problema','Problema confirmado'],['agora','Quer resolver agora'],['demo','Viu a demonstração'],['proposta','Recebeu proposta'],['negociando','Negociando condição'],['fechado','Fechou'],['perdido','Perdeu']];
+const etapaSel = l => `<select class="etapa" data-etapa="${esc(l.id)}" aria-label="Onde parou: ${esc(l.nome)}">${ETAPAS.map(([v,t]) => `<option value="${v}"${(l.etapa||'')===v?' selected':''}>${t}</option>`).join('')}</select>`;
+const S = { pending:null, workVisible:true, fBairro:'todos', fDono:'todos', fmt:{}, optVagas:true, propDe:VEND.nome || '', propBusy:false, rvShow:'todos', f2For:'', msgs2:{}, fReg:'todas', fNicho:'todos', optSite:true, db:null, ready:false, leads:[], tab:'fila', cur:null, vsel:{}, names:{}, msgs:{}, shown:'', token:0, png:null, jpg:null, url:null };
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let toastT; function toast(m){ const t=$('toast'); t.textContent=m; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>{t.hidden=true},3600); }
+function todaySP(d){ return new Intl.DateTimeFormat('en-CA',{timeZone:FUSO,year:'numeric',month:'2-digit',day:'2-digit'}).format(d||new Date()); }
+function fmtNota(n){ return Number.isInteger(n) ? String(n) : String(n).replace('.',','); }
+function fmtFone(f){ const m=String(f||'').match(/^55(\d{2})(\d{4,5})(\d{4})$/); return m ? `(${m[1]}) ${m[2]}-${m[3]}` : String(f||''); }
+
+/* ---------- marcadores do config.js: {vendedor}, {empresa}, {produto1}... ---------- */
+const BASE = (() => {
+  const o = { vendedor: VEND.nome || '', empresa: VEND.empresa || '', instagram: VEND.instagram || '', telefone: VEND.telefone || '' };
+  (CFG.produtos || []).forEach((p, i) => { o['produto' + (i+1)] = p.nome + ', ' + p.preco; o['nomeProduto' + (i+1)] = p.nome; o['preco' + (i+1)] = p.preco; });
+  return o;
+})();
+function fill(s, extra){ const v = extra ? Object.assign({}, BASE, extra) : BASE; return String(s ?? '').replace(/\{(\w+)\}/g, (m, k) => Object.prototype.hasOwnProperty.call(v, k) ? String(v[k] ?? '') : m); }
+
+const nrm = x => String(x||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+/* Faixa do lead: campo "tier" do lead, senão bairro ou cidade listados em CONFIG.faixas. */
+function tierOf(l){
+  if(l.tier) return l.tier;
+  const F = CFG.faixas || {}, b = nrm(l.bairro), c = nrm(l.cidade);
+  const em = k => ((F[k] && F[k].lugares) || []).some(p => { const n = nrm(p); return n && (n === b || n === c); });
+  return em('A') ? 'A' : em('C') ? 'C' : 'B';
+}
+const fmtOf = l => S.fmt[l.id] || (l.dono ? 'dono' : 'recepcao');
+function horaTxt(l){
+  if(!l.fecha) return '';
+  const fds = l.sabado === 'fechado' && l.domingo === 'fechado';
+  const sab = fds ? ' e o fim de semana é fechado' : (l.sabado === 'fechado' ? ' e o sábado é fechado' : (l.sabado && l.sabado.startsWith('até') ? `, e no sábado ${l.sabado}` : ''));
+  return `Vi também que o atendimento de vocês vai até as ${l.fecha}${sab}.`;
+}
+function message(l, fmtArg){
+  const fmt = fmtArg || fmtOf(l);
+  const nome = S.names[l.id] ?? l.nome;
+  const n = NICHO(l).abertura || {}, M = CFG.mensagem || {};
+  const temNota = l.nota && l.avaliacoes;
+  const vv = { nome, nota: temNota ? fmtNota(l.nota) : '', avaliacoes: l.avaliacoes || '' };
+  const f = s => fill(s, vv);
+  if(fmt === 'direct'){
+    return [M.directAbertura, temNota ? M.directComNota : M.directSemNota, n.direct, M.directFecho].map(f).filter(Boolean).join('\n');
+  }
+  const linha1 = f(M.abertura);
+  const google = f(temNota ? M.comNota : M.semNota);
+  const hora = horaTxt(l);
+  if(fmt === 'recepcao'){
+    return [linha1, google, hora, f(n.recepcao), f(M.recepcaoFecho)].filter(Boolean).join('\n');
+  }
+  const extra = S.optSite && M.extra && M.extra.texto ? f(M.extra.texto) : '';
+  return [linha1, google, hora, f(n.pergunta), [f(n.oferta), extra].filter(Boolean).join(' '), f(n.chamada)].filter(Boolean).join('\n');
+}
+
+/* ---------- oferta por nicho e faixa ---------- */
+function renderOferta(l){
+  const F = CFG.faixas || {}, t = tierOf(l), of = NICHO(l).oferta || {};
+  const o = (t === 'A' ? of.A : of.B) || [];
+  const linhas = t === 'C' && F.C && F.C.oferta ? [['Principal', fill(F.C.oferta)]] : [['Principal', fill(o[0])], ['Porta de entrada', fill(o[1])], ['Para crescer depois', fill(o[2])]].filter(x => x[1]);
+  const rot = (F[t] && F[t].rotulo) || ('Faixa ' + t);
+  $('oferta').innerHTML = `<span class="mono">Oferta sugerida<span class="tier">${esc(rot)}</span></span>` +
+    linhas.map(([k,v]) => `<p><b>${esc(k)}:</b> ${esc(v)}</p>`).join('') +
+    (CFG.ofertaDica ? `<p class="hint">${esc(CFG.ofertaDica)}</p>` : '');
+  $('oferta').hidden = !linhas.length;
+}
+
+/* ---------- segunda mensagem ---------- */
+function message2(l, tipo){
+  const n = NICHO(l), T = CFG.segunda || {};
+  const promo = S.optVagas && CFG.promocao && CFG.promocao.frase ? fill(CFG.promocao.frase) : '';
+  const vv = Object.assign({}, n.segunda || {}, { promocao: promo });
+  if(tipo === 'exemplo'){
+    const e = n.exemplo || ['', '', '', '', ''];
+    return [fill(T.exemploIntro), '', 'Cliente: ' + e[0], 'Atendente: ' + e[1], 'Cliente: ' + e[2], 'Atendente: ' + e[3], '', 'Você recebe na hora: ' + e[4] + '.', ...(T.exemploFecho || []).map(s => fill(s))].join('\n');
+  }
+  if(tipo === 'audio') return fill(T.audio, vv);
+  return ((tipo === 'silencio' ? T.silencio : T.auto) || []).map(s => fill(s, vv)).filter(Boolean).join('\n');
+}
+const F2_HINT = { audio:'Leia em voz alta e grave um áudio de até 40 segundos, sem pressa. Não envie o texto: o botão abre só a conversa. Use depois de 1 dia sem resposta ou quando voltar só a mensagem automática.', auto:'Melhor momento: no começo do horário de atendimento que a resposta automática informou, para a sua mensagem ficar no topo quando abrirem o WhatsApp.', silencio:'Use só depois de 2 dias sem nenhum retorno. Uma vez só.', exemplo:'Para quando responderem que querem ver. Confira horários e valores antes de enviar: são só um exemplo.' };
+const retOf = l => l.retorno || (l.status === 'respondeu' ? 'pessoa' : '');
+const wasSent = l => l.status === 'enviado' || l.status === 'respondeu';
+const fmtWhen = iso => { if(!iso) return ''; try{ return new Intl.DateTimeFormat('pt-BR',{timeZone:FUSO,day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(iso)).replace(',', ''); }catch(e){ return ''; } };
+function updateWa2(){ const l = current(); if(!l) return; const audio = $('f2Tipo').value === 'audio'; $('btnWa2').href = 'https://web.whatsapp.com/send?phone=' + encodeURIComponent(l.fone||'') + (audio ? '' : '&text=' + encodeURIComponent($('msg2').value)); $('btnWa2').textContent = audio ? 'Abrir a conversa para gravar' : 'Abrir WhatsApp Web'; }
+function renderFollow(l, force){
+  const show = !!l && wasSent(l); $('followStep').hidden = !show; $('propStep').hidden = !show; if(!show){ S.f2For = ''; return; }
+  $('propHint').textContent = (l.propostaEm ? 'Última proposta gerada em ' + fmtWhen(l.propostaEm) + '. ' : '') + 'São 7 páginas: diagnóstico, os três caminhos com valores, escopo, exemplo de conversa deste tipo de negócio, cronograma e próximo passo. O texto vem do config.js e o nome do lead vem do campo Nome que vai na arte.';
+  if(!force && S.f2For === l.id) return; S.f2For = l.id;
+  const tipo = $('f2Tipo').value;
+  $('msg2').value = (S.msgs2[l.id + '|' + tipo]) ?? message2(l, tipo);
+  $('f2Hint').textContent = (l.followEm ? 'Segunda mensagem registrada em ' + fmtWhen(l.followEm) + '. ' : '') + F2_HINT[tipo];
+  updateWa2();
+}
+async function setRetorno(id, val){
+  const l = S.leads.find(x => x.id === id); if(!l) return;
+  const patch = { retorno: val, retornoEm: new Date().toISOString() };
+  if(val === 'pessoa'){ patch.status = 'respondeu'; if(!l.respondeuEm) patch.respondeuEm = patch.retornoEm; }
+  else if(l.status === 'respondeu') patch.status = 'enviado';
+  await patchLead(id, patch);
+}
+function renderReview(){
+  const sent = S.leads.filter(wasSent).sort((a,b) => String(b.enviadoEm||'').localeCompare(String(a.enviadoEm||'')));
+  const n = sent.length, c = k => sent.filter(l => retOf(l) === k).length;
+  const pes = c('pessoa'), aut = c('auto'), nao = c('nao'), sem = n - pes - aut - nao, rev = sent.filter(l => l.revisadoEm).length;
+  $('jRev').textContent = sent.filter(l => !l.followEm && !['pessoa','nao'].includes(retOf(l))).length;
+  $('rvSum').innerHTML = !S.ready ? '' : `<span><b>${n}</b>enviados</span><span><b>${pes}</b>${pes===1?'pessoa respondeu':'pessoas responderam'}${n ? ' (' + Math.round(pes/n*100) + '%)' : ''}</span><span><b>${aut}</b>só resposta automática</span><span><b>${sem}</b>sem retorno</span><span><b>${nao}</b>sem interesse</span><span><b>${rev}</b>de ${n} revisados</span>`;
+  const f = S.rvShow;
+  const rows = sent.filter(l => f==='todos' ? true : f==='falta' ? !l.revisadoEm : f==='sem' ? !retOf(l) : retOf(l) === f);
+  if(!S.ready){ $('rvBody').innerHTML = '<tr><td colspan="8" class="muted">Carregando os enviados.</td></tr>'; return; }
+  if(!rows.length){ $('rvBody').innerHTML = `<tr><td colspan="8" class="muted">${n ? 'Nenhum enviado nesse recorte.' : 'Nenhuma mensagem enviada ainda. Assim que você registrar um envio, ele aparece aqui.'}</td></tr>`; return; }
+  const opt = (v,t,cur) => `<option value="${v}"${cur===v?' selected':''}>${t}</option>`;
+  $('rvBody').innerHTML = rows.map(l => {
+    const rt = retOf(l), id = esc(l.id);
+    return `<tr class="${l.revisadoEm ? 'done' : ''}">
+      <td class="when">${esc(fmtWhen(l.enviadoEm)) || 'sem data'}<span class="mt">${l.canal==='instagram' ? 'Instagram' : 'WhatsApp'}</span></td>
+      <td><button type="button" class="nm" data-pick="${id}">${esc(l.nome)}</button><span class="mt">${esc(l.sub || ROT(l.nicho))} · ${esc(REG[regOf(l)])}</span></td>
+      <td><a class="phone" href="https://web.whatsapp.com/send?phone=${encodeURIComponent(l.fone||'')}" target="wa" rel="noopener" title="Abrir a conversa no WhatsApp Web">${esc(fmtFone(l.fone))}</a></td>
+      <td><select data-ret="${id}" aria-label="Retorno de ${esc(l.nome)}">${opt('', 'Sem retorno', rt)}${opt('auto', 'Só resposta automática', rt)}${opt('pessoa', 'Pessoa respondeu', rt)}${opt('nao', 'Sem interesse', rt)}</select></td>
+      <td>${rt === 'pessoa' ? etapaSel(l) : '<span class="muted">·</span>'}</td>
+      <td>${l.followEm ? `<span class="when">${esc(fmtWhen(l.followEm))}</span>` : `<button type="button" class="btn" data-prep="${id}">Preparar</button>`}</td>
+      <td><button type="button" class="btn" data-prop="${id}">Gerar PDF</button>${l.propostaEm ? `<span class="mt">${esc(fmtWhen(l.propostaEm))}</span>` : ''}</td>
+      <td><label class="check"><input type="checkbox" data-rev="${id}"${l.revisadoEm ? ' checked' : ''} aria-label="Revisado: ${esc(l.nome)}"> ${l.revisadoEm ? 'Sim' : 'Marcar'}</label></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ---------- arte: desenhada a partir do config.js, ou imagem própria de pecas/ ---------- */
+const AW = 1080, AH = 1350, AM = 56, AR = AW - AM, AWID = AW - 2*AM;
+const ARTE = CFG.arte || {};
+const COR = Object.assign({ papel:'#F4F2EC', tinta:'#1E2329', destaque:'#1D4ED8', apoio:'#E2DED4', texto2:'#555B63' }, CFG.marca || {});
+const FF = {
+  pesada: s => `800 ${s}px Archivo, "Arial Black", sans-serif`,
+  forte: s => `600 ${s}px Archivo, Arial, sans-serif`,
+  texto: s => `400 ${s}px Archivo, Arial, sans-serif`,
+  serif: s => `400 ${s}px "Instrument Serif", Georgia, serif`,
+  serifI: s => `italic 400 ${s}px "Instrument Serif", Georgia, serif`,
+  mono: s => `500 ${s}px "IBM Plex Mono", ui-monospace, monospace`
+};
+const imgCache = {};
+function loadImg(src){ return imgCache[src] || (imgCache[src] = new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>{ delete imgCache[src]; rej(new Error('img')); }; i.src=src; })); }
+const fontReady = (document.fonts && document.fonts.load) ? Promise.race([Promise.all([FF.pesada(100), FF.forte(30), FF.texto(30), FF.serif(60), FF.serifI(60), FF.mono(20)].map(f => document.fonts.load(f))), new Promise(r=>setTimeout(r,3000))]).catch(()=>{}) : Promise.resolve();
+function hexA(h, a){ const n = parseInt(String(h).slice(1), 16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+/* texto com espaçamento entre letras, alinhado pela linha de base */
+function txt(ctx, t, x, y, font, color, o){
+  o = o || {}; t = String(t ?? ''); ctx.font = font; ctx.fillStyle = color; ctx.textBaseline = 'alphabetic';
+  const sp = o.sp || 0, w = tw(ctx, t, font, sp);
+  let xx = o.align === 'right' ? x - w : o.align === 'center' ? x - w/2 : x;
+  if(!sp){ ctx.fillText(t, xx, y); return w; }
+  for(const ch of t){ ctx.fillText(ch, xx, y); xx += ctx.measureText(ch).width + sp; }
+  return w;
+}
+function tw(ctx, t, font, sp){ ctx.font = font; return ctx.measureText(t).width + (sp || 0) * Math.max(0, [...t].length - 1); }
+function wrapT(ctx, t, font, maxW){
+  ctx.font = font; const words = String(t ?? '').split(/\s+/).filter(Boolean), out = []; let cur = '';
+  words.forEach(w => { const test = cur ? cur + ' ' + w : w; if(cur && ctx.measureText(test).width > maxW){ out.push(cur); cur = w; } else cur = test; });
+  if(cur) out.push(cur); return out;
+}
+/* parágrafo com trechos de fontes diferentes: runs = [[texto, fonte, cor], ...] */
+function richLines(ctx, runs, maxW){
+  const toks = []; runs.forEach(([t, f, c]) => String(t ?? '').split(/\s+/).filter(Boolean).forEach(w => toks.push({ t:w, f, c })));
+  const lines = []; let cur = [], x = 0;
+  toks.forEach(tk => { const w = tw(ctx, tk.t, tk.f), sp = cur.length ? tw(ctx, ' ', tk.f) : 0;
+    if(cur.length && x + sp + w > maxW){ lines.push(cur); cur = []; x = 0; }
+    tk.x = cur.length ? x + tw(ctx, ' ', tk.f) : 0; tk.w = w; x = tk.x + w; cur.push(tk); });
+  if(cur.length) lines.push(cur); return lines;
+}
+function drawRich(ctx, lines, x, y, lh){ lines.forEach((ln, i) => ln.forEach(tk => txt(ctx, tk.t, x + tk.x, y + i*lh, tk.f, tk.c))); return y + (lines.length - 1) * lh; }
+/* "PARA: NOME" encolhendo a letra e, se preciso, cortando o nome */
+function paraNome(ctx, nome, x, y, size, max, cor){
+  const text = String(nome || '').trim().toUpperCase(); if(!text) return;
+  const label = 'PARA: '; let s = size; const sp = () => s * .12;
+  while(s > 14 && tw(ctx, label + text, FF.mono(s), sp()) > max) s -= 1;
+  let t = text; while(t.length > 3 && tw(ctx, label + t, FF.mono(s), sp()) > max) t = t.slice(0, -1);
+  const w = txt(ctx, label, x, y, FF.mono(s), COR.tinta, { sp: sp() });
+  txt(ctx, t, x + w + sp(), y, FF.mono(s), cor || COR.destaque, { sp: sp() });
+}
+function linhaCruz(ctx, y){
+  ctx.fillStyle = hexA(COR.tinta, .55); ctx.fillRect(AM - 10, y, AWID + 20, 1.5);
+  [AM - 10, AR + 10].forEach(x => { ctx.fillRect(x - 10, y - .25, 20, 2); ctx.fillRect(x - 1, y - 10, 2, 20); });
+}
+function topoDePara(ctx, nome, y){
+  const de = 'DE: ' + String(VEND.nome || '').toUpperCase(), s = 19, wDe = tw(ctx, de, FF.mono(s), s*.12);
+  txt(ctx, de, AR, y, FF.mono(s), COR.tinta, { sp: s*.12, align:'right' });
+  paraNome(ctx, nome, AM, y, 19, AWID - wDe - 40, COR.destaque);
+}
+function convite(a, f1, f2, cor){ return [[a.convite, f1, cor || COR.tinta], [ARTE.fechoConvite || '', f2, cor || COR.tinta]]; }
+/* testa tamanhos do maior para o menor e devolve o primeiro que cabe (ou o menor) */
+function primeiroQueCabe(de, ate, passo, tenta){ let r = null; for(let s = de; s >= ate; s -= passo){ r = tenta(s); if(r.cabe) return r; } return r; }
+
+/* A · Jornal: manchete, conversa de exemplo e três colunas */
+function arteA(ctx, n, a, nome){
+  ctx.strokeStyle = COR.tinta; ctx.lineWidth = 2;
+  [[AM, 48], [AR - 150, 48]].forEach(([x, y]) => ctx.strokeRect(x, y, 150, 78));
+  const caixa = (linhas, cx) => { const lh = 19, y0 = 87 - (linhas.length * lh) / 2 + 13; linhas.forEach((t, i) => txt(ctx, t, cx, y0 + i * lh, FF.mono(13), COR.tinta, { sp: 1.6, align:'center' })); };
+  caixa(['ASSUNTO', String(a.assunto || 'WhatsApp').toUpperCase()], AM + 75);
+  const pal = String(VEND.nome || '').toUpperCase().split(/\s+/).filter(Boolean); const deL = ['DE', ...(pal.length > 2 ? pal.slice(0, 2) : pal)];
+  caixa(deL, AR - 75);
+  let ms = 66; while(ms > 34 && tw(ctx, a.jornal || '', FF.serif(ms)) > AWID - 340) ms -= 2;
+  txt(ctx, a.jornal || '', AW / 2, 108, FF.serif(ms), COR.tinta, { align:'center' });
+  ctx.fillStyle = COR.tinta; ctx.fillRect(AM, 140, AWID, 2);
+  const topo = String(a.linhaTopo || '').toUpperCase(), wTopo = tw(ctx, topo, FF.mono(15), 2.2);
+  txt(ctx, topo, AR, 168, FF.mono(15), COR.tinta, { sp: 2.2, align:'right' });
+  paraNome(ctx, nome, AM, 169, 19, AWID - wTopo - 30, COR.destaque);
+  ctx.fillRect(AM, 184, AWID, 1);
+  /* colunas de baixo: problema, solução, convite */
+  const gap = 34, cw = (AWID - gap * 2) / 3, cs = 27, lh = 35;
+  const c1 = wrapT(ctx, a.problema, FF.texto(cs), cw), c2 = wrapT(ctx, a.solucao, FF.texto(cs), cw), c3 = richLines(ctx, convite(a, FF.forte(cs), FF.forte(cs)), cw);
+  const insta = VEND.instagram ? 'INSTAGRAM ' + String(VEND.instagram).toUpperCase() : '';
+  const hCols = Math.max(c1.length, c2.length, c3.length + (insta ? 1.2 : 0)) * lh;
+  const colTop = 1268 - hCols;
+  ctx.fillStyle = COR.tinta; ctx.fillRect(AM, 1296, AWID, 2);
+  c1.forEach((t, i) => txt(ctx, t, AM, colTop + 27 + i * lh, FF.texto(cs), COR.tinta));
+  c2.forEach((t, i) => txt(ctx, t, AM + cw + gap, colTop + 27 + i * lh, FF.texto(cs), COR.tinta));
+  const yC = drawRich(ctx, c3, AM + 2 * (cw + gap), colTop + 27, lh);
+  if(insta) txt(ctx, insta, AM + 2 * (cw + gap), yC + 40, FF.mono(14), COR.texto2, { sp: 1.4 });
+  ctx.fillStyle = hexA(COR.tinta, .35); [1, 2].forEach(i => ctx.fillRect(AM + i * (cw + gap) - gap / 2, colTop, 1, hCols));
+  /* citação entre fios */
+  const ruleQ2 = colTop - 26, qs = 44, qy = ruleQ2 - 24, ruleQ1 = qy - qs - 10;
+  ctx.fillStyle = COR.tinta; ctx.fillRect(AM, ruleQ2, AWID, 1); ctx.fillRect(AM, ruleQ1, AWID, 1);
+  let q = '“' + (a.citacao || '') + '”', qq = qs; while(qq > 26 && tw(ctx, q, FF.serifI(qq)) > AWID) qq -= 2;
+  txt(ctx, q, AW / 2, qy, FF.serifI(qq), COR.tinta, { align:'center' });
+  /* manchete e linha fina */
+  const man = String(a.manchete || '').toUpperCase(), sub = a.subManchete || '';
+  const espacoMax = ruleQ1 - 24 - 200;
+  const subL = wrapT(ctx, sub, FF.serif(40), AWID);
+  const { hs, lines } = primeiroQueCabe(156, 70, 4, s => {
+    const ls = wrapT(ctx, man, FF.pesada(s), AWID), h = ls.length * s * .9 + 14 + subL.length * 46;
+    return { hs: s, lines: ls, cabe: ls.length <= 3 && h <= espacoMax && ls.every(t => tw(ctx, t, FF.pesada(s)) <= AWID + 4) };
+  });
+  let y = 196 + hs * .78;
+  lines.forEach((t, i) => txt(ctx, t, AM - 4, y + i * hs * .9, FF.pesada(hs), COR.tinta));
+  y += (lines.length - 1) * hs * .9 + 14 + 40;
+  subL.forEach((t, i) => txt(ctx, t, AM, y + i * 46, FF.serif(40), COR.tinta));
+  y += (subL.length - 1) * 46 + 30;
+  /* quadro com a conversa de exemplo do nicho */
+  const pTop = y, pH = ruleQ1 - 22 - pTop;
+  if(pH > 120){
+    ctx.fillStyle = COR.tinta; ctx.fillRect(AM, pTop, AWID, pH);
+    const e = n.exemplo || [], bs = 26, blh = 34, maxB = AWID * .62;
+    const bolha = (texto, lado, top) => {
+      const ls = wrapT(ctx, texto, FF.texto(bs), maxB - 44), w = Math.max(...ls.map(t => tw(ctx, t, FF.texto(bs)))) + 44, h = ls.length * blh + 30;
+      const x = lado === 'c' ? AM + 32 : AR - 32 - w;
+      ctx.fillStyle = lado === 'c' ? hexA(COR.papel, .14) : COR.papel; ctx.fillRect(x, top, w, h);
+      ls.forEach((t, i) => txt(ctx, t, x + 22, top + 15 + 25 + i * blh, FF.texto(bs), lado === 'c' ? COR.papel : COR.tinta));
+      return top + h;
+    };
+    let by = pTop + 32;
+    txt(ctx, 'EXEMPLO · SÁBADO, 21:40', AM + 32, by + 14, FF.mono(14), hexA(COR.papel, .7), { sp: 1.6 }); by += 34;
+    const conv = [['c', e[0]], ['a', e[1]], ['c', e[2]], ['a', e[3]]].filter(x => x[1]);
+    for(const [lado, t] of conv){ const ls = wrapT(ctx, t, FF.texto(bs), maxB - 44); if(by + ls.length * blh + 30 > pTop + pH - 24) break; by = bolha(t, lado, by) + 14; }
+  }
+}
+
+/* B · Capa: pergunta, palavra gigante e cartão com o convite */
+function arteB(ctx, n, a, nome){
+  topoDePara(ctx, nome, 62); linhaCruz(ctx, 78);
+  const yD = 750;
+  ctx.fillStyle = COR.tinta; ctx.fillRect(0, yD, AW, AH - yD);
+  /* palavra gigante apoiada no bloco escuro */
+  const pal = String(a.palavra || '').toUpperCase(); let ps = 250; while(ps > 90 && tw(ctx, pal, FF.pesada(ps)) > AW - 70) ps -= 4;
+  const capTop = yD - ps * .73;
+  /* linha de dados acima da palavra */
+  const dados = [['ASSUNTO', a.assunto || 'WhatsApp'], ['O QUE EU FAÇO', a.oQueFaz || VEND.oQueFaz || ''], ['INSTAGRAM', VEND.instagram || '']].filter(d => d[1]);
+  const xs = [AM, AM + 244, AM + 684], yv = capTop - 46;
+  dados.forEach((d, i) => { txt(ctx, d[0], xs[i], yv - 26, FF.mono(14), COR.texto2, { sp: 1.8 }); let vs = 22; while(vs > 14 && tw(ctx, String(d[1]).toUpperCase(), FF.forte(vs)) > (i === 2 ? AR - xs[2] : 420)) vs -= 1; txt(ctx, String(d[1]).toUpperCase(), xs[i], yv, FF.forte(vs), COR.tinta); });
+  /* pergunta: primeira parte normal, segunda em itálico */
+  const pg = Array.isArray(a.pergunta) ? a.pergunta : [a.pergunta || '', ''];
+  const { qs, ls } = primeiroQueCabe(70, 40, 2, s => {
+    const l2 = richLines(ctx, [[pg[0], FF.serif(s), COR.tinta], [pg[1], FF.serifI(s), COR.tinta]], AWID);
+    return { qs: s, ls: l2, cabe: 108 + l2.length * s * 1.08 < yv - 70 };
+  });
+  drawRich(ctx, ls, AM, 108 + qs * .8, qs * 1.08);
+  txt(ctx, pal, 36, yD, FF.pesada(ps), COR.tinta);
+  /* cartão claro com solução e convite */
+  const cs = 30, clh = 40, inner = AWID - 64;
+  const sol = wrapT(ctx, a.solucao, FF.texto(cs), inner), cv = richLines(ctx, convite(a, FF.forte(cs), FF.forte(cs)), inner);
+  const ass = [String(VEND.nome || '').toUpperCase(), VEND.instagram ? 'INSTAGRAM ' + String(VEND.instagram).toUpperCase() : ''].filter(Boolean).join(' · ');
+  const cardH = 30 + sol.length * clh + 8 + cv.length * clh + (ass ? 36 : 0) + 26, cardTop = 1298 - cardH;
+  /* citação no bloco escuro, centralizada no espaço livre, se couber */
+  const cq = '“' + (a.citacao || '') + '”', livreTopo = yD + 40, livre = cardTop - 30 - livreTopo;
+  const cit = primeiroQueCabe(76, 40, 4, s => { const l2 = wrapT(ctx, cq, FF.serifI(s), AWID); return { s, l2, cabe: l2.length <= 3 && l2.length * s * 1.12 <= livre }; });
+  if(cit && cit.cabe){ const h = cit.l2.length * cit.s * 1.12, y0 = livreTopo + (livre - h) / 2 + cit.s * .85; cit.l2.forEach((t, i) => txt(ctx, t, AM, y0 + i * cit.s * 1.12, FF.serifI(cit.s), COR.papel)); }
+  ctx.fillStyle = COR.papel; ctx.fillRect(AM, cardTop, AWID, cardH);
+  let y = cardTop + 30 + 30;
+  sol.forEach((t, i) => txt(ctx, t, AM + 32, y + i * clh, FF.texto(cs), COR.tinta));
+  y += sol.length * clh + 8; y = drawRich(ctx, cv, AM + 32, y, clh);
+  if(ass) txt(ctx, ass, AM + 32, y + 40, FF.mono(15), COR.texto2, { sp: 1.6 });
+}
+
+/* C · Ficha: citação gigante, ficha do atendimento e convite */
+function arteC(ctx, n, a, nome){
+  topoDePara(ctx, nome, 62); linhaCruz(ctx, 78);
+  const q = '“' + (a.citacao || '') + '”';
+  const ficha = (a.ficha || []).slice(0, 4), fs = 30, flh = 38;
+  const rodY = 1290;
+  const cv = s => richLines(ctx, convite(a, FF.forte(s), FF.texto(s)), AWID - 60);
+  /* procura o maior tamanho de citação que deixa tudo caber */
+  const fl = ficha.map(([k, v]) => richLines(ctx, [[k, FF.texto(fs), COR.texto2], [v, FF.forte(fs), COR.tinta]], AWID));
+  const cl = cv(40);
+  const hResto = 66 + 18 + fl.reduce((s, l) => s + 36 + (l.length - 1) * flh + 18, 0) + 40 + cl.length * 50 + 52;
+  const { qs, ql } = primeiroQueCabe(186, 60, 6, s => {
+    const l2 = wrapT(ctx, q, FF.serif(s), AWID);
+    return { qs: s, ql: l2, cabe: l2.length <= 3 && l2.every(t => tw(ctx, t, FF.serif(s)) <= AWID) && 100 + s * .78 + (l2.length - 1) * s * .98 + hResto < rodY - 50 };
+  });
+  let y = 100 + qs * .78;
+  ql.forEach((t, i) => txt(ctx, t, AM - 6, y + i * qs * .98, FF.serif(qs), COR.destaque));
+  y += (ql.length - 1) * qs * .98 + 66;
+  txt(ctx, String(ARTE.fichaTitulo || '').toUpperCase(), AM, y, FF.mono(15), COR.tinta, { sp: 2 }); y += 18;
+  ctx.fillStyle = hexA(COR.tinta, .3);
+  fl.forEach(l => { y += 36; drawRich(ctx, l, AM, y, flh); y += (l.length - 1) * flh + 18; ctx.fillStyle = hexA(COR.tinta, .3); ctx.fillRect(AM, y, AWID, 1); });
+  /* convite com borda esquerda e de baixo, apoiado acima do rodapé */
+  const bH = cl.length * 50 + 52, bTop = Math.max(y + 40, rodY - 64 - bH);
+  ctx.fillStyle = COR.tinta; ctx.fillRect(AM, bTop, 6, bH); ctx.fillRect(AM, bTop + bH - 6, Math.min(AWID, 560), 6);
+  drawRich(ctx, cl, AM + 34, bTop + 22 + 40, 50);
+  /* rodapé: de, instagram, o que eu faço */
+  let grupos = [['DE', VEND.nome], ['INSTAGRAM', VEND.instagram], ['O QUE EU FAÇO', a.oQueFaz || VEND.oQueFaz]].filter(g => g[1]);
+  const largDe = (gs, s) => gs.map(([k, v]) => tw(ctx, k, FF.mono(12), 1.4) + 12 + tw(ctx, v, FF.serif(s)));
+  const soma = ws => ws.reduce((t, w) => t + w, 0) + 24 * Math.max(0, ws.length - 1);
+  let rs = 32; while(rs > 22 && soma(largDe(grupos, rs)) > AWID) rs -= 2;
+  while(grupos.length > 1 && soma(largDe(grupos, rs)) > AWID) grupos = grupos.filter((g, i) => i !== (grupos.length > 2 ? 1 : grupos.length - 1));
+  const larg = largDe(grupos, rs), passo = grupos.length > 1 ? (AWID - larg.reduce((t, w) => t + w, 0)) / (grupos.length - 1) : 0;
+  let x = AM; grupos.forEach(([k, v], i) => { const wk = txt(ctx, k, x, rodY, FF.mono(12), COR.tinta, { sp: 1.4 }); txt(ctx, v, x + wk + 12, rodY, FF.serif(rs), COR.destaque); x += larg[i] + passo; });
+}
+function drawArte(ctx, v, n, nome){
+  ctx.fillStyle = COR.papel; ctx.fillRect(0, 0, AW, AH);
+  const a = n.arte || {};
+  (v === 'A' ? arteA : v === 'B' ? arteB : arteC)(ctx, n, a, nome);
+}
+/* imagem própria: escreve "PARA: NOME" na posição definida em CONFIG.arte.posicaoNome */
+function drawNomeProprio(ctx, v, name){
+  const p = (ARTE.posicaoNome || {})[v] || { x:56, y:40, tamanho:20, largura:670 };
+  paraNome(ctx, name, p.x, p.y + (p.tamanho || 20) * 1.025, p.tamanho || 20, p.largura || 670, p.cor || COR.destaque);
+}
+const toBlob = (c, type, q) => new Promise((res, rej) => { try{ c.toBlob(res, type, q); }catch(e){ rej(e); } });
+async function renderArt(){
+  const l = current(); if(!l) return;
+  const v = variantOf(l); const token = ++S.token; S.png = null; S.jpg = null;
+  const nome = S.names[l.id] ?? l.nome;
+  const c = document.createElement('canvas'); c.width = AW; c.height = AH; const ctx = c.getContext('2d');
+  if(ARTE.imagensProprias){
+    let img; try{ img = await loadImg(`pecas/${nichoKey(l)}-${v}.jpg`); }catch(e){ if(token===S.token) toast(`Não achei pecas/${nichoKey(l)}-${v}.jpg. Confira o nome do arquivo ou desligue imagensProprias no config.js.`); return; }
+    await fontReady; if(token !== S.token) return;
+    ctx.drawImage(img, 0, 0, AW, AH); drawNomeProprio(ctx, v, nome);
+  } else {
+    await fontReady; if(token !== S.token) return;
+    drawArte(ctx, v, NICHO(l), nome);
+  }
+  let png, jpg;
+  try{ [png, jpg] = await Promise.all([toBlob(c,'image/png'), toBlob(c,'image/jpeg',.9)]); }
+  catch(e){ if(token === S.token) toast('O navegador bloqueou a imagem. Com imagens próprias, abra a página por um servidor local (veja o guia).'); return; }
+  if(token !== S.token) return;
+  S.png = png; S.jpg = jpg; if(S.url) URL.revokeObjectURL(S.url); S.url = URL.createObjectURL(jpg); $('artImg').src = S.url;
+}
+
+/* ---------- estado ---------- */
+function current(){ return S.leads.find(l => l.id === S.cur) || null; }
+function variantOf(l){ return S.vsel[l.id] || l.varianteEnviada || l.variante || 'C'; }
+function sentToday(l){ return (l.status==='enviado' || l.status==='respondeu') && l.enviadoEm && todaySP(new Date(l.enviadoEm)) === todaySP(); }
+const placeOf = l => l.bairro ? l.bairro + (l.cidade ? ', ' + l.cidade : '') : (l.cidade || 'Sem cidade');
+function match(l){ return (S.fReg==='todas' || regOf(l)===S.fReg) && (S.fNicho==='todos' || l.nicho===S.fNicho) && (S.fBairro==='todos' || placeOf(l)===S.fBairro) && (S.fDono==='todos' || (S.fDono==='dono' ? !!l.dono : !l.dono)); }
+function fillBairros(){
+  const cnt = {}; S.leads.filter(l => (l.status||'fila')==='fila').forEach(l => { const k = placeOf(l); cnt[k] = (cnt[k]||0) + 1; });
+  const keys = Object.keys(cnt).sort((a,b) => cnt[b]-cnt[a] || a.localeCompare(b,'pt'));
+  if(S.fBairro !== 'todos' && !cnt[S.fBairro]) keys.unshift(S.fBairro);
+  const html = '<option value="todos">Todos os bairros</option>' + keys.map(k => `<option value="${esc(k)}">${esc(k)} (${cnt[k]||0})</option>`).join('');
+  if($('fBairro').dataset.h !== html){ $('fBairro').innerHTML = html; $('fBairro').dataset.h = html; }
+  $('fBairro').value = S.fBairro;
+}
+/* Ordem da fila: faixa A antes de B e C, nichos intercalados (CONFIG.rodizio), dono antes de recepção. */
+function nextInQueue(afterId){ const q = S.leads.filter(l => (l.status||'fila')==='fila' && match(l)); const i = q.findIndex(l => l.id === afterId); return (i >= 0 ? (q[i+1] || q.find(l => l.id !== afterId)) : q[0]) || null; }
+const byOrdem = (a,b) => (a.ordem||9999) - (b.ordem||9999) || String(a.nome).localeCompare(String(b.nome));
+const ROUND = (CFG.rodizio && CFG.rodizio.length) ? CFG.rodizio : NICHO_KEYS;
+function sortLeads(){
+  const fila = S.leads.filter(l => (l.status||'fila')==='fila'), rest = S.leads.filter(l => (l.status||'fila')!=='fila').sort(byOrdem);
+  const out = [];
+  ['A','B','C'].forEach(t => {
+    const g = {}; fila.filter(l => tierOf(l)===t).forEach(l => { (g[l.nicho] = g[l.nicho] || []).push(l); });
+    Object.values(g).forEach(arr => arr.sort((a,b) => (b.dono?1:0) - (a.dono?1:0) || byOrdem(a,b)));
+    const keys = [...ROUND, ...Object.keys(g).filter(k => !ROUND.includes(k))];
+    while(keys.some(k => g[k] && g[k].length)){ keys.forEach(k => { if(g[k] && g[k].length) out.push(g[k].shift()); }); }
+  });
+  S.leads = [...out, ...rest];
+}
+function saveLocal(){ try{ localStorage.setItem(LS, JSON.stringify(S.leads)); }catch(e){} }
+function loadLocal(){ try{ const r = localStorage.getItem(LS); return r ? JSON.parse(r) : []; }catch(e){ return []; } }
+async function patchLead(id, patch){
+  const l = S.leads.find(x => x.id === id); if(!l) return; Object.assign(l, patch); render();
+  if(S.db){ try{ await S.db.collection('leads').doc(id).update(patch); }catch(e){ toast('Não salvei esse registro agora. Toque de novo em alguns segundos.'); } }
+  else saveLocal();
+}
+
+/* ---------- desenho da página ---------- */
+function lastSend(){ return S.leads.reduce((m,l) => { const t = l.enviadoEm ? Date.parse(l.enviadoEm) : 0; return t > m ? t : m; }, 0); }
+function renderPace(){
+  const t = lastSend(); const el = $('pace'); if(!t || todaySP(new Date(t)) !== todaySP()){ el.hidden = true; return; }
+  const min = Math.floor((Date.now() - t) / 60000), lim = LIM.minutosEntreEnvios; el.hidden = false; el.classList.toggle('warn', min < lim);
+  el.textContent = min < lim ? `Último envio há ${min < 1 ? 'menos de 1 minuto' : min === 1 ? '1 minuto' : min + ' minutos'}. Espere uns ${lim} minutos entre envios para proteger o número.` : `Último envio há ${min} minutos.`;
+}
+setInterval(() => { if(S.ready) renderPace(); }, 30000);
+function renderMeters(){ renderPace();
+  const total = S.leads.filter(sentToday).length; const wa = S.leads.filter(l => sentToday(l) && l.canal==='whatsapp').length;
+  $('kTotal').textContent = total; $('bTotal').style.width = Math.min(100, total/LIM.totalDia*100) + '%';
+  $('kWa').textContent = wa; $('bWa').style.width = Math.min(100, wa/LIM.novosWhatsappDia*100) + '%';
+  $('mWa').classList.toggle('warn', wa >= LIM.novosWhatsappDia);
+  $('waNote').textContent = wa >= LIM.novosWhatsappDia ? 'Limite do dia atingido. Siga pelo Instagram Direct ou por ligação.' : `Limite de ${LIM.novosWhatsappDia} números novos por dia, para proteger o seu número.`;
+}
+function renderList(){
+  const count = s => S.leads.filter(l => (l.status||'fila')===s && match(l)).length;
+  const filtered = S.fReg!=='todas' || S.fNicho!=='todos' || S.fBairro!=='todos' || S.fDono!=='todos';
+  $('fCount').textContent = S.ready ? (filtered ? `Filtro ligado: ${count('fila')} na fila de ${S.leads.filter(l => (l.status||'fila')==='fila').length}.` : `${count('fila')} leads na fila, em ${Object.keys(REG).length} regiões.`) : '';
+  const tabs = [['fila','Fila'],['enviado','Enviados'],['respondeu','Responderam'],['pulado','Pulados']];
+  $('tabs').innerHTML = tabs.map(([k,t]) => `<button type="button" data-tab="${k}" aria-pressed="${S.tab===k}">${t} ${count(k)}</button>`).join('');
+  const rows = S.leads.filter(l => (l.status||'fila')===S.tab && match(l));
+  if(!S.ready){ $('list').innerHTML = '<p class="empty">Carregando a fila salva.</p>'; return; }
+  if(!S.leads.length){ $('list').innerHTML = '<p class="empty">A fila está vazia. Adicione o primeiro lead no formulário "Adicionar um lead à fila", no fim da página: nome do negócio, WhatsApp e tipo.</p>'; return; }
+  if(!rows.length){ $('list').innerHTML = `<p class="empty">${filtered ? 'Nenhum lead nesta aba com esse filtro. Troque a região ou o tipo de negócio.' : 'Nenhum lead nesta aba.'}</p>`; return; }
+  $('list').innerHTML = rows.map((l, i) => {
+    const st = l.status||'fila';
+    const chip = st==='fila' ? (l.dono ? '<span class="chip dono">Dono</span>' : (l.sinal && !l.lote ? '<span class="chip dor">Dor</span>' : '')) : `<span class="chip ${st}">${st==='enviado' ? (l.canal==='instagram'?'Instagram':'WhatsApp') : st==='respondeu' ? 'Respondeu' : 'Pulado'}</span>`;
+    return `<button type="button" class="item" data-id="${esc(l.id)}" aria-current="${l.id===S.cur}"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="nm">${esc(l.nome)}<span class="mt">${esc(l.sub || ROT(l.nicho))}${(l.bairro || l.cidade) ? ' · ' + esc(l.bairro || l.cidade) : ''}</span></span>${chip}</button>`;
+  }).join('');
+}
+function updateWa(){ const l = current(); if(!l) return; $('btnWa').href = 'https://web.whatsapp.com/send?phone=' + encodeURIComponent(l.fone||'') + '&text=' + encodeURIComponent($('msg').value); $('stWa').href = $('btnWa').href; }
+/* ---------- barra fixa: aparece quando a bancada sai da tela (e não cobre o topo da página) ---------- */
+function renderStick(){
+  const l = current(); const show = !!l && (l.status||'fila') === 'fila' && !S.workVisible && S.ready && window.scrollY > 240;
+  $('stick').hidden = !show;
+  if(!show) return;
+  $('stName').textContent = l.nome; $('stK').textContent = $('kWa').textContent + '/' + LIM.novosWhatsappDia + ' novos hoje';
+}
+try{ new IntersectionObserver(es => { S.workVisible = es.some(x => x.isIntersecting); renderStick(); }, { rootMargin:'-110px 0px 0px 0px' }).observe($('work')); }catch(e){}
+let stickRaf = 0; window.addEventListener('scroll', () => { if(!stickRaf) stickRaf = requestAnimationFrame(() => { stickRaf = 0; renderStick(); }); }, { passive:true });
+$('stImg').addEventListener('click', () => $('btnCopyImg').click());
+$('stSent').addEventListener('click', () => markSent('whatsapp'));
+/* ---------- pergunta de registro: voltou do WhatsApp sem registrar? ---------- */
+function armAsk(kind, id){ S.pending = { kind, id, at: Date.now() }; }
+$('btnWa').addEventListener('click', () => { const l = current(); if(l) armAsk('fila', l.id); });
+$('stWa').addEventListener('click', () => { const l = current(); if(l) armAsk('fila', l.id); });
+$('btnWa2').addEventListener('click', () => { const l = current(); if(l) armAsk('f2', l.id); });
+function showAsk(){
+  const p = S.pending; if(!p) return; const l = S.leads.find(x => x.id === p.id); if(!l){ S.pending = null; return; }
+  const done = p.kind === 'fila' ? (l.status||'fila') !== 'fila' : p.kind === 'f2' ? (l.followEm && Date.parse(l.followEm) > p.at) : (l.proxFeitaEm && Date.parse(l.proxFeitaEm) > p.at);
+  if(done){ S.pending = null; return; }
+  $('askTxt').innerHTML = `Mandou ${p.kind === 'f2' ? 'a segunda mensagem ' : ''}para <b>${esc(l.nome)}</b>?`; $('ask').hidden = false;
+}
+function onBack(){ if(S.pending && Date.now() - S.pending.at > 4000) showAsk(); }
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') onBack(); });
+window.addEventListener('focus', onBack);
+$('askYes').addEventListener('click', async () => {
+  const p = S.pending; $('ask').hidden = true; S.pending = null; if(!p) return;
+  if(p.kind === 'fila'){ S.cur = p.id; S.shown = ''; await markSent('whatsapp'); }
+  else if(p.kind === 'f2'){ await patchLead(p.id, { followEm: new Date().toISOString(), followTipo: $('f2Tipo').value }); const c = current(); if(c) renderFollow(c, true); toast('Segunda mensagem registrada.'); }
+  else { await patchLead(p.id, { proxFeitaEm: new Date().toISOString() }); toast('Pendência marcada como feita.'); }
+});
+$('askNo').addEventListener('click', () => { $('ask').hidden = true; S.pending = null; });
+/* ---------- teclado na bancada ---------- */
+document.addEventListener('keydown', e => {
+  if(e.ctrlKey || e.metaKey || e.altKey) return; const t = e.target; if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+  const k = e.key.toLowerCase(); const l = current(); const naFila = l && (l.status||'fila') === 'fila';
+  if(k === 'c'){ $('btnCopyImg').click(); }
+  else if(k === 'w'){ if(!l) return; armAsk('fila', l.id); window.open($('btnWa').href, 'wa'); }
+  else if(k === 'e'){ if(!naFila) return; markSent('whatsapp'); }
+  else if(k === 'p'){ if(!naFila) return; $('btnSkip').click(); }
+  else if(k === 'j' || k === 'k'){ const q = S.leads.filter(x => (x.status||'fila') === S.tab && match(x)); const i = q.findIndex(x => x.id === S.cur); const n = q[i + (k === 'j' ? 1 : -1)]; if(n) select(n.id); }
+  else return;
+  e.preventDefault();
+});
+function renderWork(){
+  const l = current();
+  $('workEmpty').hidden = !!l; $('workBody').hidden = !l;
+  if(!l){ renderFollow(null); $('workEmpty').textContent = !S.ready ? 'Assim que a fila carregar, o primeiro lead aparece aqui com a imagem e a mensagem prontas.' : (S.leads.length ? ((S.fReg!=='todas' || S.fNicho!=='todos' || S.fBairro!=='todos' || S.fDono!=='todos') ? 'Nenhum lead na fila com esse filtro. Troque a região, o bairro ou o tipo de negócio.' : 'Fila zerada por hoje. Veja as abas Enviados e Responderam para os próximos passos.') : 'Sem leads na fila. Adicione um no formulário "Adicionar um lead à fila", no fim da página.'); S.shown=''; return; }
+  const v = variantOf(l); const st = l.status||'fila';
+  renderFollow(l);
+  document.querySelectorAll('#seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+  $('afterRow').hidden = st === 'fila';
+  $('btnReplied').hidden = st === 'respondeu';
+  const key = l.id + '|' + v;
+  if(S.shown === key) return; const leadChanged = !S.shown.startsWith(l.id + '|'); S.shown = key;
+  if(leadChanged){
+    $('leadKicker').textContent = (l.ordem ? 'Nº ' + String(l.ordem).padStart(2,'0') + ' · ' : '') + (l.sub || ROT(l.nicho));
+    $('leadName').textContent = l.nome;
+    const facts = [];
+    if(l.nomeGoogle && l.nomeGoogle !== l.nome) facts.push('No Google: ' + esc(l.nomeGoogle));
+    if(l.cidade) facts.push(esc((l.bairro ? l.bairro + ', ' : '') + l.cidade));
+    facts.push(esc(REG[regOf(l)]));
+    if(l.nota && l.avaliacoes) facts.push(`${fmtNota(l.nota)} estrelas · ${l.avaliacoes} avaliações`);
+    if(l.placeId) facts.push(`<a href="https://www.google.com/maps/place/?q=place_id:${encodeURIComponent(l.placeId)}" target="_blank" rel="noopener">Ver no Google Maps</a>`);
+    facts.push(`<a href="https://www.google.com/search?q=${encodeURIComponent((l.nomeGoogle||l.nome) + ' ' + (l.cidade||'') + ' instagram')}" target="_blank" rel="noopener">Procurar o Instagram</a>`);
+    $('leadFacts').innerHTML = facts.map(f => `<span>${f}</span>`).join('');
+    $('leadSignal').hidden = !l.sinal; $('leadSignalTxt').textContent = l.sinal || '';
+    renderOferta(l); syncFmt(l);
+    $('artName').value = S.names[l.id] ?? l.nome;
+    $('msg').value = S.msgs[l.id] ?? message(l);
+    $('leadPhone').textContent = fmtFone(l.fone);
+    updateWa();
+  }
+  renderArt();
+}
+/* ---------- pendências quentes ---------- */
+S.pm = {}; S.pdKey = '';
+const waLink = (fone, txt) => 'https://web.whatsapp.com/send?phone=' + encodeURIComponent(fone||'') + (txt ? '&text=' + encodeURIComponent(txt) : '');
+function renderPend(){
+  if(!S.ready){ $('pdList').innerHTML = '<p class="empty">Carregando as pendências.</p>'; return; }
+  const all = S.leads.filter(l => l.proxAcao);
+  const open = all.filter(l => !l.proxFeitaEm).sort((a,b) => (a.prioridade||9) - (b.prioridade||9) || byOrdem(a,b));
+  const done = all.filter(l => l.proxFeitaEm).sort((a,b) => String(b.proxFeitaEm).localeCompare(String(a.proxFeitaEm)));
+  $('pdSum').innerHTML = `<span><b>${open.length}</b>para fazer</span><span><b>${done.length}</b>feitas</span>`;
+  $('jPend').textContent = open.length;
+  const conv = S.leads.filter(l => retOf(l) === 'pessoa'); const semEt = conv.filter(l => !l.etapa).length;
+  $('funil').innerHTML = conv.length ? `<span class="mono muted">Onde as ${conv.length} conversas pararam</span>` + ETAPAS.slice(1).map(([v,t]) => { const c = conv.filter(l => l.etapa === v).length; return c ? `<span><b>${c}</b>${esc(t)}</span>` : ''; }).join('') + (semEt ? `<span class="hot"><b>${semEt}</b>sem etapa registrada</span>` : '') : '';
+  const key = open.map(l => l.id + ':' + (l.etapa||'')).join(',') + '|' + done.map(l => l.id).join(',');
+  if(key === S.pdKey) return; S.pdKey = key;
+  $('pdList').innerHTML = open.length ? open.map(l => {
+    const msg = S.pm[l.id] ?? l.msgPronta ?? '';
+    const p = l.prioridade || 9;
+    return `<article class="pd${p===1 ? ' p1' : ''}" data-pd="${esc(l.id)}">
+      <div class="pd-top"><span class="chip${p===1 ? ' dor' : ''}">${esc(l.proxQuando || 'Sem data')}</span><span class="mono muted">Prioridade ${p}</span></div>
+      <h3>${esc(l.nome)}</h3>
+      <span class="mt">${esc(l.sub || l.origem || ROT(l.nicho))} · <span class="phone">${esc(fmtFone(l.fone))}</span></span>
+      ${l.crm ? `<p class="ctx"><b>O que aconteceu:</b> ${esc(l.crm)}</p>` : ''}
+      ${Array.isArray(l.historico) && l.historico.length ? `<p class="ctx"><b>Histórico:</b> ${l.historico.map(x => esc(fmtWhen(x.em)) + ' ' + esc(x.acao)).join(' · ')}</p>` : ''}
+      <p><b>Agora:</b> ${esc(l.proxAcao)}</p>
+      ${retOf(l) === 'pessoa' ? `<label class="mono muted" for="et-${esc(l.id)}">Onde parou</label><select id="et-${esc(l.id)}" class="etapa" data-etapa="${esc(l.id)}">${ETAPAS.map(([v,t]) => `<option value="${v}"${(l.etapa||'')===v?' selected':''}>${t}</option>`).join('')}</select>` : ''}
+      <label class="mono muted" for="pm-${esc(l.id)}">Mensagem, pode editar</label>
+      <textarea id="pm-${esc(l.id)}" data-pm="${esc(l.id)}" spellcheck="true">${esc(msg)}</textarea>
+      <div class="row">${l.fone ? `<a class="btn solid" data-pwa="${esc(l.id)}" href="${esc(waLink(l.fone, msg))}" target="wa" rel="noopener">Abrir WhatsApp Web</a>` : '<span class="hint">Sem número salvo: copie e cole na conversa.</span>'}<button class="btn" type="button" data-pcopy="${esc(l.id)}">Copiar</button><button class="btn quiet" type="button" data-pdone="${esc(l.id)}">Feito</button></div>
+    </article>`; }).join('') : '<p class="empty">Nenhuma pendência aberta. Volte para a fila e para a Revisão dos enviados.</p>';
+  $('pdDone').hidden = !done.length;
+  $('pdDone').innerHTML = done.length ? '<span class="mono muted" style="padding-top:10px">Feitas</span>' + done.map(l => `<div><span>${esc(l.nome)} · ${esc(fmtWhen(l.proxFeitaEm))}${Array.isArray(l.historico) && l.historico.length ? ' · ' + esc(l.historico[l.historico.length - 1].acao) : ''}</span><button class="btn quiet" type="button" data-preopen="${esc(l.id)}">Reabrir</button></div>`).join('') : '';
+}
+$('pdList').addEventListener('change', e => { const et = e.target.closest('[data-etapa]'); if(et) patchLead(et.dataset.etapa, { etapa: et.value, etapaEm: new Date().toISOString() }); });
+$('pdList').addEventListener('input', e => {
+  const t = e.target.closest('[data-pm]'); if(!t) return; const id = t.dataset.pm; S.pm[id] = t.value;
+  const l = S.leads.find(x => x.id === id); const a = document.querySelector(`[data-pwa="${CSS.escape(id)}"]`); if(l && a) a.href = waLink(l.fone, t.value);
+});
+document.addEventListener('click', async e => {
+  const cp = e.target.closest('[data-pcopy],[data-rcopy]');
+  if(cp){ const ta = cp.dataset.pcopy ? $('pm-' + cp.dataset.pcopy) : $(cp.dataset.rcopy); if(!ta) return;
+    try{ await navigator.clipboard.writeText(ta.value); toast('Mensagem copiada.'); }catch(err){ ta.focus(); ta.select(); toast('Selecionei o texto. Copie com Ctrl+C ou pelo menu do celular.'); } return; }
+  const pw = e.target.closest('[data-pwa]'); if(pw) armAsk('pend', pw.dataset.pwa);
+  const hist = (l, acao) => [...(Array.isArray(l && l.historico) ? l.historico : []), { em: new Date().toISOString(), acao }].slice(-12);
+  const dn = e.target.closest('[data-pdone]'); if(dn){ const l = S.leads.find(x => x.id === dn.dataset.pdone); await patchLead(dn.dataset.pdone, { proxFeitaEm: new Date().toISOString(), historico: hist(l, 'Feita: ' + String((l && l.proxAcao) || '').slice(0, 90)) }); toast('Pendência marcada como feita.'); return; }
+  const ro = e.target.closest('[data-preopen]'); if(ro){ const l = S.leads.find(x => x.id === ro.dataset.preopen); await patchLead(ro.dataset.preopen, { proxFeitaEm: '', historico: hist(l, 'Reaberta') }); return; }
+});
+function render(){ if(S.ready) fillBairros(); renderMeters(); renderList(); renderWork(); renderReview(); renderPend(); renderStick(); }
+function select(id){ S.cur = id; render(); }
+
+/* ---------- ações ---------- */
+document.addEventListener('click', async e => {
+  const tab = e.target.closest('[data-tab]'); if(tab){ S.tab = tab.dataset.tab; renderList(); return; }
+  const it = e.target.closest('.item'); if(it){ select(it.dataset.id); if(window.matchMedia('(max-width:880px)').matches) $('work').scrollIntoView({behavior:'smooth',block:'start'}); return; }
+  const sv = e.target.closest('#seg button'); if(sv){ const l=current(); if(l){ S.vsel[l.id] = sv.dataset.v; renderWork(); } return; }
+});
+$('rvShow').addEventListener('change', () => { S.rvShow = $('rvShow').value; renderReview(); });
+$('rvBody').addEventListener('change', e => {
+  const rt = e.target.closest('[data-ret]'); if(rt){ setRetorno(rt.dataset.ret, rt.value); return; }
+  const rv = e.target.closest('[data-rev]'); if(rv){ patchLead(rv.dataset.rev, { revisadoEm: rv.checked ? new Date().toISOString() : '' }); return; }
+  const et = e.target.closest('[data-etapa]'); if(et){ patchLead(et.dataset.etapa, { etapa: et.value, etapaEm: new Date().toISOString() }); }
+});
+$('rvBody').addEventListener('click', e => {
+  const pr = e.target.closest('[data-prop]'); if(pr){ const pl = S.leads.find(x => x.id === pr.dataset.prop); if(pl) gerarPdf(pl); return; }
+  const pk = e.target.closest('[data-pick],[data-prep]'); if(!pk) return;
+  const id = pk.dataset.pick || pk.dataset.prep; const l = S.leads.find(x => x.id === id); if(!l) return;
+  if(pk.dataset.prep){ $('f2Tipo').value = retOf(l) === 'auto' ? 'auto' : 'silencio'; }
+  S.f2For = ''; S.shown = ''; S.cur = id; S.tab = l.status === 'respondeu' ? 'respondeu' : 'enviado'; render();
+  (pk.dataset.prep ? $('followStep') : $('work')).scrollIntoView({ behavior:'smooth', block:'start' });
+});
+/* ---------- salvar arquivo: pelo recurso do Claude, se existir, senão download comum ---------- */
+let downloads = null;
+async function salvarArquivo(blob, filename){
+  if(downloads){
+    try{ await downloads.save({ filename, data: blob }); return 'ok'; }
+    catch(err){ if(err && err.code === 'declined') return 'cancelado'; if(err && err.code === 'rate_limited'){ toast('Já existe um pedido de salvar aberto. Responda a ele primeiro.'); return 'cancelado'; } }
+  }
+  try{ const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000); return 'ok'; }catch(e){ return 'falhou'; }
+}
+const slugOf = s => String(s || '').normalize('NFD').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-');
+/* ---------- proposta em PDF ---------- */
+const LIBS = ['https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'proposta-ativos.js', 'proposta-gerador.js'];
+let libsP = null;
+function loadScript(src){ return new Promise((res,rej) => { const el = document.createElement('script'); el.src = src; el.onload = () => res(); el.onerror = () => rej(new Error(src)); document.head.appendChild(el); }); }
+function loadLibs(){ return libsP || (libsP = Promise.all(LIBS.map(loadScript)).catch(e => { libsP = null; throw e; })); }
+async function gerarPdf(l){
+  if(S.propBusy){ toast('Já estou montando uma proposta. Aguarde alguns segundos.'); return; }
+  S.propBusy = true; $('btnProp').disabled = true; toast('Montando a proposta de ' + l.nome + '. Leva alguns segundos.');
+  try{
+    try{ await loadLibs(); }catch(e){ toast('Não carreguei o gerador de PDF. Confira a internet, recarregue a página e tente de novo.'); return; }
+    if(!(window.jspdf && window.gerarProposta && window.PROPOSTA_ATIVOS)){ toast('O gerador de PDF não ficou pronto. Recarregue a página e tente de novo.'); return; }
+    const nome = String(S.names[l.id] ?? l.nome).trim() || l.nome;
+    let blob;
+    try{ blob = window.gerarProposta(window.jspdf.jsPDF, window.PROPOSTA_ATIVOS, { nome, nicho:l.nicho, sub:l.sub, nota:l.nota, avaliacoes:l.avaliacoes }, { de: S.propDe.trim() || VEND.nome, config: CFG }).output('blob'); }
+    catch(e){ console.error(e); toast('Não consegui montar o PDF deste lead. Confira o config.js (veja o erro no console do navegador).'); return; }
+    const filename = `Proposta-${slugOf(nome).slice(0,50) || 'lead'}.pdf`;
+    const r = await salvarArquivo(blob, filename);
+    if(r === 'cancelado') return;
+    if(r !== 'ok'){ toast('Não consegui salvar o PDF nesta visualização. Abra a página no computador e tente de novo.'); return; }
+    await patchLead(l.id, { propostaEm: new Date().toISOString() }); const c = current(); if(c) renderFollow(c, true);
+    toast('Proposta pronta: ' + filename);
+  } finally { S.propBusy = false; $('btnProp').disabled = false; }
+}
+$('btnProp').addEventListener('click', () => { const l = current(); if(l) gerarPdf(l); });
+$('propDe').addEventListener('input', () => { S.propDe = $('propDe').value; try{ localStorage.setItem('fila-propde', S.propDe); }catch(e){} });
+$('optVagas').addEventListener('change', () => { S.optVagas = $('optVagas').checked; try{ localStorage.setItem('fila-optvagas', S.optVagas ? '1' : '0'); }catch(e){} const l = current(); if(!l) return; delete S.msgs2[l.id + '|auto']; renderFollow(l, true); });
+$('f2Tipo').addEventListener('change', () => { const l = current(); if(l) renderFollow(l, true); });
+$('msg2').addEventListener('input', () => { const l = current(); if(!l) return; S.msgs2[l.id + '|' + $('f2Tipo').value] = $('msg2').value; updateWa2(); });
+$('btnCopy2').addEventListener('click', async () => { try{ await navigator.clipboard.writeText($('msg2').value); toast('Segunda mensagem copiada.'); }catch(e){ $('msg2').focus(); $('msg2').select(); toast('Selecionei o texto. Copie com Ctrl+C ou pelo menu do celular.'); } });
+$('btnSent2').addEventListener('click', async () => { const l = current(); if(!l) return; const tipo = $('f2Tipo').value; await patchLead(l.id, { followEm: new Date().toISOString(), followTipo: tipo }); renderFollow(l, true); toast('Segunda mensagem registrada.'); });
+function setFilter(){ S.fReg = $('fReg').value; S.fNicho = $('fNicho').value; S.fBairro = $('fBairro').value || 'todos'; S.fDono = $('fDono').value; try{ localStorage.setItem('fila-filtro', JSON.stringify([S.fReg,S.fNicho])); localStorage.setItem('fila-filtro2', JSON.stringify([S.fBairro,S.fDono])); }catch(e){} const c = current(); if(!c || (c.status||'fila')!=='fila' || !match(c)){ const n = nextInQueue(0); S.cur = n ? n.id : null; S.shown=''; } S.tab = 'fila'; render(); }
+$('fReg').addEventListener('change', setFilter); $('fNicho').addEventListener('change', setFilter); $('fBairro').addEventListener('change', setFilter); $('fDono').addEventListener('change', setFilter);
+$('fmt').addEventListener('change', () => { const l = current(); if(!l) return; S.fmt[l.id] = $('fmt').value; delete S.msgs[l.id]; $('msg').value = message(l); updateWa(); syncFmt(l); });
+function syncFmt(l){ const f = fmtOf(l); $('fmt').value = f; $('btnWa').hidden = f === 'direct'; $('optSite').closest('label').hidden = f !== 'dono' || !temExtra; }
+$('artName').addEventListener('input', () => { const l=current(); if(!l) return; S.names[l.id] = $('artName').value; if(S.msgs[l.id] == null){ $('msg').value = message(l); updateWa(); } clearTimeout(S.nameT); S.nameT = setTimeout(renderArt, 250); });
+$('optSite').addEventListener('change', () => { S.optSite = $('optSite').checked; try{ localStorage.setItem('fila-optsite', S.optSite ? '1' : '0'); }catch(e){} const l=current(); if(!l) return; delete S.msgs[l.id]; $('msg').value = message(l); updateWa(); });
+$('msg').addEventListener('input', () => { const l=current(); if(!l) return; S.msgs[l.id] = $('msg').value; updateWa(); });
+$('btnCopyMsg').addEventListener('click', async () => { try{ await navigator.clipboard.writeText($('msg').value); toast('Mensagem copiada.'); }catch(e){ $('msg').focus(); $('msg').select(); toast('Selecionei o texto. Copie com Ctrl+C ou pelo menu do celular.'); } });
+$('btnCopyImg').addEventListener('click', async () => {
+  if(!S.png){ toast('A arte ainda está sendo montada. Tente em um segundo.'); return; }
+  try{ await navigator.clipboard.write([new ClipboardItem({ 'image/png': S.png })]); toast('Imagem copiada. Cole na conversa.'); }
+  catch(e){ toast('Este navegador não deixou copiar pelo botão. Clique com o botão direito na imagem e escolha Copiar imagem, ou use Salvar imagem.'); }
+});
+$('btnSaveImg').addEventListener('click', async () => {
+  const l = current(); if(!l || !S.jpg){ toast('A arte ainda está sendo montada. Tente em um segundo.'); return; }
+  const slug = slugOf(S.names[l.id] ?? l.nome).toLowerCase().slice(0,40) || 'lead';
+  const r = await salvarArquivo(S.jpg, `arte-${slug}-${variantOf(l)}.jpg`);
+  if(r === 'ok') toast('Imagem salva.'); else if(r === 'falhou') toast('Não consegui salvar agora. Segure a imagem ou use o botão direito.');
+});
+async function markSent(canal){
+  const l = current(); if(!l) return; const n = nextInQueue(l.id);
+  const extraTxt = temExtra ? fill(CFG.mensagem.extra.texto) : '';
+  await patchLead(l.id, { status:'enviado', canal, enviadoEm:new Date().toISOString(), varianteEnviada:variantOf(l), citouExtra: S.msgs[l.id] != null ? (!!extraTxt && S.msgs[l.id].includes(extraTxt)) : (S.optSite && !!extraTxt) });
+  S.shown=''; S.cur = n ? n.id : null; render();
+  toast(n ? 'Registrado. Próximo: ' + n.nome : 'Registrado. A fila acabou.');
+}
+$('btnSentWa').addEventListener('click', () => markSent('whatsapp'));
+$('btnSentIg').addEventListener('click', () => markSent('instagram'));
+$('btnSkip').addEventListener('click', async () => { const l=current(); if(!l) return; const n=nextInQueue(l.id); await patchLead(l.id, { status:'pulado' }); S.shown=''; S.cur = n ? n.id : null; render(); });
+$('btnReplied').addEventListener('click', () => { const l=current(); if(l) patchLead(l.id, { status:'respondeu', respondeuEm:new Date().toISOString() }); });
+$('btnBack').addEventListener('click', () => { const l=current(); if(l) patchLead(l.id, { status:'fila' }); });
+$('addForm').addEventListener('submit', async e => {
+  e.preventDefault(); const err = $('addErr'); err.hidden = true;
+  const nome = $('aNome').value.trim(); let fone = $('aFone').value.replace(/\D/g,'');
+  if(!nome){ err.textContent = 'Escreva o nome do negócio.'; err.hidden = false; return; }
+  if(fone.length === 10 || fone.length === 11) fone = '55' + fone;
+  if(!/^55\d{10,11}$/.test(fone)){ err.textContent = 'O WhatsApp precisa de DDD e número, por exemplo 21 99999-9999.'; err.hidden = false; return; }
+  const maxOrdem = S.leads.reduce((m,l) => Math.max(m, l.ordem||0), 0);
+  const lead = { nome, nomeGoogle:nome, nicho:$('aNicho').value, sub:ROT($('aNicho').value), regiao:$('aReg').value, cidade:$('aCidade').value.trim(), bairro:'', fone, sinal:'', variante:'C', status:'fila', ordem:maxOrdem+1 };
+  const id = 'm' + Date.now().toString(36);
+  S.leads.push({ id, ...lead }); sortLeads(); if(!S.cur) S.cur = id; render(); $('addForm').reset();
+  if(S.db){ try{ await S.db.collection('leads').doc(id).set(lead); toast('Lead adicionado à fila.'); }catch(er){ toast(er && er.code === 'quota_exceeded' ? 'A fila está no limite. Remova leads antigos antes de adicionar.' : 'Adicionei aqui, mas não salvei na sua conta agora.'); } }
+  else { saveLocal(); toast('Lead adicionado neste aparelho.'); }
+});
+
+/* ---------- cronograma do dia: só o bloco da hora fica aberto; as marcações valem para o dia ---------- */
+const CRON_LS = 'fila-cron-' + todaySP();
+S.cron = {}; S.cronCur = null; S.cronMan = new Set();
+try{ const r = localStorage.getItem(CRON_LS); if(r) S.cron = JSON.parse(r) || {}; }catch(e){ S.cron = {}; }
+function cronSave(){ try{ localStorage.setItem(CRON_LS, JSON.stringify(S.cron)); }catch(e){} }
+function cronAgora(){
+  try{ const p = new Intl.DateTimeFormat('pt-BR',{timeZone:FUSO,hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
+    const h = Number(p.find(x=>x.type==='hour').value), m = Number(p.find(x=>x.type==='minute').value); return (h % 24)*60+m;
+  }catch(e){ const d = new Date(); return d.getHours()*60 + d.getMinutes(); }
+}
+const hhm = m => String(Math.floor(m/60)).padStart(2,'0') + 'h' + String(m%60).padStart(2,'0');
+function renderCron(){
+  const bs = [...document.querySelectorAll('#cronBox details.cb')]; if(!bs.length) return;
+  const now = cronAgora(); let feitos = 0, atual = null, prox = null;
+  bs.forEach(b => {
+    const mi = Number(b.dataset.mi), mf = Number(b.dataset.mf), feito = !!S.cron[b.dataset.cb];
+    if(feito) feitos++;
+    if(now >= mi && now < mf) atual = b;
+    if(!prox && now < mi && !feito) prox = b;
+  });
+  const foco = bs.find(b => !S.cron[b.dataset.cb] && now < Number(b.dataset.mf)) || null;
+  const chave = foco ? foco.id : 'fim';
+  const reabrir = S.cronCur !== chave; S.cronCur = chave; S.cronFoco = foco;
+  bs.forEach(b => {
+    const mf = Number(b.dataset.mf), feito = !!S.cron[b.dataset.cb];
+    const ag = b === atual, passou = now >= mf;
+    const ck = b.querySelector('[data-cron]'); if(ck) ck.checked = feito;
+    b.classList.toggle('feito', feito); b.classList.toggle('ag', ag); b.classList.toggle('passou', passou);
+    const st = b.querySelector('.st');
+    if(st){ st.className = 'st' + (feito ? ' ok' : ag ? ' ag' : ''); st.textContent = feito ? 'Feito' : ag ? 'Agora' : (b === prox ? 'Próximo' : (passou ? 'Passou' : '')); }
+    if(reabrir && !S.cronMan.has(b.id)){ const abrir = (b === foco) && !feito; b.dataset.auto = abrir ? '1' : '0'; if(b.open !== abrir) b.open = abrir; }
+  });
+  $('cronDone').textContent = feitos; $('cronAll').textContent = bs.length;
+  $('cronBar').style.width = Math.round(feitos / bs.length * 100) + '%';
+  const nv = bs.map(b => {
+    const mi = Number(b.dataset.mi), mf = Number(b.dataset.mf), feito = !!S.cron[b.dataset.cb];
+    const cls = b === atual ? 'ag' : (now >= mf || feito) ? 'ja' : '';
+    return `<a href="#${esc(b.id)}" class="${cls}"><b>${esc(hhm(mi))}</b>${esc(b.dataset.nav || '')}${feito ? ' ✓' : ''}</a>`;
+  }).join('');
+  if($('cronNav').dataset.h !== nv){ $('cronNav').innerHTML = nv; $('cronNav').dataset.h = nv; }
+  $('cronNav').hidden = false;
+  const txt = (atual && atual === foco) ? 'Agora: ' + atual.dataset.nav + ', até ' + hhm(Number(atual.dataset.mf))
+    : foco ? 'Próximo, às ' + hhm(Number(foco.dataset.mi)) + ': ' + foco.dataset.nav
+    : (feitos === bs.length ? 'Dia fechado. Telas desligadas.' : 'Fora das faixas do cronograma.');
+  $('cronNow').textContent = txt + '.';
+  $('snNow').textContent = txt; $('snNow').href = '#' + (foco ? foco.id : 'cronBox');
+}
+$('cronBox').addEventListener('change', e => {
+  const ck = e.target.closest('[data-cron]'); if(!ck) return;
+  const id = ck.dataset.cron; if(ck.checked) S.cron[id] = new Date().toISOString(); else delete S.cron[id];
+  cronSave();
+  const b = ck.closest('details.cb');
+  if(ck.checked && b){ S.cronMan.delete(b.id); b.dataset.auto = '0'; b.open = false; }
+  S.cronCur = null; renderCron();
+  if(ck.checked){
+    const prox = S.cronFoco;
+    if(prox){ S.cronMan.delete(prox.id); prox.dataset.auto = '1'; prox.open = true; requestAnimationFrame(() => prox.scrollIntoView({ block:'start' })); }
+    toast(prox ? 'Bloco concluído. Abri o próximo.' : 'Bloco concluído.');
+  }
+});
+/* o que você abre ou fecha na mão fica como você deixou */
+$('cronBox').addEventListener('toggle', e => {
+  const b = e.target; if(!b.matches || !b.matches('details.cb')) return;
+  if(String(b.open) !== String(b.dataset.auto === '1')) S.cronMan.add(b.id);
+}, true);
+/* link para um bloco ou caixa fechada: abre antes de rolar */
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#"]'); if(!a) return;
+  const t = document.getElementById(a.getAttribute('href').slice(1)); if(!t) return;
+  if(t.tagName === 'DETAILS') t.open = true;
+});
+/* barra de seções: marca a seção que está na tela */
+try{
+  const links = [...document.querySelectorAll('#secnav a[data-spy]')];
+  const io = new IntersectionObserver(es => { es.forEach(x => { if(x.isIntersecting) links.forEach(l => l.setAttribute('aria-current', String(l.dataset.spy === x.target.id))); }); }, { rootMargin:'-45% 0px -50% 0px' });
+  links.forEach(l => { const t = $(l.dataset.spy); if(t) io.observe(t); });
+}catch(e){}
+renderCron();
+setInterval(renderCron, 60000);
+
+/* ---------- textos que vêm do config.js ---------- */
+const temExtra = !!(CFG.mensagem && CFG.mensagem.extra && CFG.mensagem.extra.texto);
+function aplicarConfig(){
+  if(!window.CONFIG || !NICHO_KEYS.length) { $('aviso').hidden = false; $('aviso').innerHTML = '<b>Não consegui ler o config.js.</b> Ele precisa ficar na mesma pasta do index.html e não pode ter erro de digitação (vírgula, aspas ou chave). Desfaça a última mudança ou veja a linha do erro no console do navegador (F12).'; return false; }
+  $('aviso').hidden = VEND.nome && VEND.nome !== 'Seu Nome';
+  if(VEND.empresa) $('kicker').textContent = VEND.empresa + ' · Prospecção no WhatsApp';
+  document.querySelectorAll('[data-lim="wa"]').forEach(el => el.textContent = LIM.novosWhatsappDia);
+  document.querySelectorAll('[data-lim="total"]').forEach(el => el.textContent = LIM.totalDia);
+  document.querySelectorAll('textarea[data-fill]').forEach(ta => { ta.value = fill(ta.value); });
+  $('optSiteTxt').textContent = temExtra ? (CFG.mensagem.extra.rotulo || 'Citar a frase extra') : '';
+  const temPromo = !!(CFG.promocao && CFG.promocao.frase);
+  $('optVagasTxt').textContent = temPromo ? (CFG.promocao.rotulo || 'Citar a condição especial') : '';
+  $('optVagas').closest('label').hidden = !temPromo;
+  $('priceBody').innerHTML = (CFG.produtos || []).map(p => `<tr><td><b>${esc(p.nome)}</b></td><td>${esc(p.preco)}${p.condicao ? '. ' + esc(p.condicao) : ''}</td><td>${esc(String(p.prazo || '').replace(/^Entrega em /i, ''))}</td><td>${esc((p.itens || []).join(', '))}</td></tr>`).join('');
+  return true;
+}
+
+/* ---------- início ---------- */
+function adopt(arr){
+  S.leads = arr; sortLeads(); S.ready = true; fillBairros();
+  if(!current()){ const n = nextInQueue(0); S.cur = n ? n.id : null; }
+  render();
+}
+async function start(){
+  if(!aplicarConfig()) return;
+  try{ if(localStorage.getItem('fila-optsite') === '0'){ S.optSite = false; $('optSite').checked = false; } }catch(e){}
+  try{ if(localStorage.getItem('fila-optvagas') === '0'){ S.optVagas = false; $('optVagas').checked = false; } const pd = localStorage.getItem('fila-propde'); if(pd) S.propDe = pd; }catch(e){}
+  $('propDe').value = S.propDe;
+  const regOpts = Object.entries(REG).map(([k,t]) => `<option value="${esc(k)}">${esc(t)}</option>`).join('');
+  $('fReg').innerHTML = '<option value="todas">Todas as regiões</option>' + regOpts; $('aReg').innerHTML = regOpts;
+  $('fNicho').innerHTML = '<option value="todos">Todos os tipos</option>' + NICHO_KEYS.map(k => `<option value="${esc(k)}">${esc(ROT(k))}</option>`).join('');
+  $('aNicho').innerHTML = NICHO_KEYS.map(k => `<option value="${esc(k)}">${esc(NICHOS[k].rotuloForm || ROT(k))}</option>`).join('');
+  try{ const f2 = JSON.parse(localStorage.getItem('fila-filtro2') || 'null'); if(f2){ S.fBairro = f2[0] || 'todos'; S.fDono = ['todos','dono','recepcao'].includes(f2[1]) ? f2[1] : 'todos'; $('fDono').value = S.fDono; } }catch(e){}
+  try{ const f = JSON.parse(localStorage.getItem('fila-filtro') || 'null'); if(f && (f[0]==='todas' || REG[f[0]]) && (f[1]==='todos' || NICHOS[f[1]])){ S.fReg = f[0]; S.fNicho = f[1]; $('fReg').value = f[0]; $('fNicho').value = f[1]; } }catch(e){}
+  render();
+  /* Publicada como Artifact no Claude, a página pode guardar a fila na sua conta (recurso "db")
+     e salvar arquivos (recurso "downloads"). Fora do Claude, usa o armazenamento deste navegador. */
+  let db = null;
+  try{ db = (window.claude && window.claude.use) ? await window.claude.use('db') : null; }catch(e){ db = null; }
+  try{ downloads = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; }catch(e){ downloads = null; }
+  if(!db){ adopt(loadLocal()); return; }
+  S.db = db;
+  db.collection('leads').limit(1000).onSnapshot(q => { adopt(q.docs.map(d => ({ id:d.id, ...d.data() }))); }, () => { if(!S.ready) adopt(loadLocal()); toast('Perdi a conexão com a fila salva. Recarregue a página.'); });
+}
+start();
+</script>
+</body>
+</html>
