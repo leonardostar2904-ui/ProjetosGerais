@@ -1,0 +1,344 @@
+{
+ "base": "Fotografia editorial de moda para a campanha de verão de uma marca independente brasileira de roupas autorais. Luz natural, sem flash e sem iluminação de estúdio. Arquitetura modernista em concreto aparente. Composição assimétrica com bastante espaço negativo. Pessoa em movimento real, nunca posando de frente para a câmera, nunca sorrindo para a lente.\n\nPaleta restrita e obrigatória nas roupas: grafite quase preto #242421, bege pergaminho #F1EEE7, terracota #B86A4B, verde oliva acinzentado #777B68 e cinza claro #D7D9D3. Nenhuma peça de roupa em cor fora dessa lista.\n\nAcabamento de filme fotográfico 35mm: grão fino, cor levemente dessaturada, pretos densos e profundos, alta nitidez óptica. Sem HDR, sem gradiente digital, sem brilho artificial, sem pele alisada por retoque, sem vinheta pesada, sem desfoque de fundo exagerado.\n\nAs roupas são lisas ou com textura do próprio tecido. Sem logotipo, sem monograma, sem estampa de xadrez de damas, sem letras entrelaçadas, sem etiqueta aparente, sem fivela gravada e sem qualquer elemento que identifique uma marca existente.\n\nSem nenhum texto, legenda, assinatura ou marca d'água dentro da imagem.",
+ "cards": [
+  {
+   "id": "H1",
+   "name": "Hero da Home",
+   "tags": [
+    "GRÉCIA",
+    "16:9 PAISAGEM"
+   ],
+   "prompt": "Plano aberto horizontal. P1, homem negro de pele retinta e cabeça raspada, muito alto e magro, cerca de 30 anos, atravessa em passo largo um terraço de concreto aparente no alto de uma ilha grega. Ele veste uma camisa de linho bege pergaminho de modelagem muito ampla, aberta e solta ao vento, por cima de uma regata canelada da mesma cor, com calça reta de cintura alta em grafite e sandália de couro escuro.\n\nSol de meio-dia a pino. A sombra dele é curta e dura no concreto. A parede caiada à esquerda joga luz refletida no rosto e no peito. Ao fundo, o mar Egeu como uma faixa escura e o céu branco de calor, sem nuvem.\n\nEle caminha da direita para a esquerda e ocupa o terço direito do quadro. Os outros dois terços são só a parede de concreto vazia e a linha do horizonte. Corpo inteiro, com folga em cima.\n\nProporção paisagem 16:9."
+  },
+  {
+   "id": "H2",
+   "name": "Hero vertical para celular",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Versão vertical da mesma cena. Plano médio alto. P1, homem negro de pele retinta e cabeça raspada, muito alto e magro, cerca de 30 anos, parado de perfil num terraço de concreto aparente numa ilha grega, o corpo em leve torção como se tivesse acabado de parar de andar. Camisa de linho bege pergaminho muito ampla, aberta ao vento, sobre regata canelada bege, calça reta de cintura alta em grafite.\n\nSol de meio-dia a pino, sombra dura e curta, parede caiada refletindo luz no rosto. Ao fundo, concreto e uma faixa estreita de mar no canto inferior.\n\nEle ocupa a metade inferior direita do quadro. A metade superior é só parede de concreto vazia e céu branco, para o texto do site entrar por cima. Corpo cortado na altura da coxa.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "H3",
+   "name": "Editorial de campanha",
+   "tags": [
+    "RIO",
+    "3:2 PAISAGEM"
+   ],
+   "prompt": "Plano aberto horizontal com duas pessoas. P2, mulher negra de pele retinta com tranças longas presas em coque alto, cerca de 28 anos, e P4, homem negro de pele média com locs curtos presos atrás e barba aparada, cerca de 38 anos, em pé sob os pilotis de um prédio modernista carioca, separados por cerca de dois metros, sem se olhar.\n\nEla veste um colete de linho terracota de modelagem ampla sobre o corpo, com calça reta de cintura alta em verde oliva acinzentado. Ele veste camisa de linho grafite ampla por dentro de uma calça reta bege pergaminho, com uma bolsa estruturada de couro liso grafite na mão.\n\nLuz de fim de tarde entrando de lado, baixa e dourada, atravessando um painel de cobogó de concreto que desenha um padrão geométrico de sombra no chão e nas roupas dos dois. Vegetação tropical de folhas grandes no canto direito.\n\nComposição assimétrica: os dois no terço esquerdo, o resto é concreto e o desenho da sombra do cobogó. Corpo inteiro.\n\nProporção paisagem 3:2."
+  },
+  {
+   "id": "H4",
+   "name": "Bastidores, página Sobre",
+   "tags": [
+    "RIO",
+    "3:2 PAISAGEM"
+   ],
+   "prompt": "Fotografia de bastidor, horizontal, sem pose. Um ateliê pequeno de costura dentro de um prédio modernista carioca, com parede de concreto aparente e janela alta de vidro. Sobre uma mesa comprida de madeira clara, rolos de linho bege pergaminho e de algodão grafite, tesoura de alfaiate, fita métrica, moldes de papel pardo e alfinetes.\n\nDuas mãos negras de pele média, cortadas pelo quadro na altura do antebraço, alisam um corte de linho sobre a mesa. Ao fundo, desfocada, P5, mulher negra de pele retinta e cabeça raspada, cerca de 24 anos, de costas, mexendo numa arara de roupas.\n\nLuz natural de fim de tarde entrando pela janela em diagonal, pegando a poeira no ar e a textura do tecido. Resto da sala em sombra.\n\nEnquadramento de observador, levemente de cima, cortado nas bordas como quem fotografou de passagem. Muito espaço vazio de mesa à esquerda.\n\nProporção paisagem 3:2."
+  },
+  {
+   "id": "C1",
+   "name": "Essenciais",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Plano médio vertical. P5, mulher negra de pele retinta, cabeça raspada, baixa e forte, cerca de 24 anos, com sardas no rosto, encostada de lado numa parede caiada de branco que encontra uma coluna de concreto bruto, numa ilha grega. Veste uma regata canelada bege pergaminho justa ao corpo e uma calça reta de cintura alta em grafite.\n\nSol de meio-dia a pino vindo de cima e um pouco atrás, deixando o rosto em meia sombra e desenhando a clavícula e o ombro. A parede branca reflete luz quente na pele.\n\nEla olha para baixo e para fora do quadro, braço solto. Enquadrada do meio da coxa para cima, deslocada para a esquerda, com a parede vazia ocupando o terço direito.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "C2",
+   "name": "Camadas",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Plano médio vertical. P3, mulher negra de pele média com cabelo crespo curto em black power e ombros largos, cerca de 35 anos, em pé diante de uma parede de concreto com a marca da fôrma de madeira, num prédio modernista carioca. Veste uma camisa de linho bege pergaminho ampla, por baixo de um colete de linho terracota de modelagem solta e aberto, com calça reta de cintura alta em verde oliva acinzentado.\n\nLuz de fim de tarde baixa, entrando de lado pela esquerda, dourada, separando as três camadas de roupa por sombra própria. O lado direito do corpo fica na penumbra.\n\nEla está no meio de um giro de tronco, o colete abrindo com o movimento. Enquadrada do quadril para cima, deslocada para a direita, com parede de concreto vazia no terço esquerdo.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "C3",
+   "name": "Objetos",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Plano médio vertical. P4, homem negro de pele média, locs curtos presos atrás e barba curta aparada, cerca de 38 anos, sentado na borda de um banco de concreto sob os pilotis de um prédio modernista carioca. Veste camisa de linho grafite ampla com as mangas dobradas e calça reta bege pergaminho. Ao lado dele, apoiada no banco, uma bolsa estruturada de couro liso grafite, de construção simples e costura aparente, sem nenhuma ferragem gravada.\n\nLuz de fim de tarde baixa, atravessando um cobogó de concreto e desenhando quadrados de sombra no banco, na bolsa e na perna dele.\n\nEle está inclinado para a frente, cotovelos nos joelhos, olhando para fora do quadro. A bolsa ocupa o primeiro plano baixo, em foco. Enquadrado da coxa para cima, deslocado para a esquerda.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "B1",
+   "name": "Principal",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Retrato vertical de corpo inteiro. P2, mulher negra de pele retinta com tranças longas e finas presas num coque alto e pescoço longo, cerca de 28 anos, em pé num corredor estreito entre uma parede de concreto bruto e uma parede caiada de branco, numa ilha grega.\n\nEla veste uma camisa de linho bege pergaminho de modelagem muito ampla, ombro caído bem abaixo da articulação, colarinho estruturado e firme, mangas largas dobradas uma vez no punho, abotoada até o terceiro botão e solta por fora. Por baixo, calça reta de cintura alta em grafite. Pés descalços.\n\nSol de meio-dia entrando por uma fresta no alto do corredor, criando uma faixa vertical de luz dura na parede e deixando metade do corpo dela na sombra fria do concreto. O linho recebe a luz de raspão e mostra a trama.\n\nEla está em leve torção, peso numa perna só, olhando para fora do quadro. Corpo inteiro, deslocada para a direita, com o terço esquerdo ocupado só pela parede vazia.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "B2",
+   "name": "Detalhe do tecido",
+   "tags": [
+    "MACRO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Macro vertical, muito próximo. Detalhe do ombro e da parte alta do peito de uma camisa de linho bege pergaminho vestida por uma pessoa negra de pele retinta. O quadro mostra a costura do ombro caído, a barra do colarinho estruturado, dois botões de madrepérola fosca e um pedaço da clavícula.\n\nSol de meio-dia batendo quase paralelo ao tecido, atravessando o linho e revelando a trama aberta do fio, o relevo da costura e os vincos naturais do uso. Dá para ver a pele por trás do tecido na parte mais fina.\n\nFundo completamente fora de foco, parede caiada branca. Foco rigoroso no ponto da costura. Sem rosto no quadro, cortado abaixo do queixo.\n\nSem logotipo, sem etiqueta, sem nada escrito nos botões.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "B3",
+   "name": "Em uso",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Plano médio vertical com movimento. P2, mulher negra de pele retinta com tranças presas em coque alto, cerca de 28 anos, descendo uma escada de pedra branca de uma ilha grega, pega no meio do passo.\n\nCamisa de linho bege pergaminho muito ampla, desabotoada e aberta, voando para trás com o vento, sobre uma regata canelada bege e calça reta de cintura alta em grafite. O tecido da camisa está em pleno movimento, a manga esquerda levantada pelo ar.\n\nSol de meio-dia a pino, sombra dura e curta nos degraus, o branco da pedra estourando de luz e refletindo na pele dela. Vento visível.\n\nEla olha para baixo, atenta ao degrau, uma mão no corrimão de ferro. Enquadrada do joelho para cima, deslocada para a esquerda, com a escada vazia subindo no canto direito.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "B4",
+   "name": "Outro ângulo, de costas",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Retrato vertical de costas. P2, mulher negra de pele retinta com tranças longas presas em coque alto, cerca de 28 anos, de costas para a câmera, parada diante de um muro baixo de concreto com o mar Egeu ao fundo, numa ilha grega.\n\nA camisa de linho bege pergaminho aparece inteira por trás: ombro caído muito largo, prega central nas costas, barra reta e comprida cobrindo o quadril, mangas largas caindo ao longo do corpo. Calça reta de cintura alta em grafite aparecendo abaixo da barra.\n\nSol de meio-dia vindo de cima e de frente para ela, então as costas ficam em luz suave refletida do chão claro, com a sombra dela projetada na direção da câmera.\n\nEla está parada, braços soltos, cabeça levemente virada para a direita mostrando o perfil. Corpo inteiro, centralizada na metade inferior, com o céu branco ocupando a parte de cima do quadro.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "B5",
+   "name": "Cor alternativa, grafite",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO",
+    "OPCIONAL"
+   ],
+   "prompt": "Mesma cena e mesmo enquadramento da foto principal, trocando só a cor da camisa. Retrato vertical de corpo inteiro. P2, mulher negra de pele retinta com tranças longas presas em coque alto, cerca de 28 anos, em pé num corredor estreito entre concreto bruto e parede caiada de branco, numa ilha grega.\n\nEla veste uma camisa de linho grafite quase preto, de modelagem muito ampla, ombro caído, colarinho estruturado, mangas largas dobradas no punho, abotoada até o terceiro botão. Por baixo, calça reta de cintura alta também em grafite, criando um bloco único de cor escura.\n\nSol de meio-dia entrando por uma fresta no alto, faixa de luz dura na parede branca atrás dela, o corpo escuro recortado contra o claro. O linho escuro mostra a trama onde a luz bate de raspão.\n\nMesma torção, mesmo peso numa perna só, mesmo olhar para fora do quadro. Corpo inteiro, deslocada para a direita.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "R1",
+   "name": "Principal",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Retrato vertical de corpo inteiro. P1, homem negro de pele retinta, cabeça raspada, muito alto e magro, traços angulosos, cerca de 30 anos, em pé encostado numa coluna de concreto bruto diante de uma parede caiada de branco, numa ilha grega.\n\nVeste uma regata de algodão canelado bege pergaminho, justa ao corpo, cava funda mostrando o ombro inteiro, barra reta na altura do quadril, e calça reta de cintura alta em grafite. Nada mais.\n\nSol de meio-dia a pino vindo de cima, desenhando o ombro, o trapézio e a clavícula com sombra dura. O canelado do algodão cria uma textura de listras verticais finas que a luz acentua. A parede branca reflete luz quente na pele retinta.\n\nEle está com um ombro apoiado na coluna, braços cruzados baixo, olhando para fora do quadro à esquerda. Corpo inteiro, deslocado para a direita, terço esquerdo só parede.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "R2",
+   "name": "Detalhe do tecido",
+   "tags": [
+    "MACRO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Macro vertical, muito próximo. Detalhe da cava e do ombro de uma regata de algodão canelado bege pergaminho vestida por uma pessoa negra de pele retinta. O quadro mostra a borda da cava com acabamento de viés estreito, as colunas do canelado correndo na vertical e um pedaço do ombro e do bíceps.\n\nSol de meio-dia batendo de lado, entrando dentro de cada sulco do canelado e criando uma sequência de luz e sombra bem finas no tecido. A pele ao lado aparece com brilho natural de calor, sem retoque, com a textura real dos poros.\n\nFundo fora de foco, parede caiada branca estourada de luz. Foco rigoroso na borda da cava. Sem rosto, cortado na altura do pescoço.\n\nSem logotipo, sem etiqueta, sem costura decorativa.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "R3",
+   "name": "Em uso",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Plano médio vertical com movimento. P1, homem negro de pele retinta e cabeça raspada, cerca de 30 anos, atravessando um pátio de concreto aberto numa ilha grega, pego em pleno passo, puxando para fora do corpo uma camisa de linho bege que acabou de tirar e carrega na mão.\n\nVeste a regata de algodão canelado bege pergaminho e calça reta de cintura alta em grafite. O suor marca levemente as costas da regata.\n\nSol de meio-dia a pino, calor visível subindo do concreto, sombra curta e muito dura colada nos pés dele. Luz branca e dura batendo no ombro e no topo da cabeça.\n\nEle olha para o chão, braço estendido com a camisa pendurada. Enquadrado da coxa para cima, deslocado para a esquerda, com o pátio vazio de concreto ocupando toda a direita do quadro.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "R4",
+   "name": "Outro ângulo, perfil",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Retrato vertical de perfil fechado. P1, homem negro de pele retinta, cabeça raspada, cerca de 30 anos, de perfil absoluto para a câmera, sentado num degrau de pedra branca com as costas eretas, numa ilha grega.\n\nA regata de algodão canelado bege pergaminho aparece de lado: a cava funda deixando a lateral do tronco visível, o canelado correndo na vertical, a barra reta parando no quadril. Calça reta de cintura alta em grafite.\n\nSol de meio-dia vindo exatamente de trás dele, então a silhueta fica recortada contra a parede branca e o tecido claro ganha um contorno de luz. O lado do rosto voltado para a câmera está em sombra aberta, com detalhe preservado.\n\nEle olha para frente, queixo paralelo ao chão, antebraços apoiados nos joelhos. Enquadrado da canela para cima, deslocado para a direita, com a escada vazia à esquerda.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "R5",
+   "name": "Cor alternativa, grafite",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO",
+    "OPCIONAL"
+   ],
+   "prompt": "Mesma cena e mesmo enquadramento da foto principal, trocando só a cor da regata. Retrato vertical de corpo inteiro. P1, homem negro de pele retinta, cabeça raspada, muito alto e magro, cerca de 30 anos, encostado numa coluna de concreto bruto diante de parede caiada de branco, numa ilha grega.\n\nVeste uma regata de algodão canelado grafite quase preto, justa ao corpo, cava funda, barra reta no quadril, com calça reta de cintura alta também em grafite.\n\nSol de meio-dia a pino desenhando ombro e clavícula com sombra dura. O canelado escuro aparece pelas linhas de luz que correm na vertical. A parede branca atrás recorta a silhueta escura.\n\nMesma posição: ombro apoiado na coluna, braços cruzados baixo, olhar para fora do quadro à esquerda. Corpo inteiro, deslocado para a direita.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "E1",
+   "name": "Principal",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Retrato vertical de corpo inteiro. P3, mulher negra de pele média com cabelo crespo curto em black power e ombros largos, cerca de 35 anos, em pé diante de uma parede de concreto com a marca da fôrma de madeira, sob os pilotis de um prédio modernista carioca.\n\nVeste uma calça de alfaiataria leve em grafite, de linhas completamente retas, cintura muito alta marcada por um cós largo, prega única na frente, perna solta caindo reta até o chão e cobrindo o peito do pé. Por cima, uma regata canelada bege pergaminho por dentro da calça, revelando a altura da cintura. Sapato baixo de couro escuro.\n\nLuz de fim de tarde baixa entrando de lado pela esquerda, dourada, rasante, mostrando a queda reta do tecido e a sombra própria da prega central. O lado direito do corpo em penumbra.\n\nEla está parada, peso distribuído, uma mão no bolso, tronco levemente girado. Corpo inteiro com folga embaixo, deslocada para a esquerda, com a parede de concreto vazia ocupando toda a direita.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "E2",
+   "name": "Detalhe do tecido",
+   "tags": [
+    "MACRO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Macro vertical. Detalhe da cintura e do quadril de uma calça de alfaiataria leve em grafite vestida por uma pessoa negra de pele média. O quadro mostra o cós largo, o fechamento interno sem fivela aparente, o começo da prega única descendo pela frente da perna e a entrada do bolso embutido na costura lateral.\n\nLuz de fim de tarde rasante, vinda da esquerda, revelando a trama fina da lã fria, o relevo da prega e a sombra limpa dentro do bolso. Uma mão de pele média entra pelo canto do quadro e repousa na borda do bolso.\n\nFundo de concreto fora de foco. Foco rigoroso na linha da prega. Cortado da costela até o meio da coxa, sem rosto.\n\nSem logotipo, sem fivela gravada, sem etiqueta, sem botão com inscrição.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "E3",
+   "name": "Em uso",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Plano aberto vertical com movimento. P3, mulher negra de pele média com black power curto, cerca de 35 anos, atravessando em passo rápido um corredor aberto de prédio modernista carioca, pega no momento em que a perna da frente avança e o tecido da calça abre.\n\nCalça de alfaiataria leve em grafite de cintura muito alta e perna reta, com camisa de linho bege pergaminho ampla por dentro da calça e mangas dobradas. Bolsa estruturada de couro grafite na mão esquerda.\n\nLuz de fim de tarde atravessando um painel de cobogó de concreto, desenhando quadrados de sombra que correm pelo corpo e pela calça enquanto ela anda. Chão de concreto polido devolvendo um reflexo baixo.\n\nEla olha para frente, fora do quadro. Corpo inteiro, deslocada para a direita, com o corredor vazio se estendendo à esquerda.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "E4",
+   "name": "Outro ângulo, três quartos de costas",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Retrato vertical em três quartos de costas. P3, mulher negra de pele média com black power curto, cerca de 35 anos, parada de costas e levemente virada, subindo o primeiro degrau de uma escada de concreto aparente num prédio modernista carioca.\n\nA calça de alfaiataria leve em grafite aparece por trás: cós alto limpo, caimento reto sem bolso traseiro aplicado, a perna de trás caindo em linha única até o chão e a perna da frente dobrada no degrau. Regata canelada bege pergaminho por dentro.\n\nLuz de fim de tarde baixa vindo da direita, criando uma faixa dourada na parede de concreto e deixando a silhueta dela em contraluz parcial, com o contorno da perna desenhado pela luz.\n\nEla apoia a mão no corrimão de concreto, cabeça virada para a direita mostrando um pouco do perfil. Corpo inteiro, deslocada para a esquerda, muito espaço de parede vazia acima.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "E5",
+   "name": "Cor alternativa, oliva",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO",
+    "OPCIONAL"
+   ],
+   "prompt": "Mesma cena e mesmo enquadramento da foto principal, trocando só a cor da calça. Retrato vertical de corpo inteiro. P3, mulher negra de pele média com black power curto e ombros largos, cerca de 35 anos, diante de uma parede de concreto com marca de fôrma de madeira, sob pilotis de um prédio modernista carioca.\n\nVeste uma calça de alfaiataria leve em verde oliva acinzentado, linhas retas, cintura muito alta com cós largo, prega única na frente, perna caindo reta até cobrir o peito do pé. Regata canelada bege pergaminho por dentro da calça. Sapato baixo de couro escuro.\n\nLuz de fim de tarde baixa e rasante pela esquerda, dourada, acentuando o verde acinzentado contra o cinza do concreto. Lado direito em penumbra.\n\nMesma pose: parada, uma mão no bolso, tronco levemente girado. Corpo inteiro, deslocada para a esquerda.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "D1",
+   "name": "Principal",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Retrato vertical de corpo inteiro. P5, mulher negra de pele retinta, cabeça raspada, baixa e forte, com sardas no rosto, cerca de 24 anos, em pé diante de um painel de cobogó de concreto num prédio modernista carioca.\n\nVeste um colete de linho terracota de modelagem ampla, ombro caído, cava funda e profunda, comprimento longo chegando ao quadril, sem abotoar, usado diretamente sobre a pele sem camisa por baixo. Calça reta de cintura alta em grafite.\n\nLuz de fim de tarde atravessando o cobogó e projetando quadrados de sombra sobre o colete, o braço nu e o concreto atrás. O terracota fica saturado onde a luz bate e profundo onde a sombra cai. A textura do linho aparece no ombro.\n\nEla está parada de frente, braços soltos, o colete abrindo naturalmente, olhando para fora do quadro à direita. Corpo inteiro, deslocada para a esquerda, com o cobogó ocupando toda a direita.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "D2",
+   "name": "Detalhe do tecido",
+   "tags": [
+    "MACRO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Macro vertical. Detalhe da cava e da lateral de um colete de linho terracota vestido por uma pessoa negra de pele retinta. O quadro mostra a borda da cava com acabamento em viés, a costura lateral aberta, a barra inferior reta e um pedaço da pele do tronco aparecendo pela abertura funda.\n\nLuz de fim de tarde rasante, dourada, entrando por trás do tecido e revelando a trama grossa e irregular do linho, os fios mais claros e mais escuros dentro do terracota, e o relevo do pespontado da borda.\n\nFundo de concreto fora de foco em sombra. Foco rigoroso na borda da cava. Cortado do ombro até a cintura, sem rosto.\n\nSem logotipo, sem etiqueta, sem botão com inscrição.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "D3",
+   "name": "Em uso, sobreposto",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Plano médio vertical. P5, mulher negra de pele retinta e cabeça raspada, cerca de 24 anos, no meio de um giro de tronco sob os pilotis de um prédio modernista carioca, o colete abrindo com o movimento.\n\nVeste o colete de linho terracota amplo por cima de uma camisa de linho bege pergaminho de mangas largas, com calça reta de cintura alta em grafite. As três camadas aparecem separadas: a camisa saindo por baixo da barra do colete e nas mangas, o colete solto por cima.\n\nLuz de fim de tarde baixa de lado, dourada, separando cada camada por sua própria sombra. Vegetação tropical de folhas grandes desfocada ao fundo.\n\nEla está girando o tronco, um braço levantado ajeitando a gola da camisa, olhando para baixo. Enquadrada do quadril para cima, deslocada para a direita.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "D4",
+   "name": "Outro ângulo, de costas",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Retrato vertical de costas. P5, mulher negra de pele retinta, cabeça raspada, cerca de 24 anos, de costas para a câmera, encostada numa coluna de concreto aparente de um prédio modernista carioca.\n\nO colete de linho terracota aparece inteiro por trás: ombro caído muito largo, cava funda deixando as costas e a escápula à mostra, costura central nas costas e barra reta na altura do quadril. Calça reta de cintura alta em grafite.\n\nLuz de fim de tarde baixa vindo da esquerda, rasante, desenhando a musculatura das costas nuas na abertura da cava e deixando a textura do linho em relevo. Uma faixa de luz dourada corta a parede de concreto na diagonal.\n\nEla está com a cabeça baixa e uma mão apoiada na coluna. Enquadrada da coxa para cima, centralizada embaixo, com a parede vazia ocupando a parte de cima do quadro.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "D5",
+   "name": "Cor alternativa, grafite",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO",
+    "OPCIONAL"
+   ],
+   "prompt": "Mesma cena e mesmo enquadramento da foto principal, trocando só a cor do colete. Retrato vertical de corpo inteiro. P5, mulher negra de pele retinta, cabeça raspada, baixa e forte, com sardas no rosto, cerca de 24 anos, diante de um painel de cobogó de concreto num prédio modernista carioca.\n\nVeste um colete de linho grafite quase preto, modelagem ampla, ombro caído, cava funda, comprimento longo até o quadril, aberto e usado diretamente sobre a pele. Calça reta de cintura alta também em grafite.\n\nLuz de fim de tarde atravessando o cobogó e projetando quadrados de sombra no colete escuro, no braço nu e no concreto. O linho escuro mostra a trama onde a luz dourada bate de raspão.\n\nMesma pose: parada de frente, braços soltos, colete abrindo, olhar para fora do quadro à direita. Corpo inteiro, deslocada para a esquerda.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "V1",
+   "name": "Principal",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Retrato vertical de corpo inteiro. P4, homem negro de pele média, locs curtos presos atrás, barba curta aparada, corpo encorpado, cerca de 38 anos, em pé num terraço de concreto aparente numa ilha grega, no fim da tarde.\n\nVeste uma jaqueta de algodão lavado verde oliva acinzentado, modelagem muito ampla, ombro caído, quatro bolsos aplicados com aba, fecho frontal de botões escondidos, barra reta na altura do quadril, usada aberta. Por baixo, regata canelada bege pergaminho e calça reta de cintura alta em grafite.\n\nSol baixo de fim de tarde vindo de lado, quase horizontal, dourado, entrando por baixo da aba dos bolsos e marcando cada costura estrutural da jaqueta. O algodão lavado mostra a textura gasta e o volume da modelagem.\n\nEle está parado de frente com o peso numa perna, uma das mãos dentro do bolso do peito, olhando para fora do quadro à esquerda. Corpo inteiro, deslocado para a direita, com o mar e o céu baixo ocupando a esquerda.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "V2",
+   "name": "Detalhe do tecido",
+   "tags": [
+    "MACRO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Macro vertical. Detalhe do bolso do peito de uma jaqueta de algodão lavado verde oliva acinzentado vestida por uma pessoa negra de pele média. O quadro mostra a aba do bolso, o pespontado duplo em linha da mesma cor, um botão fosco sem inscrição e a dobra do tecido logo abaixo.\n\nLuz baixa de fim de tarde entrando quase paralela ao tecido, revelando a trama fechada do algodão, o desgaste claro nas quinas das costuras e a sombra limpa embaixo da aba. Uma mão de pele média aparece no canto, o polegar entrando no bolso.\n\nFundo de concreto fora de foco em tom quente. Foco rigoroso no pesponto da aba. Cortado do ombro à cintura, sem rosto.\n\nSem logotipo, sem etiqueta, sem rebite ou botão com marca gravada.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "V3",
+   "name": "Em uso",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Plano médio vertical com movimento. P4, homem negro de pele média com locs curtos e barba aparada, cerca de 38 anos, vestindo a jaqueta no meio do gesto, com um braço já dentro da manga e o outro puxando a gola por cima do ombro, num terraço de pedra de uma ilha grega ao anoitecer.\n\nJaqueta de algodão lavado verde oliva acinzentado de modelagem ampla, sobre regata canelada bege pergaminho e calça reta de cintura alta em grafite. O tecido da jaqueta está em movimento, a manga vazia balançando.\n\nLuz do último sol, muito baixa e alaranjada, batendo só no lado esquerdo do rosto e do ombro, o resto da cena caindo no azul da hora azul. Vento forte levantando a barra da jaqueta.\n\nEle olha para baixo, concentrado no gesto. Enquadrado da cintura para cima, deslocado para a esquerda, com o céu escurecendo à direita.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "V4",
+   "name": "Outro ângulo, de costas",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Retrato vertical de costas. P4, homem negro de pele média com locs curtos presos atrás, cerca de 38 anos, de costas para a câmera, parado diante de um muro de concreto com o mar ao fundo, numa ilha grega no fim da tarde.\n\nA jaqueta de algodão lavado verde oliva acinzentado aparece inteira por trás: ombro caído muito largo, prega de movimento nas costas, duas costuras verticais estruturais descendo das escápulas e barra reta no quadril. Calça reta de cintura alta em grafite.\n\nSol baixo de fim de tarde vindo de frente para ele, então as costas ficam em sombra aberta quente, com a borda do ombro e do braço contornada por uma linha fina de luz dourada. A sombra dele se estende comprida na direção da câmera.\n\nEle está parado, braços soltos, cabeça erguida olhando para o mar. Corpo inteiro, centralizado na metade inferior, com o céu de fim de tarde ocupando a parte de cima.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "V5",
+   "name": "Cor alternativa, grafite",
+   "tags": [
+    "GRÉCIA",
+    "4:5 RETRATO",
+    "OPCIONAL"
+   ],
+   "prompt": "Mesma cena e mesmo enquadramento da foto principal, trocando só a cor da jaqueta. Retrato vertical de corpo inteiro. P4, homem negro de pele média, locs curtos presos atrás, barba curta aparada, cerca de 38 anos, num terraço de concreto aparente numa ilha grega, no fim da tarde.\n\nVeste uma jaqueta de algodão lavado grafite quase preto, modelagem muito ampla, ombro caído, quatro bolsos aplicados com aba, barra reta no quadril, usada aberta. Por baixo, regata canelada bege pergaminho e calça reta de cintura alta em grafite.\n\nSol baixo de fim de tarde vindo de lado, quase horizontal, dourado, marcando cada costura da jaqueta escura e revelando a textura lavada do algodão. O bege da regata abre um corte claro no meio do bloco escuro.\n\nMesma pose: parado de frente, peso numa perna, mão no bolso do peito, olhar para fora do quadro à esquerda. Corpo inteiro, deslocado para a direita.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "T1",
+   "name": "Principal, natureza morta",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Natureza morta vertical. Uma bolsa estruturada de couro liso grafite quase preto, de construção simples e geométrica, apoiada sozinha sobre um banco de concreto aparente sob os pilotis de um prédio modernista carioca.\n\nA bolsa é retangular, de boca reta, com alça única de couro do mesmo tom caída ao lado, costura aparente em linha da mesma cor correndo nas laterais e no fundo, e nenhuma ferragem além de dois rebites lisos e sem gravação. O couro tem textura natural de poro, sem verniz.\n\nLuz de fim de tarde atravessando um cobogó de concreto e desenhando dois quadrados de sombra sobre o banco e um sobre a bolsa. O couro escuro ganha reflexo baixo e difuso, sem brilho duro.\n\nCâmera na altura do banco, levemente de lado. A bolsa ocupa o terço inferior direito, o resto do quadro é o concreto vazio e a sombra geométrica.\n\nSem logotipo, sem monograma, sem etiqueta pendurada, sem fivela gravada, sem nada escrito.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "T2",
+   "name": "Detalhe do material",
+   "tags": [
+    "MACRO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Macro vertical, muito próximo. Detalhe do encontro entre a alça e o corpo de uma bolsa de couro liso grafite quase preto. O quadro mostra o rebite liso sem gravação, a dobra da alça, a costura aparente de pontos regulares e a borda do couro com o corte tingido na mesma cor.\n\nLuz de fim de tarde rasante, revelando o poro natural do couro, a leve irregularidade do tingimento e o relevo de cada ponto da costura. Reflexo baixo e aveludado, sem brilho de verniz.\n\nFundo de concreto fora de foco em sombra. Foco rigoroso no rebite. Nenhuma parte de corpo humano no quadro.\n\nSem logotipo, sem marca gravada, sem letra ou número em nenhuma peça metálica.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "T3",
+   "name": "Em uso",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Plano médio vertical com movimento. P2, mulher negra de pele retinta com tranças longas presas em coque alto, cerca de 28 anos, descendo uma escada de concreto aparente num prédio modernista carioca, com a bolsa estruturada de couro liso grafite pendurada no ombro pela alça única.\n\nVeste camisa de linho bege pergaminho ampla por dentro de uma calça reta de cintura alta em verde oliva acinzentado. A bolsa bate na lateral do corpo com o passo, a alça marcando o tecido da camisa no ombro.\n\nLuz de fim de tarde entrando de lado pela escada, dourada, pegando a bolsa de raspão e deixando o couro com reflexo baixo. Sombra do corrimão cortando a parede atrás.\n\nEla desce olhando para frente, uma mão segurando a alça no ombro. Enquadrada da coxa para cima, deslocada para a esquerda, com a parede de concreto vazia à direita.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "T4",
+   "name": "Outro ângulo, aberta",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO"
+   ],
+   "prompt": "Natureza morta vertical, outro ângulo. A mesma bolsa estruturada de couro liso grafite quase preto, agora vista de cima em ângulo de quarenta e cinco graus e com a boca aberta, apoiada sobre uma mesa de concreto num prédio modernista carioca.\n\nA abertura revela o forro interno de algodão cru bege pergaminho, um bolso interno chapado e a costura de montagem do fundo. A alça única está dobrada sobre a mesa ao lado. A estrutura das laterais mantém a boca aberta sozinha.\n\nLuz de fim de tarde vindo de cima pela esquerda, entrando dentro da bolsa e iluminando o forro claro, que contrasta com o couro escuro. Sombra limpa e definida na mesa à direita.\n\nA bolsa ocupa a metade inferior do quadro, deslocada para a esquerda, com a mesa de concreto vazia ocupando o resto.\n\nSem logotipo, sem etiqueta costurada no forro, sem nada escrito.\n\nProporção retrato 4:5."
+  },
+  {
+   "id": "T5",
+   "name": "Cor alternativa, argila",
+   "tags": [
+    "RIO",
+    "4:5 RETRATO",
+    "OPCIONAL"
+   ],
+   "prompt": "Mesma cena e mesmo enquadramento da foto principal, trocando só a cor da bolsa. Natureza morta vertical. Uma bolsa estruturada de couro liso terracota, de construção simples e geométrica, apoiada sozinha sobre um banco de concreto aparente sob os pilotis de um prédio modernista carioca.\n\nBolsa retangular de boca reta, alça única de couro do mesmo tom caída ao lado, costura aparente em linha da mesma cor nas laterais e no fundo, dois rebites lisos sem gravação. Couro com poro natural, sem verniz.\n\nLuz de fim de tarde atravessando um cobogó e desenhando quadrados de sombra no banco e sobre a bolsa. O terracota fica quente e saturado onde a luz bate, e profundo na sombra, contra o cinza frio do concreto.\n\nMesma câmera na altura do banco, levemente de lado. A bolsa no terço inferior direito, resto do quadro em concreto vazio.\n\nSem logotipo, sem monograma, sem etiqueta, sem nada escrito.\n\nProporção retrato 4:5."
+  }
+ ]
+}
