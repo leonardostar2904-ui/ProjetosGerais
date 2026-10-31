@@ -1,0 +1,3158 @@
+{
+  "project": "AVS",
+  "generatedAt": "2026-10-31T03:46:54Z",
+  "epics": [
+    {
+      "id": "E01",
+      "order": 1,
+      "name": "Briefing e requisitos",
+      "short": "Briefing",
+      "ref": "Etapa 1",
+      "phase": "planejar",
+      "summary": "Interpretar o briefing e chegar a um documento de requisitos e arquitetura."
+    },
+    {
+      "id": "E02",
+      "order": 2,
+      "name": "Design system",
+      "short": "Design system",
+      "ref": "Etapa 2",
+      "phase": "planejar",
+      "summary": "Cores, tipografia, componentes e espaçamentos."
+    },
+    {
+      "id": "E03",
+      "order": 3,
+      "name": "Direção fotográfica",
+      "short": "Fotografia",
+      "ref": "Briefing §7",
+      "phase": "planejar",
+      "summary": "Nove imagens com a mesma luz, tratamento e direção."
+    },
+    {
+      "id": "E04",
+      "order": 4,
+      "name": "Wireframes e UX",
+      "short": "Wireframes",
+      "ref": "Etapa 3",
+      "phase": "planejar",
+      "summary": "Wireframes das cinco páginas em desktop e mobile."
+    },
+    {
+      "id": "E05",
+      "order": 5,
+      "name": "Estrutura e componentes",
+      "short": "Estrutura",
+      "ref": "Etapa 4",
+      "phase": "construir",
+      "summary": "Navegação, layout global, catálogo local, sacola e pesquisa."
+    },
+    {
+      "id": "E06",
+      "order": 6,
+      "name": "Home",
+      "short": "Home",
+      "ref": "Página 01 · Etapas 5 e 6",
+      "phase": "construir",
+      "summary": "Campanha editorial que gera desejo e leva para a coleção."
+    },
+    {
+      "id": "E07",
+      "order": 7,
+      "name": "Coleção",
+      "short": "Coleção",
+      "ref": "Página 02 · Etapas 5 e 6",
+      "phase": "construir",
+      "summary": "Descoberta e seleção de produtos com filtros reais."
+    },
+    {
+      "id": "E08",
+      "order": 8,
+      "name": "Produto",
+      "short": "Produto",
+      "ref": "Página 03 · Etapas 5 e 6",
+      "phase": "construir",
+      "summary": "Transformar interesse em intenção de compra."
+    },
+    {
+      "id": "E09",
+      "order": 9,
+      "name": "Sacola",
+      "short": "Sacola",
+      "ref": "Página 05 · Etapas 5 e 6",
+      "phase": "construir",
+      "summary": "Experiência simples e transparente antes de finalizar."
+    },
+    {
+      "id": "E10",
+      "order": 10,
+      "name": "Sobre a AVESSO",
+      "short": "Sobre",
+      "ref": "Página 04 · Etapa 5",
+      "phase": "construir",
+      "summary": "Posicionamento e confiança em formato de matéria de revista."
+    },
+    {
+      "id": "E11",
+      "order": 11,
+      "name": "Responsividade, acessibilidade e SEO",
+      "short": "Responsivo e a11y",
+      "ref": "Etapa 7 · Desafio 1",
+      "phase": "entregar",
+      "summary": "Mesma qualidade no celular, teclado e leitores de tela."
+    },
+    {
+      "id": "E12",
+      "order": 12,
+      "name": "Revisão e desafios extras",
+      "short": "Revisão",
+      "ref": "Etapa 8 · Desafios 2 e 3",
+      "phase": "entregar",
+      "summary": "QA, avaliação de três perfis e avaliação crítica."
+    },
+    {
+      "id": "E13",
+      "order": 13,
+      "name": "Publicação",
+      "short": "Publicação",
+      "ref": "Etapa 9",
+      "phase": "entregar",
+      "summary": "Site hospedado e acessível por URL."
+    },
+    {
+      "id": "E14",
+      "order": 14,
+      "name": "Case de portfólio",
+      "short": "Case",
+      "ref": "Briefing §10",
+      "phase": "entregar",
+      "summary": "Mostrar o pensamento, as decisões e o resultado."
+    }
+  ],
+  "issues": [
+    {
+      "key": "AVS-1",
+      "num": 1,
+      "rank": 10,
+      "title": "Rodar o prompt de kickoff com o briefing completo",
+      "type": "tarefa",
+      "epic": "E01",
+      "status": "todo",
+      "priority": "alta",
+      "points": 1,
+      "rubric": "ux",
+      "description": "Enviar ao Claude o prompt de kickoff da seção 9 junto com o briefing inteiro. A regra é não começar a desenvolver: primeiro análise, arquitetura, fluxo, layout, design system, componentes e estratégia técnica.",
+      "checklist": [
+        {
+          "text": "Prompt de kickoff enviado com o briefing completo",
+          "done": false
+        },
+        {
+          "text": "Claude entregou os 7 itens pedidos sem gerar código",
+          "done": false
+        },
+        {
+          "text": "Respostas salvas em um documento do projeto",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-2",
+      "num": 2,
+      "rank": 20,
+      "title": "Documento de requisitos funcionais, visuais e comerciais",
+      "type": "tarefa",
+      "epic": "E01",
+      "status": "todo",
+      "priority": "alta",
+      "points": 3,
+      "rubric": "ux",
+      "description": "Consolidar o que o cliente pediu em um documento único, que vira a referência das etapas seguintes.",
+      "checklist": [
+        {
+          "text": "Requisitos da tabela de requisitos técnicos (§6) listados",
+          "done": false
+        },
+        {
+          "text": "Requisitos visuais: paleta, proporção de cores, tipografia e direção de arte",
+          "done": false
+        },
+        {
+          "text": "Lista do que a marca não quer transmitir",
+          "done": false
+        },
+        {
+          "text": "Os 5 objetivos comerciais registrados",
+          "done": false
+        },
+        {
+          "text": "Limitações: sem gateway, API paga de WhatsApp, banco externo, automação paga ou plataforma externa",
+          "done": false
+        },
+        {
+          "text": "Catálogo dos 6 produtos copiado sem alterar nomes e preços",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-3",
+      "num": 3,
+      "rank": 30,
+      "title": "Levantar inconsistências e decisões em aberto",
+      "type": "tarefa",
+      "epic": "E01",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "ux",
+      "description": "O kickoff pede para apontar inconsistências. Estes são pontos do briefing que precisam de decisão antes dos wireframes. São hipóteses a validar, não regras do cliente.",
+      "checklist": [
+        {
+          "text": "Categorias da Home (Essenciais, Camadas, Objetos) não batem com as do filtro (Camisas, Calças, Terceiras peças, Acessórios): definir o mapeamento",
+          "done": false
+        },
+        {
+          "text": "Bolsa Traço é acessório: decidir se usa tamanho único e como fica a seleção obrigatória de tamanho",
+          "done": false
+        },
+        {
+          "text": "Tamanhos 34 a 46 para homens e mulheres: decidir como apresentar a grade unissex",
+          "done": false
+        },
+        {
+          "text": "Definir quais produtos recebem selo de lançamento e o que a ordenação Lançamentos considera",
+          "done": false
+        },
+        {
+          "text": "Definir o critério de Mais relevantes",
+          "done": false
+        },
+        {
+          "text": "Definir quais produtos ou tamanhos aparecem esgotados",
+          "done": false
+        },
+        {
+          "text": "Definir o valor do frete simulado e se o frete grátis considera o subtotal antes ou depois do cupom",
+          "done": false
+        },
+        {
+          "text": "Política de trocas e Política de privacidade estão no footer, mas não entre as 5 páginas: decidir o destino desses links",
+          "done": false
+        },
+        {
+          "text": "Instagram e WhatsApp sem contas reais: decidir como tratar os links",
+          "done": false
+        },
+        {
+          "text": "Grid de 4 colunas com só 6 produtos: planejar a composição para não parecer vazio",
+          "done": false
+        },
+        {
+          "text": "Fotos geradas por IA podem contrariar o pedido de não parecer feito com IA: definir a origem das imagens",
+          "done": false
+        },
+        {
+          "text": "Ticket médio de R$ 430 abaixo do frete grátis de R$ 650: considerar na barra de progresso e nos produtos relacionados",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-4",
+      "num": 4,
+      "rank": 40,
+      "title": "Arquitetura de informação das 5 páginas",
+      "type": "tarefa",
+      "epic": "E01",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "ux",
+      "description": "Mapa do site e hierarquia de conteúdo de cada página, a partir das seções obrigatórias do briefing.",
+      "checklist": [
+        {
+          "text": "Sitemap com Home, Coleção, Produto, Sobre e Sacola",
+          "done": false
+        },
+        {
+          "text": "Seções de cada página listadas na ordem do briefing",
+          "done": false
+        },
+        {
+          "text": "Navegação do header (Loja, Sobre nós, pesquisa, sacola) e do footer definida",
+          "done": false
+        },
+        {
+          "text": "Mapeamento entre categorias da Home e filtros da Coleção definido",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-5",
+      "num": 5,
+      "rank": 50,
+      "title": "Fluxo de navegação e jornada de compra",
+      "type": "tarefa",
+      "epic": "E01",
+      "status": "todo",
+      "priority": "media",
+      "points": 2,
+      "rubric": "ux",
+      "description": "Desenhar o caminho de quem chega pela Home até a simulação de pagamento, incluindo os desvios.",
+      "checklist": [
+        {
+          "text": "Fluxo Home > Coleção > Produto > Sacola > Pagamento simulado",
+          "done": false
+        },
+        {
+          "text": "Entradas alternativas: categoria, destaque, pesquisa e produto relacionado",
+          "done": false
+        },
+        {
+          "text": "Saídas dos estados vazios (filtro sem resultado e sacola vazia)",
+          "done": false
+        },
+        {
+          "text": "Fluxo pensado primeiro para o celular",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-6",
+      "num": 6,
+      "rank": 60,
+      "title": "Estratégia técnica e estrutura do projeto",
+      "type": "tarefa",
+      "epic": "E01",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "func",
+      "description": "Registrar a stack e a organização do código antes de começar. O padrão do repositório é Next.js (App Router) + Tailwind, com deploy na Vercel.",
+      "checklist": [
+        {
+          "text": "Stack confirmada",
+          "done": false
+        },
+        {
+          "text": "Estrutura de pastas e componentes reutilizáveis definida",
+          "done": false
+        },
+        {
+          "text": "Catálogo como dado local, sem banco externo",
+          "done": false
+        },
+        {
+          "text": "Sacola com estado global e persistência em LocalStorage",
+          "done": false
+        },
+        {
+          "text": "Rotas das 5 páginas definidas, com rota dinâmica para produto",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-7",
+      "num": 7,
+      "rank": 70,
+      "title": "Tokens de cor e proporção de uso",
+      "type": "tarefa",
+      "epic": "E02",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "identidade",
+      "description": "Aplicar a paleta oficial respeitando a proporção: grafite e pergaminho dominam, as outras cores entram como apoio.",
+      "checklist": [
+        {
+          "text": "Grafite #242421: textos, fundos escuros e elementos principais",
+          "done": false
+        },
+        {
+          "text": "Pergaminho #F1EEE7: fundo principal",
+          "done": false
+        },
+        {
+          "text": "Argila #B86A4B: destaques e botões secundários",
+          "done": false
+        },
+        {
+          "text": "Oliva #777B68: elementos complementares",
+          "done": false
+        },
+        {
+          "text": "Névoa #D7D9D3: cards, divisórias e fundos auxiliares",
+          "done": false
+        },
+        {
+          "text": "Contraste AA verificado (argila sobre pergaminho dá 3,5:1, abaixo de 4,5:1 para texto pequeno)",
+          "done": false
+        },
+        {
+          "text": "Áreas escuras planejadas para criar contraste",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-8",
+      "num": 8,
+      "rank": 80,
+      "title": "Escala tipográfica com Manrope e Cormorant Garamond",
+      "type": "tarefa",
+      "epic": "E02",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "identidade",
+      "description": "Manrope para textos, navegação, botões, informações de produto e formulários. Cormorant Garamond para campanhas, frases institucionais, chamadas de impacto e elementos editoriais.",
+      "checklist": [
+        {
+          "text": "Escala de tamanhos para desktop e mobile",
+          "done": false
+        },
+        {
+          "text": "Pesos e entrelinhas definidos",
+          "done": false
+        },
+        {
+          "text": "Regra de uso de cada fonte documentada",
+          "done": false
+        },
+        {
+          "text": "Fontes carregadas com fallback",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-9",
+      "num": 9,
+      "rank": 90,
+      "title": "Grid, espaçamentos e breakpoints",
+      "type": "tarefa",
+      "epic": "E02",
+      "status": "todo",
+      "priority": "media",
+      "points": 2,
+      "rubric": "consist",
+      "description": "Base de layout compartilhada pelas cinco páginas.",
+      "checklist": [
+        {
+          "text": "Escala de espaçamento definida",
+          "done": false
+        },
+        {
+          "text": "Breakpoints de smartphone, tablet e desktop",
+          "done": false
+        },
+        {
+          "text": "Grid de produtos: 4 colunas no desktop, 2 ou 3 no tablet, 2 no mobile",
+          "done": false
+        },
+        {
+          "text": "Largura máxima de texto para leitura",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-10",
+      "num": 10,
+      "rank": 100,
+      "title": "Logotipo AVESSO STUDIO em tipografia",
+      "type": "tarefa",
+      "epic": "E02",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "identidade",
+      "description": "O logo é tipográfico: caixa alta, espaçamento entre letras e aplicação preferencialmente horizontal.",
+      "checklist": [
+        {
+          "text": "Versão clara e versão escura",
+          "done": false
+        },
+        {
+          "text": "Sem ícones de cabide, agulha, manequim ou roupa",
+          "done": false
+        },
+        {
+          "text": "Tamanhos para header desktop, header mobile e footer",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-11",
+      "num": 11,
+      "rank": 110,
+      "title": "Componentes base: botões, links, campos e selos",
+      "type": "tarefa",
+      "epic": "E02",
+      "status": "todo",
+      "priority": "alta",
+      "points": 3,
+      "rubric": "consist",
+      "description": "Peças de interface usadas em todas as páginas.",
+      "checklist": [
+        {
+          "text": "Botão principal e botão secundário em argila",
+          "done": false
+        },
+        {
+          "text": "Estados de hover, foco visível e desabilitado",
+          "done": false
+        },
+        {
+          "text": "Campos de texto com rótulo e mensagem de erro",
+          "done": false
+        },
+        {
+          "text": "Selos de lançamento e de esgotado",
+          "done": false
+        },
+        {
+          "text": "Sem sombras excessivas, gradientes ou bordas arredondadas em tudo",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-12",
+      "num": 12,
+      "rank": 120,
+      "title": "Componentes de produto: card, seletores e quantidade",
+      "type": "tarefa",
+      "epic": "E02",
+      "status": "todo",
+      "priority": "alta",
+      "points": 3,
+      "rubric": "consist",
+      "description": "Componentes que aparecem na Home, na Coleção, no Produto e na Sacola.",
+      "checklist": [
+        {
+          "text": "Card de produto com foto, nome, preço, cores e selo",
+          "done": false
+        },
+        {
+          "text": "Seletor de cor",
+          "done": false
+        },
+        {
+          "text": "Seletor de tamanho com estados disponível, selecionado e esgotado",
+          "done": false
+        },
+        {
+          "text": "Seletor de quantidade",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-13",
+      "num": 13,
+      "rank": 130,
+      "title": "Componentes de feedback: modal, confirmação, acordeão e estado vazio",
+      "type": "tarefa",
+      "epic": "E02",
+      "status": "todo",
+      "priority": "media",
+      "points": 2,
+      "rubric": "consist",
+      "description": "Padrões de interação reaproveitados nas páginas.",
+      "checklist": [
+        {
+          "text": "Modal acessível: Esc fecha, foco preso e devolvido",
+          "done": false
+        },
+        {
+          "text": "Confirmação visual de item adicionado",
+          "done": false
+        },
+        {
+          "text": "Acordeão para seções expansíveis",
+          "done": false
+        },
+        {
+          "text": "Estado vazio reutilizável",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-14",
+      "num": 14,
+      "rank": 140,
+      "title": "Documentar o design system",
+      "type": "tarefa",
+      "epic": "E02",
+      "status": "todo",
+      "priority": "baixa",
+      "points": 2,
+      "rubric": "identidade",
+      "description": "Uma referência com cores, tipografia, espaçamentos e componentes. Também vira material para o case.",
+      "checklist": [
+        {
+          "text": "Cores com HEX e aplicação",
+          "done": false
+        },
+        {
+          "text": "Tipografia com escala",
+          "done": false
+        },
+        {
+          "text": "Componentes com estados",
+          "done": false
+        },
+        {
+          "text": "Captura pronta para o case",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-15",
+      "num": 15,
+      "rank": 150,
+      "title": "Guia de direção fotográfica",
+      "type": "tarefa",
+      "epic": "E03",
+      "status": "todo",
+      "priority": "critica",
+      "points": 2,
+      "rubric": "identidade",
+      "description": "Antes de produzir qualquer imagem, fixar a direção para que as 9 imagens pareçam de uma única campanha. O briefing aponta como maior erro usar seis fotos aleatórias de roupa.",
+      "checklist": [
+        {
+          "text": "Luz natural e mesmo tratamento de cor",
+          "done": false
+        },
+        {
+          "text": "Cenário de arquitetura brutalista, com concreto, madeira e tecido",
+          "done": false
+        },
+        {
+          "text": "Composição assimétrica com espaço negativo",
+          "done": false
+        },
+        {
+          "text": "Modelos em movimento, longe do padrão de catálogo",
+          "done": false
+        },
+        {
+          "text": "Origem das imagens definida (IA, banco de imagens ou produção própria)",
+          "done": false
+        },
+        {
+          "text": "Briefing ou prompt base reutilizável para todas as imagens",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-16",
+      "num": 16,
+      "rank": 160,
+      "title": "Hero principal 16:9",
+      "type": "tarefa",
+      "epic": "E03",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "identidade",
+      "description": "Imagem de abertura da Home.",
+      "checklist": [
+        {
+          "text": "Imagem 16:9 aprovada",
+          "done": false
+        },
+        {
+          "text": "Recorte vertical para mobile",
+          "done": false
+        },
+        {
+          "text": "Espaço negativo para o texto do hero",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-17",
+      "num": 17,
+      "rank": 170,
+      "title": "Campanha editorial 3:2",
+      "type": "tarefa",
+      "epic": "E03",
+      "status": "todo",
+      "priority": "alta",
+      "points": 1,
+      "rubric": "identidade",
+      "description": "Usada na Home (editorial ENTRELINHAS) e no cabeçalho da Coleção.",
+      "checklist": [
+        {
+          "text": "Imagem 3:2 aprovada",
+          "done": false
+        },
+        {
+          "text": "Funciona na Home e na Coleção",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-18",
+      "num": 18,
+      "rank": 180,
+      "title": "Fotos principais dos 6 produtos (4:5)",
+      "type": "tarefa",
+      "epic": "E03",
+      "status": "todo",
+      "priority": "alta",
+      "points": 5,
+      "rubric": "identidade",
+      "description": "Uma foto principal por produto, todas na mesma direção.",
+      "checklist": [
+        {
+          "text": "Camisa Bruma",
+          "done": false
+        },
+        {
+          "text": "Calça Eixo",
+          "done": false
+        },
+        {
+          "text": "Colete Dobra",
+          "done": false
+        },
+        {
+          "text": "Jaqueta Vértice",
+          "done": false
+        },
+        {
+          "text": "Regata Base",
+          "done": false
+        },
+        {
+          "text": "Bolsa Traço",
+          "done": false
+        },
+        {
+          "text": "Cores das peças coerentes com as cores do catálogo",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-19",
+      "num": 19,
+      "rank": 190,
+      "title": "Fotos extras: galeria do produto e hover dos cards",
+      "type": "tarefa",
+      "epic": "E03",
+      "status": "todo",
+      "priority": "media",
+      "points": 5,
+      "rubric": "visual",
+      "description": "A página de produto pede pelo menos 4 imagens e o card da Coleção pede uma segunda foto no hover.",
+      "checklist": [
+        {
+          "text": "Detalhe do tecido",
+          "done": false
+        },
+        {
+          "text": "Peça em uso",
+          "done": false
+        },
+        {
+          "text": "Outro ângulo",
+          "done": false
+        },
+        {
+          "text": "Segunda foto de cada um dos 6 produtos para o hover",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-20",
+      "num": 20,
+      "rank": 200,
+      "title": "Imagens das categorias Essenciais, Camadas e Objetos",
+      "type": "tarefa",
+      "epic": "E03",
+      "status": "todo",
+      "priority": "media",
+      "points": 2,
+      "rubric": "visual",
+      "description": "Cada categoria da Home precisa de imagem própria.",
+      "checklist": [
+        {
+          "text": "Essenciais",
+          "done": false
+        },
+        {
+          "text": "Camadas",
+          "done": false
+        },
+        {
+          "text": "Objetos",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-21",
+      "num": 21,
+      "rank": 210,
+      "title": "Foto de bastidores 3:2",
+      "type": "tarefa",
+      "epic": "E03",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "identidade",
+      "description": "Imagem da página Sobre.",
+      "checklist": [
+        {
+          "text": "Imagem aprovada",
+          "done": false
+        },
+        {
+          "text": "Conversa com a seção de produção",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-22",
+      "num": 22,
+      "rank": 220,
+      "title": "Consistência e otimização das imagens",
+      "type": "tarefa",
+      "epic": "E03",
+      "status": "todo",
+      "priority": "media",
+      "points": 2,
+      "rubric": "visual",
+      "description": "Revisar o conjunto antes de aplicar nas páginas.",
+      "checklist": [
+        {
+          "text": "Revisão lado a lado: mesma luz e tratamento",
+          "done": false
+        },
+        {
+          "text": "Exportação em formato leve (WebP ou AVIF)",
+          "done": false
+        },
+        {
+          "text": "Tamanhos responsivos gerados",
+          "done": false
+        },
+        {
+          "text": "Texto alternativo escrito para cada imagem",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-23",
+      "num": 23,
+      "rank": 230,
+      "title": "Wireframe da Home (desktop e mobile)",
+      "type": "tarefa",
+      "epic": "E04",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "ux",
+      "description": "As 9 seções obrigatórias da Home na ordem do briefing.",
+      "checklist": [
+        {
+          "text": "Barra de anúncio e header",
+          "done": false
+        },
+        {
+          "text": "Hero assimétrico",
+          "done": false
+        },
+        {
+          "text": "Categorias",
+          "done": false
+        },
+        {
+          "text": "4 produtos em destaque",
+          "done": false
+        },
+        {
+          "text": "Manifesto",
+          "done": false
+        },
+        {
+          "text": "Editorial ENTRELINHAS",
+          "done": false
+        },
+        {
+          "text": "Newsletter",
+          "done": false
+        },
+        {
+          "text": "Footer",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-24",
+      "num": 24,
+      "rank": 240,
+      "title": "Wireframe da Coleção",
+      "type": "tarefa",
+      "epic": "E04",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "ux",
+      "description": "Descoberta de produtos no desktop e no celular.",
+      "checklist": [
+        {
+          "text": "Cabeçalho editorial",
+          "done": false
+        },
+        {
+          "text": "Filtros no desktop",
+          "done": false
+        },
+        {
+          "text": "Filtros em painel no mobile",
+          "done": false
+        },
+        {
+          "text": "Ordenação",
+          "done": false
+        },
+        {
+          "text": "Grid e estado vazio",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-25",
+      "num": 25,
+      "rank": 250,
+      "title": "Wireframe da página de produto",
+      "type": "tarefa",
+      "epic": "E04",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "ux",
+      "description": "A página que transforma interesse em intenção de compra.",
+      "checklist": [
+        {
+          "text": "Breadcrumb",
+          "done": false
+        },
+        {
+          "text": "Galeria",
+          "done": false
+        },
+        {
+          "text": "Informações e seleção de cor e tamanho",
+          "done": false
+        },
+        {
+          "text": "Botão ADICIONAR À SACOLA visível no mobile",
+          "done": false
+        },
+        {
+          "text": "Seções expansíveis",
+          "done": false
+        },
+        {
+          "text": "Produtos relacionados",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-26",
+      "num": 26,
+      "rank": 260,
+      "title": "Wireframe da Sacola e do pagamento simulado",
+      "type": "tarefa",
+      "epic": "E04",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "ux",
+      "description": "Fluxo de revisão do pedido até a etapa demonstrativa.",
+      "checklist": [
+        {
+          "text": "Lista de itens",
+          "done": false
+        },
+        {
+          "text": "Resumo do pedido",
+          "done": false
+        },
+        {
+          "text": "Cupom",
+          "done": false
+        },
+        {
+          "text": "Barra de frete grátis",
+          "done": false
+        },
+        {
+          "text": "Etapa de pagamento simulada",
+          "done": false
+        },
+        {
+          "text": "Sacola vazia",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-27",
+      "num": 27,
+      "rank": 270,
+      "title": "Wireframe da página Sobre",
+      "type": "tarefa",
+      "epic": "E04",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "ux",
+      "description": "Estrutura de matéria editorial.",
+      "checklist": [
+        {
+          "text": "Abertura",
+          "done": false
+        },
+        {
+          "text": "Nossa história",
+          "done": false
+        },
+        {
+          "text": "Filosofia em 3 pilares",
+          "done": false
+        },
+        {
+          "text": "Produção em 5 etapas",
+          "done": false
+        },
+        {
+          "text": "Manifesto escuro",
+          "done": false
+        },
+        {
+          "text": "CTA",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-28",
+      "num": 28,
+      "rank": 280,
+      "title": "Revisão crítica dos wireframes com o Claude",
+      "type": "tarefa",
+      "epic": "E04",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "ux",
+      "description": "Pedir para o Claude questionar as decisões antes de codar, como o briefing recomenda.",
+      "checklist": [
+        {
+          "text": "Feedback registrado",
+          "done": false
+        },
+        {
+          "text": "Ajustes aplicados ou descartados com justificativa",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-29",
+      "num": 29,
+      "rank": 290,
+      "title": "Setup do projeto",
+      "type": "tarefa",
+      "epic": "E05",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "func",
+      "description": "Base técnica do site.",
+      "checklist": [
+        {
+          "text": "Projeto criado na stack definida",
+          "done": false
+        },
+        {
+          "text": "Manrope e Cormorant Garamond carregadas",
+          "done": false
+        },
+        {
+          "text": "Tokens do design system configurados",
+          "done": false
+        },
+        {
+          "text": "Lint e formatação funcionando",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-30",
+      "num": 30,
+      "rank": 300,
+      "title": "Catálogo de produtos em dados locais",
+      "type": "tarefa",
+      "epic": "E05",
+      "status": "todo",
+      "priority": "critica",
+      "points": 2,
+      "rubric": "func",
+      "description": "Fonte única dos 6 produtos. O briefing proíbe inventar preços ou nomes diferentes.",
+      "checklist": [
+        {
+          "text": "Camisa Bruma · Camisas · R$ 389 · Pergaminho e Grafite",
+          "done": false
+        },
+        {
+          "text": "Calça Eixo · Calças · R$ 529 · Grafite e Oliva",
+          "done": false
+        },
+        {
+          "text": "Colete Dobra · Terceiras peças · R$ 459 · Argila e Grafite",
+          "done": false
+        },
+        {
+          "text": "Jaqueta Vértice · Terceiras peças · R$ 689 · Oliva e Grafite",
+          "done": false
+        },
+        {
+          "text": "Regata Base · Camisas · R$ 219 · Pergaminho e Grafite",
+          "done": false
+        },
+        {
+          "text": "Bolsa Traço · Acessórios · R$ 349 · Grafite e Argila",
+          "done": false
+        },
+        {
+          "text": "Descrições oficiais copiadas",
+          "done": false
+        },
+        {
+          "text": "Tamanhos, estoque, selo de lançamento, composição, modelagem e cuidados",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-31",
+      "num": 31,
+      "rank": 310,
+      "title": "Barra de anúncio",
+      "type": "historia",
+      "epic": "E05",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "identidade",
+      "description": "Faixa grafite discreta com texto claro: \"Produção em pequenos lotes. Frete grátis acima de R$ 650.\"",
+      "checklist": [
+        {
+          "text": "Texto exato do briefing",
+          "done": false
+        },
+        {
+          "text": "Presente em todas as páginas",
+          "done": false
+        },
+        {
+          "text": "Legível no mobile",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-32",
+      "num": 32,
+      "rank": 320,
+      "title": "Header fixo com contador da sacola",
+      "type": "historia",
+      "epic": "E05",
+      "status": "todo",
+      "priority": "critica",
+      "points": 3,
+      "rubric": "ux",
+      "description": "O header deve permanecer acessível durante a navegação.",
+      "checklist": [
+        {
+          "text": "Logotipo AVESSO STUDIO",
+          "done": false
+        },
+        {
+          "text": "Links Loja e Sobre nós",
+          "done": false
+        },
+        {
+          "text": "Ícone de pesquisa",
+          "done": false
+        },
+        {
+          "text": "Ícone de sacola com quantidade de produtos",
+          "done": false
+        },
+        {
+          "text": "Permanece acessível durante a rolagem",
+          "done": false
+        },
+        {
+          "text": "Ícones com nome acessível",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-33",
+      "num": 33,
+      "rank": 330,
+      "title": "Menu mobile",
+      "type": "historia",
+      "epic": "E05",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "resp",
+      "description": "Navegação responsiva para o celular.",
+      "checklist": [
+        {
+          "text": "Abre e fecha por botão com rótulo",
+          "done": false
+        },
+        {
+          "text": "Navegável por teclado, Esc fecha",
+          "done": false
+        },
+        {
+          "text": "Foco preso enquanto aberto",
+          "done": false
+        },
+        {
+          "text": "Inclui Loja, Sobre nós, pesquisa e sacola",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-34",
+      "num": 34,
+      "rank": 340,
+      "title": "Footer completo",
+      "type": "historia",
+      "epic": "E05",
+      "status": "todo",
+      "priority": "media",
+      "points": 2,
+      "rubric": "consist",
+      "description": "Todos os itens obrigatórios do footer.",
+      "checklist": [
+        {
+          "text": "Logotipo",
+          "done": false
+        },
+        {
+          "text": "Instagram",
+          "done": false
+        },
+        {
+          "text": "Loja",
+          "done": false
+        },
+        {
+          "text": "Sobre a marca",
+          "done": false
+        },
+        {
+          "text": "Política de trocas",
+          "done": false
+        },
+        {
+          "text": "Política de privacidade",
+          "done": false
+        },
+        {
+          "text": "Atendimento via WhatsApp",
+          "done": false
+        },
+        {
+          "text": "Newsletter",
+          "done": false
+        },
+        {
+          "text": "Direitos autorais",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-35",
+      "num": 35,
+      "rank": 350,
+      "title": "Navegação conectando as 5 páginas",
+      "type": "historia",
+      "epic": "E05",
+      "status": "todo",
+      "priority": "alta",
+      "points": 1,
+      "rubric": "ux",
+      "description": "Requisito técnico: todas as páginas precisam estar conectadas.",
+      "checklist": [
+        {
+          "text": "Todas as páginas acessíveis pelo header ou por links internos",
+          "done": false
+        },
+        {
+          "text": "Nenhum link quebrado",
+          "done": false
+        },
+        {
+          "text": "Página atual sinalizada no menu",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-36",
+      "num": 36,
+      "rank": 360,
+      "title": "Sacola com persistência em LocalStorage",
+      "type": "tarefa",
+      "epic": "E05",
+      "status": "todo",
+      "priority": "critica",
+      "points": 3,
+      "rubric": "func",
+      "description": "Estado global da sacola usado pelo header, pela página de produto e pela Sacola.",
+      "checklist": [
+        {
+          "text": "Adicionar item (produto, cor e tamanho)",
+          "done": false
+        },
+        {
+          "text": "Mesmo item soma na quantidade",
+          "done": false
+        },
+        {
+          "text": "Alterar quantidade",
+          "done": false
+        },
+        {
+          "text": "Remover item",
+          "done": false
+        },
+        {
+          "text": "Dados preservados ao navegar e ao recarregar",
+          "done": false
+        },
+        {
+          "text": "Leitura segura quando o LocalStorage estiver vazio ou indisponível",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-37",
+      "num": 37,
+      "rank": 370,
+      "title": "Pesquisa de produtos pelo nome",
+      "type": "historia",
+      "epic": "E05",
+      "status": "todo",
+      "priority": "alta",
+      "points": 3,
+      "rubric": "func",
+      "description": "Requisito técnico: pesquisa de produtos pelo nome.",
+      "checklist": [
+        {
+          "text": "Abre pelo ícone do header",
+          "done": false
+        },
+        {
+          "text": "Filtra pelo nome do produto",
+          "done": false
+        },
+        {
+          "text": "Encontra mesmo sem acento (vertice acha Vértice)",
+          "done": false
+        },
+        {
+          "text": "Mensagem quando não há resultado",
+          "done": false
+        },
+        {
+          "text": "Resultado leva à página do produto",
+          "done": false
+        },
+        {
+          "text": "Funciona por teclado",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-38",
+      "num": 38,
+      "rank": 380,
+      "title": "Hero editorial com CTA",
+      "type": "historia",
+      "epic": "E06",
+      "status": "todo",
+      "priority": "critica",
+      "points": 3,
+      "rubric": "visual",
+      "description": "Fotografia predominante, tipografia forte e composição assimétrica.",
+      "checklist": [
+        {
+          "text": "Fotografia de campanha ocupando boa parte da primeira tela",
+          "done": false
+        },
+        {
+          "text": "Título: Vista o que não precisa explicar.",
+          "done": false
+        },
+        {
+          "text": "Texto: Peças contemporâneas para quem encontra identidade na própria expressão.",
+          "done": false
+        },
+        {
+          "text": "Botão EXPLORAR COLEÇÃO leva à Coleção",
+          "done": false
+        },
+        {
+          "text": "Composição assimétrica e tipografia forte",
+          "done": false
+        },
+        {
+          "text": "Recorte e legibilidade no mobile",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-39",
+      "num": 39,
+      "rank": 390,
+      "title": "Categorias Essenciais, Camadas e Objetos",
+      "type": "historia",
+      "epic": "E06",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "ux",
+      "description": "Três entradas para a coleção.",
+      "checklist": [
+        {
+          "text": "Essenciais: peças para o cotidiano",
+          "done": false
+        },
+        {
+          "text": "Camadas: sobreposições e estruturas",
+          "done": false
+        },
+        {
+          "text": "Objetos: acessórios e complementos",
+          "done": false
+        },
+        {
+          "text": "Imagem própria em cada categoria",
+          "done": false
+        },
+        {
+          "text": "Link para a coleção já filtrada",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-40",
+      "num": 40,
+      "rank": 400,
+      "title": "Produtos em destaque",
+      "type": "historia",
+      "epic": "E06",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "func",
+      "description": "Quatro produtos da coleção.",
+      "checklist": [
+        {
+          "text": "4 produtos da coleção",
+          "done": false
+        },
+        {
+          "text": "Foto, nome, preço e cores disponíveis",
+          "done": false
+        },
+        {
+          "text": "Selo de lançamento quando aplicável",
+          "done": false
+        },
+        {
+          "text": "Card leva à página do produto",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-41",
+      "num": 41,
+      "rank": 410,
+      "title": "Manifesto",
+      "type": "historia",
+      "epic": "E06",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "identidade",
+      "description": "Área visualmente diferenciada.",
+      "checklist": [
+        {
+          "text": "Frase: Não desenhamos para acompanhar o movimento. Desenhamos para fazer parte dele.",
+          "done": false
+        },
+        {
+          "text": "Área visualmente diferenciada",
+          "done": false
+        },
+        {
+          "text": "Link para conhecer a AVESSO",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-42",
+      "num": 42,
+      "rank": 420,
+      "title": "Editorial de campanha ENTRELINHAS",
+      "type": "historia",
+      "epic": "E06",
+      "status": "todo",
+      "priority": "media",
+      "points": 2,
+      "rubric": "visual",
+      "description": "Fotografia horizontal com o texto da coleção.",
+      "checklist": [
+        {
+          "text": "Fotografia horizontal",
+          "done": false
+        },
+        {
+          "text": "Texto: Uma coleção sobre aquilo que existe entre o essencial e o extraordinário.",
+          "done": false
+        },
+        {
+          "text": "Botão CONHEÇA A COLEÇÃO",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-43",
+      "num": 43,
+      "rank": 430,
+      "title": "Newsletter com validação",
+      "type": "historia",
+      "epic": "E06",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "func",
+      "description": "Requisito técnico: validação de e-mail e confirmação visual.",
+      "checklist": [
+        {
+          "text": "Título: Receba o que vem a seguir.",
+          "done": false
+        },
+        {
+          "text": "Texto: Novas coleções, ideias e lançamentos diretamente no seu e-mail.",
+          "done": false
+        },
+        {
+          "text": "Validação de e-mail com mensagem de erro clara",
+          "done": false
+        },
+        {
+          "text": "Confirmação visual após a inscrição",
+          "done": false
+        },
+        {
+          "text": "Sem envio para serviço externo (simulação)",
+          "done": false
+        },
+        {
+          "text": "Mesmo comportamento na newsletter do footer",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-44",
+      "num": 44,
+      "rank": 440,
+      "title": "Cabeçalho editorial da coleção",
+      "type": "historia",
+      "epic": "E07",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "visual",
+      "description": "Abertura da página de coleção.",
+      "checklist": [
+        {
+          "text": "Título: COLEÇÃO 01 / ENTRELINHAS",
+          "done": false
+        },
+        {
+          "text": "Descrição: Uma seleção de peças que exploram o equilíbrio entre estrutura, movimento e simplicidade.",
+          "done": false
+        },
+        {
+          "text": "Imagem de campanha",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-45",
+      "num": 45,
+      "rank": 450,
+      "title": "Filtros funcionais",
+      "type": "historia",
+      "epic": "E07",
+      "status": "todo",
+      "priority": "critica",
+      "points": 5,
+      "rubric": "func",
+      "description": "Requisito do cliente: os filtros precisam funcionar de verdade. Não basta criar elementos visuais.",
+      "checklist": [
+        {
+          "text": "Categoria: Camisas, Calças, Terceiras peças, Acessórios",
+          "done": false
+        },
+        {
+          "text": "Tamanho: 34 a 46",
+          "done": false
+        },
+        {
+          "text": "Cor: Grafite, Pergaminho, Argila, Oliva",
+          "done": false
+        },
+        {
+          "text": "Preço por intervalo de valores",
+          "done": false
+        },
+        {
+          "text": "Filtros combinados entre si",
+          "done": false
+        },
+        {
+          "text": "Contagem de resultados visível",
+          "done": false
+        },
+        {
+          "text": "Filtro aplicado ao chegar por uma categoria da Home",
+          "done": false
+        },
+        {
+          "text": "Filtros em painel no mobile",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-46",
+      "num": 46,
+      "rank": 460,
+      "title": "Ordenação",
+      "type": "historia",
+      "epic": "E07",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "func",
+      "description": "Funcionamento por preço e relevância.",
+      "checklist": [
+        {
+          "text": "Mais relevantes",
+          "done": false
+        },
+        {
+          "text": "Menor preço",
+          "done": false
+        },
+        {
+          "text": "Maior preço",
+          "done": false
+        },
+        {
+          "text": "Lançamentos",
+          "done": false
+        },
+        {
+          "text": "Funciona junto com os filtros",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-47",
+      "num": 47,
+      "rank": 470,
+      "title": "Grid responsivo de produtos",
+      "type": "historia",
+      "epic": "E07",
+      "status": "todo",
+      "priority": "alta",
+      "points": 1,
+      "rubric": "resp",
+      "description": "Colunas por dispositivo, conforme o briefing.",
+      "checklist": [
+        {
+          "text": "4 colunas no desktop",
+          "done": false
+        },
+        {
+          "text": "2 ou 3 colunas no tablet",
+          "done": false
+        },
+        {
+          "text": "2 colunas no mobile",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-48",
+      "num": 48,
+      "rank": 480,
+      "title": "Interações dos cards",
+      "type": "historia",
+      "epic": "E07",
+      "status": "todo",
+      "priority": "media",
+      "points": 3,
+      "rubric": "func",
+      "description": "Comportamento dos cards na Coleção.",
+      "checklist": [
+        {
+          "text": "Hover troca para a segunda fotografia",
+          "done": false
+        },
+        {
+          "text": "Alternativa para telas de toque",
+          "done": false
+        },
+        {
+          "text": "Card leva à página do produto",
+          "done": false
+        },
+        {
+          "text": "Indicador de produto esgotado",
+          "done": false
+        },
+        {
+          "text": "Compra rápida com seleção de tamanho (opcional: decidir se entra)",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-49",
+      "num": 49,
+      "rank": 490,
+      "title": "Estado vazio dos filtros",
+      "type": "historia",
+      "epic": "E07",
+      "status": "todo",
+      "priority": "alta",
+      "points": 1,
+      "rubric": "ux",
+      "description": "Quando nenhum produto corresponde aos filtros.",
+      "checklist": [
+        {
+          "text": "Texto: Não encontramos peças com esses critérios.",
+          "done": false
+        },
+        {
+          "text": "Botão LIMPAR FILTROS zera filtros e ordenação",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-50",
+      "num": 50,
+      "rank": 500,
+      "title": "Breadcrumb",
+      "type": "historia",
+      "epic": "E08",
+      "status": "todo",
+      "priority": "baixa",
+      "points": 1,
+      "rubric": "ux",
+      "description": "Exemplo do briefing: Home > Coleção > Camisas > Camisa Bruma.",
+      "checklist": [
+        {
+          "text": "Home > Coleção > Categoria > Produto",
+          "done": false
+        },
+        {
+          "text": "Cada nível é um link",
+          "done": false
+        },
+        {
+          "text": "Categoria leva à coleção filtrada",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-51",
+      "num": 51,
+      "rank": 510,
+      "title": "Galeria navegável com 4 imagens",
+      "type": "historia",
+      "epic": "E08",
+      "status": "todo",
+      "priority": "critica",
+      "points": 3,
+      "rubric": "visual",
+      "description": "Deve ser possível navegar pelas imagens.",
+      "checklist": [
+        {
+          "text": "Foto principal",
+          "done": false
+        },
+        {
+          "text": "Detalhe do tecido",
+          "done": false
+        },
+        {
+          "text": "Peça em uso",
+          "done": false
+        },
+        {
+          "text": "Outro ângulo",
+          "done": false
+        },
+        {
+          "text": "Navegação por miniaturas ou setas",
+          "done": false
+        },
+        {
+          "text": "Funciona por teclado e por toque",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-52",
+      "num": 52,
+      "rank": 520,
+      "title": "Informações comerciais",
+      "type": "historia",
+      "epic": "E08",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "ux",
+      "description": "Exemplo: CAMISA BRUMA, R$ 389,00, \"Uma interpretação contemporânea da camisa clássica, com modelagem ampla e construção minimalista.\"",
+      "checklist": [
+        {
+          "text": "Nome e preço",
+          "done": false
+        },
+        {
+          "text": "Descrição",
+          "done": false
+        },
+        {
+          "text": "Cores disponíveis",
+          "done": false
+        },
+        {
+          "text": "Tamanhos disponíveis",
+          "done": false
+        },
+        {
+          "text": "Composição",
+          "done": false
+        },
+        {
+          "text": "Modelagem",
+          "done": false
+        },
+        {
+          "text": "Disponibilidade",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-53",
+      "num": 53,
+      "rank": 530,
+      "title": "Seleção obrigatória de tamanho",
+      "type": "historia",
+      "epic": "E08",
+      "status": "todo",
+      "priority": "critica",
+      "points": 2,
+      "rubric": "func",
+      "description": "O cliente precisa selecionar um tamanho antes de adicionar o produto à sacola.",
+      "checklist": [
+        {
+          "text": "Tamanhos 34 a 46",
+          "done": false
+        },
+        {
+          "text": "Sem tamanho escolhido, o produto não entra na sacola",
+          "done": false
+        },
+        {
+          "text": "Mensagem orientando a escolher o tamanho",
+          "done": false
+        },
+        {
+          "text": "Tamanho esgotado desabilitado",
+          "done": false
+        },
+        {
+          "text": "Regra definida para a Bolsa Traço",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-54",
+      "num": 54,
+      "rank": 540,
+      "title": "Guia de tamanhos em modal",
+      "type": "historia",
+      "epic": "E08",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "func",
+      "description": "Tabela de medidas corporais do briefing (34: 82-86 / 64-68 / 90-94 cm até 46: 110-116 / 92-98 / 118-124 cm).",
+      "checklist": [
+        {
+          "text": "Tabela 34 a 46 com busto, cintura e quadril do briefing",
+          "done": false
+        },
+        {
+          "text": "Apresentado como guia de medidas corporais",
+          "done": false
+        },
+        {
+          "text": "Aviso de que as medidas são referência do protótipo",
+          "done": false
+        },
+        {
+          "text": "Esc fecha, foco preso e devolvido ao botão",
+          "done": false
+        },
+        {
+          "text": "Tabela legível no mobile",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-55",
+      "num": 55,
+      "rank": 550,
+      "title": "ADICIONAR À SACOLA com confirmação",
+      "type": "historia",
+      "epic": "E08",
+      "status": "todo",
+      "priority": "critica",
+      "points": 2,
+      "rubric": "func",
+      "description": "O que acontece ao clicar no botão de compra.",
+      "checklist": [
+        {
+          "text": "Produto entra na sacola com cor e tamanho",
+          "done": false
+        },
+        {
+          "text": "Contador do header atualiza",
+          "done": false
+        },
+        {
+          "text": "Confirmação visual aparece",
+          "done": false
+        },
+        {
+          "text": "Item preservado durante a navegação",
+          "done": false
+        },
+        {
+          "text": "Confirmação anunciada para leitor de tela",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-56",
+      "num": 56,
+      "rank": 560,
+      "title": "Seções expansíveis",
+      "type": "historia",
+      "epic": "E08",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "ux",
+      "description": "Informações adicionais em acordeão.",
+      "checklist": [
+        {
+          "text": "Composição e materiais",
+          "done": false
+        },
+        {
+          "text": "Modelagem e caimento",
+          "done": false
+        },
+        {
+          "text": "Cuidados com a peça",
+          "done": false
+        },
+        {
+          "text": "Entrega e trocas",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-57",
+      "num": 57,
+      "rank": 570,
+      "title": "Produtos relacionados",
+      "type": "historia",
+      "epic": "E08",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "ux",
+      "description": "Três produtos que complementem o produto visualizado.",
+      "checklist": [
+        {
+          "text": "3 produtos que complementam o produto visto",
+          "done": false
+        },
+        {
+          "text": "Produto atual fora da lista",
+          "done": false
+        },
+        {
+          "text": "Cards iguais aos da Coleção",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-58",
+      "num": 58,
+      "rank": 580,
+      "title": "Página de produto para os 6 produtos",
+      "type": "tarefa",
+      "epic": "E08",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "consist",
+      "description": "A estrutura vale para todo o catálogo, não só para a Camisa Bruma.",
+      "checklist": [
+        {
+          "text": "Rota dinâmica por produto",
+          "done": false
+        },
+        {
+          "text": "Os 6 produtos abrem sem erro",
+          "done": false
+        },
+        {
+          "text": "Conteúdo de cada produto vem do catálogo local",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-59",
+      "num": 59,
+      "rank": 590,
+      "title": "Cabeçalho e lista de itens",
+      "type": "historia",
+      "epic": "E09",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "ux",
+      "description": "Topo da página e itens escolhidos.",
+      "checklist": [
+        {
+          "text": "Título: SUA SACOLA",
+          "done": false
+        },
+        {
+          "text": "Subtítulo: Peças escolhidas para fazer parte da sua rotina.",
+          "done": false
+        },
+        {
+          "text": "Item com imagem, nome, cor, tamanho e preço",
+          "done": false
+        },
+        {
+          "text": "Seletor de quantidade",
+          "done": false
+        },
+        {
+          "text": "Botão de remover",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-60",
+      "num": 60,
+      "rank": 600,
+      "title": "Resumo do pedido com cálculo automático",
+      "type": "historia",
+      "epic": "E09",
+      "status": "todo",
+      "priority": "critica",
+      "points": 3,
+      "rubric": "func",
+      "description": "Subtotal, desconto, frete e total.",
+      "checklist": [
+        {
+          "text": "Subtotal: soma dos produtos",
+          "done": false
+        },
+        {
+          "text": "Desconto quando houver cupom válido",
+          "done": false
+        },
+        {
+          "text": "Frete simulado",
+          "done": false
+        },
+        {
+          "text": "Total calculado automaticamente",
+          "done": false
+        },
+        {
+          "text": "Valores em reais no formato brasileiro",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-61",
+      "num": 61,
+      "rank": 610,
+      "title": "Cupom AVESSO10",
+      "type": "historia",
+      "epic": "E09",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "func",
+      "description": "Cupom de demonstração com 10% de desconto.",
+      "checklist": [
+        {
+          "text": "AVESSO10 aplica 10% de desconto",
+          "done": false
+        },
+        {
+          "text": "Mensagem para cupom inválido",
+          "done": false
+        },
+        {
+          "text": "Opção de remover o cupom",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-62",
+      "num": 62,
+      "rank": 620,
+      "title": "Barra de progresso do frete grátis",
+      "type": "historia",
+      "epic": "E09",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "func",
+      "description": "A partir de R$ 650, frete grátis.",
+      "checklist": [
+        {
+          "text": "Meta de R$ 650",
+          "done": false
+        },
+        {
+          "text": "Mensagem: Faltam R$ X para você ganhar frete grátis.",
+          "done": false
+        },
+        {
+          "text": "Barra atualiza com quantidade, remoção e cupom",
+          "done": false
+        },
+        {
+          "text": "Mensagem de frete grátis conquistado",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-63",
+      "num": 63,
+      "rank": 630,
+      "title": "Etapa demonstrativa de pagamento",
+      "type": "historia",
+      "epic": "E09",
+      "status": "todo",
+      "priority": "media",
+      "points": 2,
+      "rubric": "func",
+      "description": "Sem gateway real: a etapa precisa deixar claro que é uma simulação.",
+      "checklist": [
+        {
+          "text": "Botão CONTINUAR PARA PAGAMENTO",
+          "done": false
+        },
+        {
+          "text": "Etapa deixa claro que é uma simulação",
+          "done": false
+        },
+        {
+          "text": "Não coleta dados reais de cartão",
+          "done": false
+        },
+        {
+          "text": "Caminho de volta para a sacola",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-64",
+      "num": 64,
+      "rank": 640,
+      "title": "Sacola vazia",
+      "type": "historia",
+      "epic": "E09",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "ux",
+      "description": "Estado quando não há produtos.",
+      "checklist": [
+        {
+          "text": "Texto: Sua sacola está esperando por algo especial.",
+          "done": false
+        },
+        {
+          "text": "Botão VOLTAR À COLEÇÃO",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-65",
+      "num": 65,
+      "rank": 650,
+      "title": "Abertura editorial",
+      "type": "historia",
+      "epic": "E10",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "visual",
+      "description": "Página com cara de matéria de revista, não institucional genérica.",
+      "checklist": [
+        {
+          "text": "Título: Somos o que escolhemos revelar.",
+          "done": false
+        },
+        {
+          "text": "Imagem de campanha com composição editorial",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-66",
+      "num": 66,
+      "rank": 660,
+      "title": "Nossa história e filosofia",
+      "type": "historia",
+      "epic": "E10",
+      "status": "todo",
+      "priority": "media",
+      "points": 2,
+      "rubric": "identidade",
+      "description": "Texto institucional e os três pilares.",
+      "checklist": [
+        {
+          "text": "Texto da seção Nossa história",
+          "done": false
+        },
+        {
+          "text": "01. Intenção",
+          "done": false
+        },
+        {
+          "text": "02. Permanência",
+          "done": false
+        },
+        {
+          "text": "03. Construção",
+          "done": false
+        },
+        {
+          "text": "Diagramação editorial",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-67",
+      "num": 67,
+      "rank": 670,
+      "title": "Processo de produção",
+      "type": "historia",
+      "epic": "E10",
+      "status": "todo",
+      "priority": "media",
+      "points": 2,
+      "rubric": "visual",
+      "description": "Apresentar visualmente o processo de criação.",
+      "checklist": [
+        {
+          "text": "Pesquisa e conceito",
+          "done": false
+        },
+        {
+          "text": "Desenvolvimento e modelagem",
+          "done": false
+        },
+        {
+          "text": "Escolha dos materiais",
+          "done": false
+        },
+        {
+          "text": "Produção em pequenos lotes",
+          "done": false
+        },
+        {
+          "text": "Distribuição",
+          "done": false
+        },
+        {
+          "text": "Foto de bastidores aplicada",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-68",
+      "num": 68,
+      "rank": 680,
+      "title": "Manifesto e CTA final",
+      "type": "historia",
+      "epic": "E10",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "identidade",
+      "description": "Fechamento da página.",
+      "checklist": [
+        {
+          "text": "Área escura com: Estar na moda nunca foi sobre estar na fila.",
+          "done": false
+        },
+        {
+          "text": "Chamada: Conheça nossas peças.",
+          "done": false
+        },
+        {
+          "text": "Botão EXPLORAR A COLEÇÃO",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-69",
+      "num": 69,
+      "rank": 690,
+      "title": "Revisão mobile-first (Desafio 1)",
+      "type": "tarefa",
+      "epic": "E11",
+      "status": "todo",
+      "priority": "critica",
+      "points": 3,
+      "rubric": "resp",
+      "description": "Considerar que 85% dos visitantes acessam pelo celular. O site precisa manter a mesma qualidade visual e funcional.",
+      "checklist": [
+        {
+          "text": "Testado em 360, 390 e 430 px de largura",
+          "done": false
+        },
+        {
+          "text": "Sem rolagem horizontal",
+          "done": false
+        },
+        {
+          "text": "Áreas de toque com pelo menos 44 px",
+          "done": false
+        },
+        {
+          "text": "Hero, filtros, galeria e sacola revisados no celular",
+          "done": false
+        },
+        {
+          "text": "Teste em um celular real",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-70",
+      "num": 70,
+      "rank": 700,
+      "title": "Tablet e desktop",
+      "type": "tarefa",
+      "epic": "E11",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "resp",
+      "description": "Conferir as larguras intermediárias e grandes.",
+      "checklist": [
+        {
+          "text": "768 px",
+          "done": false
+        },
+        {
+          "text": "1024 px",
+          "done": false
+        },
+        {
+          "text": "1440 px ou mais",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-71",
+      "num": 71,
+      "rank": 710,
+      "title": "Acessibilidade: contraste, teclado e textos alternativos",
+      "type": "tarefa",
+      "epic": "E11",
+      "status": "todo",
+      "priority": "alta",
+      "points": 3,
+      "rubric": "resp",
+      "description": "Requisito técnico de acessibilidade.",
+      "checklist": [
+        {
+          "text": "Contraste AA em textos e botões",
+          "done": false
+        },
+        {
+          "text": "Site inteiro navegável por teclado",
+          "done": false
+        },
+        {
+          "text": "Foco visível",
+          "done": false
+        },
+        {
+          "text": "Textos alternativos nas imagens",
+          "done": false
+        },
+        {
+          "text": "Rótulos em todos os campos",
+          "done": false
+        },
+        {
+          "text": "Atualizações da sacola anunciadas para leitor de tela",
+          "done": false
+        },
+        {
+          "text": "Respeita a preferência por movimento reduzido",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-72",
+      "num": 72,
+      "rank": 720,
+      "title": "SEO: título e descrição por página",
+      "type": "tarefa",
+      "epic": "E11",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "func",
+      "description": "Requisito técnico de SEO.",
+      "checklist": [
+        {
+          "text": "Home",
+          "done": false
+        },
+        {
+          "text": "Coleção",
+          "done": false
+        },
+        {
+          "text": "Produto (um por produto)",
+          "done": false
+        },
+        {
+          "text": "Sobre",
+          "done": false
+        },
+        {
+          "text": "Sacola",
+          "done": false
+        },
+        {
+          "text": "Hierarquia de títulos correta",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-73",
+      "num": 73,
+      "rank": 730,
+      "title": "QA dos 14 requisitos técnicos",
+      "type": "tarefa",
+      "epic": "E12",
+      "status": "todo",
+      "priority": "critica",
+      "points": 3,
+      "rubric": "func",
+      "description": "Passar pela tabela de requisitos técnicos do briefing (§6), item por item.",
+      "checklist": [
+        {
+          "text": "Responsividade",
+          "done": false
+        },
+        {
+          "text": "Navegação",
+          "done": false
+        },
+        {
+          "text": "Sacola: adicionar, remover e alterar quantidades",
+          "done": false
+        },
+        {
+          "text": "Persistência em LocalStorage",
+          "done": false
+        },
+        {
+          "text": "Filtros",
+          "done": false
+        },
+        {
+          "text": "Ordenação",
+          "done": false
+        },
+        {
+          "text": "Pesquisa",
+          "done": false
+        },
+        {
+          "text": "Seleção de tamanho",
+          "done": false
+        },
+        {
+          "text": "Modal do guia de tamanhos",
+          "done": false
+        },
+        {
+          "text": "Newsletter",
+          "done": false
+        },
+        {
+          "text": "Cupom",
+          "done": false
+        },
+        {
+          "text": "Menu mobile",
+          "done": false
+        },
+        {
+          "text": "SEO",
+          "done": false
+        },
+        {
+          "text": "Acessibilidade",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-74",
+      "num": 74,
+      "rank": 740,
+      "title": "Desafio 2: avaliação de três perfis",
+      "type": "tarefa",
+      "epic": "E12",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "ux",
+      "description": "Pedir ao Claude para simular três avaliadores, cada um apontando cinco problemas.",
+      "checklist": [
+        {
+          "text": "Diretor de criação de marca de moda: 5 problemas",
+          "done": false
+        },
+        {
+          "text": "Especialista em UX de e-commerce: 5 problemas",
+          "done": false
+        },
+        {
+          "text": "Consumidor que nunca ouviu falar da AVESSO: 5 problemas",
+          "done": false
+        },
+        {
+          "text": "Problemas relevantes registrados como Bug no board",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-75",
+      "num": 75,
+      "rank": 750,
+      "title": "Desafio 3: avaliação crítica com nota de 0 a 100",
+      "type": "tarefa",
+      "epic": "E12",
+      "status": "todo",
+      "priority": "alta",
+      "points": 1,
+      "rubric": "consist",
+      "description": "Usar o prompt do briefing: \"Considere que você é um diretor de criação responsável por aprovar ou rejeitar este projeto. Não seja gentil...\"",
+      "checklist": [
+        {
+          "text": "Prompt executado com o projeto final",
+          "done": false
+        },
+        {
+          "text": "Nota registrada nas notas desta issue",
+          "done": false
+        },
+        {
+          "text": "Comparação com a rubrica de 100 pontos do cliente",
+          "done": false
+        },
+        {
+          "text": "Problemas críticos registrados como Bug",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-76",
+      "num": 76,
+      "rank": 760,
+      "title": "Corrigir os problemas priorizados",
+      "type": "tarefa",
+      "epic": "E12",
+      "status": "todo",
+      "priority": "alta",
+      "points": 5,
+      "rubric": "consist",
+      "description": "Fechar os bugs que mais pesam na rubrica antes de publicar.",
+      "checklist": [
+        {
+          "text": "Bugs triados por impacto na rubrica",
+          "done": false
+        },
+        {
+          "text": "Correções críticas feitas",
+          "done": false
+        },
+        {
+          "text": "Reavaliação depois das correções",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-77",
+      "num": 77,
+      "rank": 770,
+      "title": "Publicar o site com URL pública",
+      "type": "tarefa",
+      "epic": "E13",
+      "status": "todo",
+      "priority": "alta",
+      "points": 1,
+      "rubric": "",
+      "description": "Padrão do repositório: deploy na Vercel.",
+      "checklist": [
+        {
+          "text": "Deploy feito",
+          "done": false
+        },
+        {
+          "text": "URL acessível",
+          "done": false
+        },
+        {
+          "text": "Testado no celular pelo link publicado",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-78",
+      "num": 78,
+      "rank": 780,
+      "title": "Checagem pós-publicação",
+      "type": "tarefa",
+      "epic": "E13",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "func",
+      "description": "Conferir o site já publicado.",
+      "checklist": [
+        {
+          "text": "Todos os links funcionam em produção",
+          "done": false
+        },
+        {
+          "text": "Sacola persiste no domínio publicado",
+          "done": false
+        },
+        {
+          "text": "Títulos e descrições aparecem corretamente",
+          "done": false
+        },
+        {
+          "text": "Imagens carregam rápido no celular",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-79",
+      "num": 79,
+      "rank": 790,
+      "title": "Capturas das 5 páginas em desktop e mobile",
+      "type": "tarefa",
+      "epic": "E14",
+      "status": "todo",
+      "priority": "alta",
+      "points": 2,
+      "rubric": "",
+      "description": "Material visual do case.",
+      "checklist": [
+        {
+          "text": "Home",
+          "done": false
+        },
+        {
+          "text": "Coleção",
+          "done": false
+        },
+        {
+          "text": "Produto",
+          "done": false
+        },
+        {
+          "text": "Sobre",
+          "done": false
+        },
+        {
+          "text": "Sacola",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-80",
+      "num": 80,
+      "rank": 800,
+      "title": "Demonstração das funcionalidades",
+      "type": "tarefa",
+      "epic": "E14",
+      "status": "todo",
+      "priority": "media",
+      "points": 2,
+      "rubric": "",
+      "description": "Mostrar o protótipo funcionando, não só telas.",
+      "checklist": [
+        {
+          "text": "Filtros",
+          "done": false
+        },
+        {
+          "text": "Pesquisa",
+          "done": false
+        },
+        {
+          "text": "Seleção de tamanhos",
+          "done": false
+        },
+        {
+          "text": "Sacola",
+          "done": false
+        },
+        {
+          "text": "Cálculo de valores com cupom e frete",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-81",
+      "num": 81,
+      "rank": 810,
+      "title": "Escrever o case",
+      "type": "tarefa",
+      "epic": "E14",
+      "status": "todo",
+      "priority": "alta",
+      "points": 3,
+      "rubric": "",
+      "description": "Apresentar como conceito autoral de e-commerce, sem inventar resultados comerciais como aumento de vendas ou conversão.",
+      "checklist": [
+        {
+          "text": "01. O desafio",
+          "done": false
+        },
+        {
+          "text": "02. Estratégia",
+          "done": false
+        },
+        {
+          "text": "03. Identidade visual",
+          "done": false
+        },
+        {
+          "text": "04. Experiência digital",
+          "done": false
+        },
+        {
+          "text": "05. Funcionalidades",
+          "done": false
+        },
+        {
+          "text": "06. Resultado e aprendizados",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    },
+    {
+      "key": "AVS-82",
+      "num": 82,
+      "rank": 820,
+      "title": "Publicar o case no portfólio",
+      "type": "tarefa",
+      "epic": "E14",
+      "status": "todo",
+      "priority": "media",
+      "points": 1,
+      "rubric": "",
+      "description": "Último passo do desafio.",
+      "checklist": [
+        {
+          "text": "Case publicado com o link do site",
+          "done": false
+        },
+        {
+          "text": "Revisão de português",
+          "done": false
+        },
+        {
+          "text": "Link testado",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "createdAt": "2026-10-31T03:46:54Z",
+      "updatedAt": "2026-10-31T03:46:54Z"
+    }
+  ]
+}

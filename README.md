@@ -10,6 +10,12 @@ Repositorio dos projetos de cliente. Um diretorio por cliente.
 | Pereira & Martins Contabilidade | Site + branding basico + 15 templates de post | Nao iniciado |
 | BiblioMaison | Site + 7 templates de post | Nao iniciado |
 
+## Portfolio
+
+| Projeto | Entregaveis | Status |
+|---|---|---|
+| AVESSO Studio (desafio) | E-commerce de 5 paginas + case | Backlog montado, ver `portfolio/avesso-studio/board/` |
+
 ## Estrutura por cliente
 
 ```

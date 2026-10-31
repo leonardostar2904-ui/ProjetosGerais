@@ -1,0 +1,855 @@
+<title>Board AVESSO Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: board no estilo Jira vestido com a marca AVESSO. Faixa grafite no topo, barra de filtros,
+   quatro colunas de status e raias recolhíveis por epic. No celular, uma coluna por vez, escolhida por abas. */
+:root{
+  --grafite:#242421; --pergaminho:#F1EEE7; --argila:#B86A4B; --oliva:#777B68; --nevoa:#D7D9D3;
+  --bg:#F1EEE7; --fg:#242421; --muted:#5E5F55; --line:#D7D9D3; --line-strong:#BDBFB7;
+  --col:#E7E5DE; --card:#FBFAF6; --card-hover:#FFFFFF; --field:#FFFFFF;
+  --band:#242421; --band-fg:#F1EEE7; --band-muted:#B3B4AA;
+  --accent:#B86A4B; --accent-ink:#9A5233; --accent-soft:#F1DED4;
+  --ok:#5F6452; --ok-fill:#777B68;
+  --icon-ink:#242421; --icon-on:#F1EEE7;
+  --scrim:rgba(36,36,33,.42);
+  --lift:0 1px 0 rgba(36,36,33,.10);
+  --panel-shadow:-12px 0 32px rgba(36,36,33,.14);
+  --font-ui:"Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-ed:"Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --r:2px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#191917; --fg:#F1EEE7; --muted:#A9AA9F; --line:#34342F; --line-strong:#4A4A44;
+    --col:#21211E; --card:#2B2B27; --card-hover:#33332E; --field:#21211E;
+    --band:#0E0E0D; --band-fg:#F1EEE7; --band-muted:#9C9D93;
+    --accent:#C97A5A; --accent-ink:#E09A7C; --accent-soft:#3B2920;
+    --ok:#AEB29C; --ok-fill:#8C9079;
+    --icon-ink:#D7D9D3; --icon-on:#191917;
+    --scrim:rgba(0,0,0,.55); --lift:none; --panel-shadow:-12px 0 32px rgba(0,0,0,.4);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#191917; --fg:#F1EEE7; --muted:#A9AA9F; --line:#34342F; --line-strong:#4A4A44;
+  --col:#21211E; --card:#2B2B27; --card-hover:#33332E; --field:#21211E;
+  --band:#0E0E0D; --band-fg:#F1EEE7; --band-muted:#9C9D93;
+  --accent:#C97A5A; --accent-ink:#E09A7C; --accent-soft:#3B2920;
+  --ok:#AEB29C; --ok-fill:#8C9079;
+  --icon-ink:#D7D9D3; --icon-on:#191917;
+  --scrim:rgba(0,0,0,.55); --lift:none; --panel-shadow:-12px 0 32px rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+
+[hidden]{display:none !important}
+body{background:var(--bg); color:var(--fg); font:14px/1.45 var(--font-ui); -webkit-font-smoothing:antialiased}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--bg)}
+body.locked{overflow:hidden}
+button,input,select,textarea{font:inherit; color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+.wrap{max-width:1680px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px))}
+
+/* Faixa da marca */
+.band{background:var(--band); color:var(--band-fg)}
+.band-in{display:flex; align-items:center; gap:14px; padding-block:10px; min-height:24px}
+.logo{font-weight:600; font-size:12px; letter-spacing:.34em; white-space:nowrap}
+.band-sep{width:1px; height:14px; background:var(--band-muted); opacity:.5}
+.band-proj{font-size:12px; color:var(--band-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+.sync{margin-left:auto; display:flex; align-items:center; gap:7px; font-size:12px; color:var(--band-muted); white-space:nowrap}
+.sync::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--band-muted)}
+.sync.ok::before{background:var(--ok-fill)}
+.sync.warn::before{background:var(--accent)}
+
+/* Cabeçalho da página */
+.head{display:flex; flex-wrap:wrap; align-items:flex-end; gap:16px 32px; padding-block:22px 16px}
+.head-main{flex:1 1 280px; min-width:0}
+.eyebrow{margin:0 0 4px; font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+h1{margin:0; font-family:var(--font-ed); font-weight:600; font-size:clamp(30px, 4vw, 40px); line-height:1.05; letter-spacing:-.005em; text-wrap:balance}
+.head-side{flex:0 1 460px; min-width:0; display:flex; flex-direction:column; gap:10px}
+.prog-text{font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums}
+.prog-text strong{color:var(--fg); font-weight:700}
+.bar{height:4px; background:var(--line); overflow:hidden; flex:none}
+.bar i{display:block; height:100%; background:var(--ok-fill)}
+.bar.wide{width:100%; height:6px}
+.next{display:flex; align-items:center; gap:10px; width:100%; min-width:0; text-align:left; background:var(--card); border:1px solid var(--line-strong); border-radius:var(--r); padding:9px 12px}
+.next:hover{background:var(--card-hover)}
+.next-label{font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent-ink); flex:none}
+.next-key{font-weight:600; font-variant-numeric:tabular-nums; flex:none}
+.next-title{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+
+/* Barra de filtros */
+.toolbar{display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding-block:4px 12px}
+.search{flex:1 1 240px; min-width:0; display:flex; align-items:center; gap:8px; background:var(--field); border:1px solid var(--line-strong); border-radius:var(--r); padding:0 10px; color:var(--muted)}
+.search:focus-within{outline:2px solid var(--accent); outline-offset:1px}
+.search input{flex:1; min-width:0; border:0; background:none; padding:8px 0; outline:none; color:var(--fg)}
+select,.field input,.field textarea,.add-check input{background:var(--field); border:1px solid var(--line-strong); border-radius:var(--r); padding:7px 9px; color:var(--fg); min-width:0}
+.toolbar select{flex:0 1 auto; max-width:100%}
+.toggle,.ghost{background:none; border:1px solid var(--line-strong); border-radius:var(--r); padding:7px 11px; font-weight:600; font-size:13px}
+.toggle[aria-pressed="true"]{background:var(--col); border-color:var(--fg)}
+.toggle[aria-pressed="true"]::before{content:"✓ "; color:var(--ok)}
+.tsel{flex:0 1 auto; min-width:0}
+.tsel select{width:100%}
+.linkish{background:none; border:0; padding:7px 4px; color:var(--accent-ink); font-weight:600; font-size:13px; text-decoration:underline; text-underline-offset:3px}
+.primary{background:var(--fg); color:var(--bg); border:1px solid var(--fg); border-radius:var(--r); padding:8px 14px; font-weight:700; font-size:12px; letter-spacing:.1em; text-transform:uppercase}
+.primary:hover{background:var(--accent-ink); border-color:var(--accent-ink); color:var(--icon-on)}
+#createBtn{margin-left:auto}
+
+/* Abas (celular) */
+.tabs-wrap{display:none}
+.tabs{display:flex; gap:2px; overflow-x:auto; scrollbar-width:none}
+.tab{flex:1 0 auto; background:none; border:0; border-bottom:2px solid transparent; padding:10px 8px 8px; font-weight:600; font-size:13px; color:var(--muted); white-space:nowrap}
+.tab .n{font-variant-numeric:tabular-nums; color:var(--fg); margin-left:4px}
+.tab[aria-selected="true"]{color:var(--fg); border-bottom-color:var(--fg)}
+
+/* Board */
+.board{display:flex; flex-direction:column; gap:6px; padding-bottom:56px}
+.cols-head{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--bg); padding-block:10px 8px; border-bottom:1px solid var(--line)}
+.col-head{display:flex; align-items:baseline; gap:8px; padding:0 8px; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); min-width:0}
+.col-head .n{color:var(--fg); font-variant-numeric:tabular-nums}
+.col-head .p{margin-left:auto; font-weight:500; letter-spacing:.02em; text-transform:none; font-variant-numeric:tabular-nums; white-space:nowrap}
+.lane{border-bottom:1px solid var(--line); padding-bottom:8px}
+.lane-h{margin:0; font-size:inherit}
+.lane-head{display:flex; align-items:center; gap:10px; width:100%; min-width:0; background:none; border:0; padding:10px 4px 8px; text-align:left; color:var(--fg)}
+.chev{flex:none; transition:transform .15s; color:var(--muted)}
+.lane[data-collapsed="false"] .chev{transform:rotate(90deg)}
+.dot{width:7px; height:7px; border-radius:50%; flex:none; background:var(--muted)}
+.ph-planejar{background:var(--oliva)} .ph-construir{background:var(--accent)} .ph-entregar{background:var(--icon-ink)}
+.lane-name{font-weight:700; font-size:14px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.lane-ref{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+.lane-prog{margin-left:auto; display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; flex:none}
+.lane-prog .bar{width:72px}
+.lane[data-collapsed="true"] .lane-body{display:none}
+.lane-body{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px}
+.lane.flat{border-bottom:0; padding-top:8px}
+.cell{background:var(--col); padding:6px; display:flex; flex-direction:column; gap:6px; min-height:52px; min-width:0}
+.cell.over{outline:2px dashed var(--accent); outline-offset:-2px; background:var(--accent-soft)}
+
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--lift); padding:9px 10px 8px; display:flex; flex-direction:column; gap:8px; cursor:pointer; min-width:0}
+.card:hover{background:var(--card-hover); border-color:var(--line-strong)}
+.card:focus-visible{outline-offset:1px}
+.card.dragging{opacity:.45}
+.card-title{font-size:13.5px; line-height:1.35; font-weight:500; overflow-wrap:anywhere}
+.card.is-done .card-title{color:var(--muted)}
+.card-meta{display:flex; align-items:center; gap:7px; flex-wrap:wrap; font-size:11.5px; color:var(--muted)}
+.card-meta svg{display:block}
+.key{font-weight:600; letter-spacing:.02em; font-variant-numeric:tabular-nums; white-space:nowrap}
+.card.is-done .key{text-decoration:line-through}
+.chip{display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line-strong); padding:0 6px; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis}
+.chip .dot{width:6px; height:6px}
+.meta-r{margin-left:auto; display:flex; align-items:center; gap:7px}
+.chk{display:inline-flex; align-items:center; gap:3px; font-variant-numeric:tabular-nums}
+.chk.full{color:var(--ok); font-weight:600}
+.pts{min-width:20px; height:18px; padding:0 6px; border-radius:9px; background:var(--line); color:var(--fg); font-weight:700; font-size:11px; display:inline-grid; place-items:center; font-variant-numeric:tabular-nums}
+
+.notice{padding:40px 8px; max-width:62ch}
+.notice h2{margin:0 0 6px; font-family:var(--font-ed); font-weight:600; font-size:26px; line-height:1.15}
+.notice p{margin:0; color:var(--muted)}
+
+/* Painel da issue */
+.scrim{position:fixed; inset:0; background:var(--scrim); z-index:20}
+.drawer{position:fixed; top:0; right:0; bottom:0; z-index:21; width:min(560px,100%); background:var(--bg); border-left:1px solid var(--line); box-shadow:var(--panel-shadow); display:flex; flex-direction:column; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); padding-right:env(safe-area-inset-right,0px); outline:none}
+.d-top{display:flex; align-items:center; gap:10px; padding:12px 20px; border-bottom:1px solid var(--line)}
+.d-key{display:flex; align-items:center; gap:8px; font-weight:700; font-size:13px; letter-spacing:.02em; font-variant-numeric:tabular-nums}
+.d-epic{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+.icon-btn{margin-left:auto; flex:none; display:grid; place-items:center; width:36px; height:36px; background:none; border:1px solid transparent; border-radius:var(--r); color:var(--fg)}
+.icon-btn:hover{border-color:var(--line-strong)}
+.d-body{flex:1; overflow-y:auto; padding:16px 20px 40px; display:flex; flex-direction:column; gap:20px}
+.d-body > *{flex:none}
+.d-title{width:100%; resize:none; overflow:hidden; border:1px solid transparent; border-radius:var(--r); background:none; padding:4px 6px; margin-left:-7px; font-family:var(--font-ui); font-size:20px; font-weight:700; line-height:1.3; color:var(--fg)}
+.d-title:hover,.d-title:focus{border-color:var(--line-strong); background:var(--field)}
+.seg{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border:1px solid var(--line-strong); border-radius:var(--r); overflow:hidden}
+.seg button{background:var(--field); border:0; border-left:1px solid var(--line-strong); padding:9px 4px; font-size:12px; font-weight:600; color:var(--muted)}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--fg); color:var(--bg)}
+.seg button[data-s="done"][aria-pressed="true"]{background:var(--ok-fill); color:var(--icon-on)}
+.seg button:disabled{cursor:default}
+.fields{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
+.field{display:flex; flex-direction:column; gap:5px; min-width:0}
+.field > span,.d-sec h3{font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.field.wide{grid-column:1 / -1}
+.d-sec{display:flex; flex-direction:column; gap:8px}
+.d-sec h3{margin:0; display:flex; align-items:center; gap:10px}
+.d-sec h3 .n{letter-spacing:.02em; color:var(--fg); font-variant-numeric:tabular-nums}
+.d-sec textarea{width:100%; box-sizing:border-box; resize:vertical; background:var(--field); border:1px solid var(--line-strong); border-radius:var(--r); padding:9px 10px; line-height:1.5; color:var(--fg)}
+.checks{list-style:none; margin:0; padding:0; display:flex; flex-direction:column}
+.checks li{display:flex; align-items:flex-start; gap:6px; border-bottom:1px solid var(--line); padding:7px 0}
+.checks label{flex:1; display:flex; align-items:flex-start; gap:10px; cursor:pointer; line-height:1.4; min-width:0; overflow-wrap:anywhere}
+.checks input{margin:2px 0 0; width:16px; height:16px; accent-color:var(--ok-fill); flex:none}
+.checks li.done label span{color:var(--muted); text-decoration:line-through}
+.x{flex:none; background:none; border:0; color:var(--muted); width:28px; height:24px; border-radius:var(--r); font-size:16px; line-height:1}
+.x:hover{color:var(--accent-ink); background:var(--col)}
+.add-check{display:flex; gap:8px}
+.add-check input{flex:1}
+.d-meta{margin:0; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
+.danger{display:flex; flex-wrap:wrap; align-items:center; gap:10px; border-top:1px solid var(--line); padding-top:14px}
+.danger p{margin:0; flex:1 1 220px}
+.btn-danger{background:var(--accent-ink); color:var(--icon-on); border:1px solid var(--accent-ink); border-radius:var(--r); padding:7px 12px; font-weight:700; font-size:13px}
+.linkish.danger-link{color:var(--accent-ink)}
+
+/* Criar issue */
+.modal{position:fixed; z-index:22; left:50%; top:50%; transform:translate(-50%,-50%); width:min(540px, calc(100% - 32px)); max-height:calc(100% - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); overflow-y:auto; background:var(--bg); border:1px solid var(--line-strong); box-shadow:var(--panel-shadow); padding:22px; box-sizing:border-box}
+.modal h2{margin:0 0 16px; font-family:var(--font-ed); font-weight:600; font-size:26px}
+.modal form{display:flex; flex-direction:column; gap:14px}
+.modal .field textarea{resize:vertical}
+.form-err{margin:0; color:var(--accent-ink); font-weight:600; font-size:13px}
+.actions{display:flex; justify-content:flex-end; gap:8px}
+
+.toast{position:fixed; z-index:30; left:50%; transform:translateX(-50%); bottom:calc(20px + env(safe-area-inset-bottom,0px)); background:var(--fg); color:var(--bg); padding:10px 16px; border-radius:var(--r); font-weight:600; font-size:13px; max-width:calc(100% - 32px); box-sizing:border-box}
+
+@media (max-width:759px){
+  .cols-head{display:none}
+  .tsel{flex:1 1 140px}
+  .tab{padding:10px 4px 8px; font-size:12.5px}
+  .tabs-wrap{display:block; position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--bg); border-bottom:1px solid var(--line)}
+  .lane-body{grid-template-columns:minmax(0,1fr)}
+  .board[data-tab="todo"] .cell:not([data-status="todo"]),
+  .board[data-tab="doing"] .cell:not([data-status="doing"]),
+  .board[data-tab="review"] .cell:not([data-status="review"]),
+  .board[data-tab="done"] .cell:not([data-status="done"]){display:none}
+  .board[data-tab="todo"] .lane.no-todo,
+  .board[data-tab="doing"] .lane.no-doing,
+  .board[data-tab="review"] .lane.no-review,
+  .board[data-tab="done"] .lane.no-done{display:none}
+  .lane-ref{display:none}
+  .lane-prog .bar{width:44px}
+  .band-proj,.band-sep{display:none}
+  .head{padding-block:18px 12px}
+  #createBtn{margin-left:0}
+}
+@media (max-width:600px){
+  .drawer{width:100%; border-left:0; padding-left:env(safe-area-inset-left,0px)}
+  .d-top,.d-body{padding-left:16px; padding-right:16px}
+}
+@media (max-width:420px){
+  .seg{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .seg button:nth-child(3){border-left:0}
+  .seg button:nth-child(n+3){border-top:1px solid var(--line-strong)}
+  .fields{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+
+<header class="band">
+  <div class="wrap band-in">
+    <span class="logo">AVESSO STUDIO</span>
+    <span class="band-sep" aria-hidden="true"></span>
+    <span class="band-proj">Projeto AVS · E-commerce Coleção 01 Entrelinhas</span>
+    <span class="sync" id="sync" role="status">Conectando…</span>
+  </div>
+</header>
+
+<section class="wrap head">
+  <div class="head-main">
+    <p class="eyebrow">Desafio de portfólio · 5 páginas · 9 etapas</p>
+    <h1>Board do projeto</h1>
+  </div>
+  <div class="head-side">
+    <div id="progress"></div>
+    <button class="next" id="nextBtn" type="button" hidden></button>
+  </div>
+</section>
+
+<div class="wrap toolbar">
+  <label class="search">
+    <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m10.4 10.4 3.6 3.6" stroke="currentColor" stroke-width="1.6"/></svg>
+    <span class="sr">Buscar issues</span>
+    <input id="q" type="search" placeholder="Buscar em títulos, chaves, descrições e critérios" autocomplete="off">
+  </label>
+  <label class="tsel"><span class="sr">Filtrar por epic</span><select id="fEpic"><option value="">Todos os epics</option></select></label>
+  <label class="tsel"><span class="sr">Filtrar por prioridade</span><select id="fPrio"><option value="">Todas as prioridades</option></select></label>
+  <button id="groupBtn" class="toggle" type="button" aria-pressed="true">Raias por epic</button>
+  <button id="clearBtn" class="linkish" type="button" hidden>Limpar filtros</button>
+  <button id="createBtn" class="primary" type="button" hidden>Criar issue</button>
+</div>
+
+<div class="tabs-wrap"><div class="wrap"><div class="tabs" id="tabs" role="tablist" aria-label="Coluna exibida"></div></div></div>
+
+<main class="wrap">
+  <div id="board" class="board" role="region" aria-label="Board de issues"></div>
+</main>
+
+<div id="scrim" class="scrim" hidden></div>
+
+<aside id="drawer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="dKey" tabindex="-1" hidden>
+  <div class="d-top">
+    <span class="d-key" id="dKey"></span>
+    <span class="d-epic" id="dEpicName"></span>
+    <button id="dClose" class="icon-btn" type="button" aria-label="Fechar issue">
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.7"/></svg>
+    </button>
+  </div>
+  <div class="d-body">
+    <textarea id="dTitle" class="d-title" rows="1" maxlength="200" aria-label="Título da issue"></textarea>
+    <div class="seg" id="dStatus" role="group" aria-label="Status"></div>
+    <div class="fields">
+      <label class="field"><span>Tipo</span><select id="dType"></select></label>
+      <label class="field"><span>Prioridade</span><select id="dPrio"></select></label>
+      <label class="field"><span>Epic</span><select id="dEpic"></select></label>
+      <label class="field"><span>Pontos</span><select id="dPts"></select></label>
+      <label class="field wide"><span>Critério de avaliação do cliente</span><select id="dRubric"></select></label>
+    </div>
+    <section class="d-sec">
+      <h3><label for="dDesc">Descrição</label></h3>
+      <textarea id="dDesc" rows="4"></textarea>
+    </section>
+    <section class="d-sec">
+      <h3>Critérios de aceite <span class="n" id="dCheckCount"></span></h3>
+      <div class="bar wide" aria-hidden="true"><i id="dCheckBar"></i></div>
+      <ul class="checks" id="dChecks"></ul>
+      <form class="add-check" id="dAddCheck">
+        <label class="sr" for="dNewCheck">Novo critério de aceite</label>
+        <input id="dNewCheck" maxlength="300" placeholder="Adicionar critério">
+        <button class="ghost" type="submit">Adicionar</button>
+      </form>
+    </section>
+    <section class="d-sec">
+      <h3><label for="dNotes">Notas</label></h3>
+      <textarea id="dNotes" rows="3" placeholder="Decisões, links, resultados das avaliações"></textarea>
+    </section>
+    <p class="d-meta" id="dMeta"></p>
+    <div class="danger" id="dDanger">
+      <button id="dDelete" class="linkish danger-link" type="button">Excluir issue</button>
+    </div>
+  </div>
+</aside>
+
+<div id="createDlg" class="modal" role="dialog" aria-modal="true" aria-labelledby="cHead" hidden>
+  <h2 id="cHead">Criar issue</h2>
+  <form id="createForm" novalidate>
+    <label class="field"><span>Título</span><input id="cTitle" maxlength="200" autocomplete="off"></label>
+    <div class="fields">
+      <label class="field"><span>Tipo</span><select id="cType"></select></label>
+      <label class="field"><span>Prioridade</span><select id="cPrio"></select></label>
+      <label class="field"><span>Epic</span><select id="cEpic"></select></label>
+      <label class="field"><span>Pontos</span><select id="cPts"></select></label>
+    </div>
+    <label class="field"><span>Descrição</span><textarea id="cDesc" rows="3"></textarea></label>
+    <p class="form-err" id="cErr" role="alert" hidden></p>
+    <div class="actions">
+      <button class="ghost" type="button" id="cCancel">Cancelar</button>
+      <button class="primary" type="submit" id="cSubmit">Criar</button>
+    </div>
+  </form>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function(){
+  const STATUSES = [['todo','A fazer'],['doing','Em andamento'],['review','Em revisão'],['done','Concluído']];
+  const PRIOS = [['critica','Crítica'],['alta','Alta'],['media','Média'],['baixa','Baixa']];
+  const TYPES = [['historia','História'],['tarefa','Tarefa'],['bug','Bug']];
+  const RUBRIC = [['','Nenhum'],['identidade','Identidade visual e direção de arte · 20 pts'],['ux','UX e arquitetura de informação · 20 pts'],['visual','Qualidade visual das páginas · 20 pts'],['func','Funcionalidades e interações · 20 pts'],['resp','Responsividade e acessibilidade · 10 pts'],['consist','Consistência entre as páginas · 10 pts']];
+  const POINTS = [0,1,2,3,5,8,13];
+  const TAB_LABEL = {doing:'Andamento', review:'Revisão'};
+  const label = (list, id) => (list.find(x => x[0] === id) || [,''])[1];
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const sumPts = list => list.reduce((n, i) => n + (Number(i.points) || 0), 0);
+  const nowIso = () => new Date().toISOString();
+  const fmt = iso => { if (!iso) return '—'; const d = new Date(iso); return isNaN(d) ? '—' : d.toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}); };
+
+  const ICON = {
+    chev: '<svg class="chev" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>',
+    historia: '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect width="16" height="16" rx="2" style="fill:var(--oliva)"/><path d="M5 3.5h6v9l-3-2.2-3 2.2z" style="fill:var(--pergaminho)"/></svg>',
+    tarefa: '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect width="16" height="16" rx="2" style="fill:var(--icon-ink)"/><path d="M4.2 8.3 6.8 10.8 11.8 5.4" style="fill:none;stroke:var(--icon-on);stroke-width:1.8"/></svg>',
+    bug: '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect width="16" height="16" rx="2" style="fill:var(--accent)"/><circle cx="8" cy="8" r="3.2" style="fill:var(--pergaminho)"/></svg>',
+    critica: '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 8.5 8 4l4.5 4.5M3.5 12.5 8 8l4.5 4.5" style="fill:none;stroke:var(--accent);stroke-width:1.8"/></svg>',
+    alta: '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 10.5 8 6l4.5 4.5" style="fill:none;stroke:var(--accent);stroke-width:1.8"/></svg>',
+    media: '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 6.5h9M3.5 9.5h9" style="fill:none;stroke:var(--muted);stroke-width:1.6"/></svg>',
+    baixa: '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 5.5 8 10l4.5-4.5" style="fill:none;stroke:var(--oliva);stroke-width:1.8"/></svg>',
+    check: '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M2.5 8.6 6 12l7.5-8" style="fill:none;stroke:currentColor;stroke-width:1.8"/></svg>'
+  };
+
+  // Preferências locais de visualização (não são dados do projeto)
+  const PREF_KEY = 'avs-board-prefs-v1';
+  const prefs = Object.assign({grouped:true, lanes:{}, tab:'todo', epic:'', prio:''}, readPrefs());
+  function readPrefs(){ try { return JSON.parse(localStorage.getItem(PREF_KEY)) || {}; } catch (e) { return {}; } }
+  function savePrefs(){ try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {} }
+  if (!STATUSES.some(s => s[0] === prefs.tab)) prefs.tab = 'todo';
+
+  const S = {
+    db:null, mode:'loading', canWrite:true, epics:[], issues:[],
+    epicsReady:false, issuesReady:false, confirmedE:false, confirmedI:false,
+    stale:false, pending:0, q:'', openKey:null, returnFocus:null,
+    defaultOpen:new Set(), dragKey:null, dirty:false, hashDone:false, epicSig:''
+  };
+
+  const epicById = id => S.epics.find(e => e.id === id);
+  const epicOrder = id => { const e = epicById(id); return e ? (e.order || 0) : 9999; };
+  const byRank = (a, b) => (a.rank || 0) - (b.rank || 0) || (a.num || 0) - (b.num || 0);
+  const byEpicRank = (a, b) => epicOrder(a.epic) - epicOrder(b.epic) || byRank(a, b);
+  const filtering = () => !!(prefs.epic || prefs.prio || S.q.trim());
+  function matches(it){
+    if (prefs.epic && (prefs.epic === '_none' ? !!epicById(it.epic) : it.epic !== prefs.epic)) return false;
+    if (prefs.prio && it.priority !== prefs.prio) return false;
+    const q = norm(S.q.trim());
+    if (q && ![it.title, it.key, it.description, (it.checklist || []).map(c => c.text).join(' ')].some(t => norm(t).includes(q))) return false;
+    return true;
+  }
+
+  /* ---------- render ---------- */
+  function renderAll(){ renderSync(); renderHead(); renderToolbar(); renderTabs(); renderBoard(); }
+
+  function renderSync(){
+    const el = $('sync'); let t, c = '';
+    if (S.mode === 'nodb') { t = 'Sem armazenamento'; c = 'warn'; }
+    else if (S.mode === 'error') { t = 'Erro ao carregar'; c = 'warn'; }
+    else if (S.mode === 'loading') { t = S.stale ? 'Sem resposta do armazenamento' : 'Conectando…'; c = S.stale ? 'warn' : ''; }
+    else if (S.pending) { t = 'Salvando…'; }
+    else if (S.stale) { t = 'Pode estar desatualizado'; c = 'warn'; }
+    else if (!S.canWrite) { t = 'Somente leitura'; }
+    else { t = 'Tudo salvo'; c = 'ok'; }
+    el.textContent = t; el.className = 'sync ' + c;
+  }
+
+  function renderHead(){
+    const all = S.issues, done = all.filter(i => i.status === 'done');
+    const pct = all.length ? Math.round(done.length / all.length * 100) : 0;
+    $('progress').innerHTML = S.mode === 'ready'
+      ? `<div class="prog-text"><strong>${done.length}</strong> de ${all.length} issues concluídas · ${sumPts(done)} de ${sumPts(all)} pontos · ${pct}%</div><div class="bar wide" style="margin-top:8px" aria-hidden="true"><i style="width:${pct}%"></i></div>`
+      : '';
+    const nb = $('nextBtn');
+    const doing = all.filter(i => i.status === 'doing').sort(byEpicRank)[0];
+    const next = doing || all.filter(i => i.status === 'todo').sort(byEpicRank)[0];
+    if (S.mode !== 'ready' || !next) { nb.hidden = true; return; }
+    nb.hidden = false; nb.dataset.key = next.key;
+    nb.innerHTML = `<span class="next-label">${doing ? 'Continuar' : 'Próxima'}</span><span class="next-key">${esc(next.key)}</span><span class="next-title">${esc(next.title)}</span>`;
+    nb.setAttribute('aria-label', `${doing ? 'Continuar' : 'Próxima issue'}: ${next.key}, ${next.title}`);
+  }
+
+  function renderToolbar(){
+    const sig = S.epics.map(e => e.id + ':' + e.name).join('|');
+    if (sig !== S.epicSig) {
+      S.epicSig = sig;
+      if (prefs.epic && prefs.epic !== '_none' && S.epics.length && !epicById(prefs.epic)) { prefs.epic = ''; savePrefs(); }
+      $('fEpic').innerHTML = '<option value="">Todos os epics</option>' + S.epics.map(e => `<option value="${esc(e.id)}">${esc(e.name)}</option>`).join('') + '<option value="_none">Sem epic</option>';
+    }
+    if ($('fPrio').options.length < 2) $('fPrio').innerHTML = '<option value="">Todas as prioridades</option>' + PRIOS.map(p => `<option value="${p[0]}">${p[1]}</option>`).join('');
+    $('fEpic').value = prefs.epic; $('fPrio').value = prefs.prio;
+    $('groupBtn').setAttribute('aria-pressed', String(prefs.grouped));
+    $('clearBtn').hidden = !filtering();
+    $('createBtn').hidden = !(S.mode === 'ready' && S.canWrite);
+  }
+
+  function renderTabs(){
+    const vis = S.issues.filter(matches);
+    const hadFocus = document.activeElement && document.activeElement.closest && document.activeElement.closest('#tabs');
+    $('tabs').innerHTML = STATUSES.map(([s, l]) => `<button class="tab" type="button" role="tab" aria-controls="board" aria-selected="${prefs.tab === s}" data-tab="${s}">${TAB_LABEL[s] || l}<span class="n">${S.mode === 'ready' ? vis.filter(i => i.status === s).length : ''}</span></button>`).join('');
+    if (hadFocus) $('tabs').querySelector('[aria-selected="true"]').focus({preventScroll:true});
+  }
+
+  const notice = (h, p) => `<div class="notice"><h2>${h}</h2>${p ? `<p>${p}</p>` : ''}</div>`;
+
+  function renderBoard(){
+    if (S.dragKey) { S.dirty = true; return; }
+    const b = $('board');
+    const act = document.activeElement;
+    const focusKey = act && act.closest && act.closest('#board') ? (act.dataset.key ? 'card:' + act.dataset.key : act.dataset.lane ? 'lane:' + act.dataset.lane : '') : '';
+    b.dataset.tab = prefs.tab;
+    if (S.mode === 'nodb') { b.innerHTML = notice('O board precisa do armazenamento do artifact.', 'As issues ficam salvas no próprio artifact. Abra este board pelo link do claude.ai, com a sua conta, para ver e mover as issues.'); return; }
+    if (S.mode === 'error') { b.innerHTML = notice('Não consegui carregar as issues.', 'Recarregue a página em alguns instantes. Nada do que já foi salvo se perde.'); return; }
+    if (S.mode === 'loading') { b.innerHTML = S.stale ? notice('As issues estão demorando para chegar.', 'Confira a conexão. O board aparece sozinho assim que o armazenamento responder.') : notice('Carregando issues…', ''); return; }
+    if (!S.issues.length && !S.epics.length) { b.innerHTML = notice('Nenhuma issue ainda.', S.canWrite ? 'Use Criar issue para começar o backlog.' : ''); return; }
+
+    const vis = S.issues.filter(matches);
+    let html = '<div class="cols-head">' + STATUSES.map(([s, l]) => {
+      const list = vis.filter(i => i.status === s);
+      return `<div class="col-head"><span>${l}</span><span class="n">${list.length}</span><span class="p">${sumPts(list)} pts</span></div>`;
+    }).join('') + '</div>';
+
+    if (prefs.grouped) {
+      const lanes = S.epics.map(e => ({id:e.id, epic:e})).concat([{id:'_none', epic:null}]);
+      for (const L of lanes) {
+        const inLane = i => L.epic ? i.epic === L.id : !epicById(i.epic);
+        const all = S.issues.filter(inLane), list = vis.filter(inLane);
+        if (!L.epic && !all.length) continue;
+        if (filtering() && !list.length) continue;
+        html += laneHtml(L, all, list);
+      }
+    } else {
+      html += `<section class="lane flat"><div class="lane-body">${cellsHtml(vis.slice().sort(byEpicRank), false)}</div></section>`;
+    }
+    if (filtering() && !vis.length) html += notice('Nenhuma issue com esses filtros.', 'Ajuste a busca ou use Limpar filtros.');
+    b.innerHTML = html;
+
+    if (focusKey) {
+      const [kind, id] = [focusKey.slice(0, focusKey.indexOf(':')), focusKey.slice(focusKey.indexOf(':') + 1)];
+      const el = b.querySelector(kind === 'card' ? `.card[data-key="${CSS.escape(id)}"]` : `.lane-head[data-lane="${CSS.escape(id)}"]`);
+      if (el) el.focus({preventScroll:true});
+    }
+  }
+
+  function isCollapsed(id){
+    if (filtering()) return false;
+    if (Object.prototype.hasOwnProperty.call(prefs.lanes, id)) return !!prefs.lanes[id];
+    return !S.defaultOpen.has(id);
+  }
+
+  function laneHtml(L, all, list){
+    const e = L.epic, done = all.filter(i => i.status === 'done').length;
+    const pct = all.length ? Math.round(done / all.length * 100) : 0;
+    const collapsed = isCollapsed(L.id);
+    const empties = STATUSES.filter(([s]) => !list.some(i => i.status === s)).map(([s]) => 'no-' + s).join(' ');
+    return `<section class="lane ${empties}" data-collapsed="${collapsed}">
+      <h2 class="lane-h"><button class="lane-head" type="button" data-lane="${esc(L.id)}" aria-expanded="${!collapsed}" aria-controls="lb-${esc(L.id)}">
+        ${ICON.chev}<span class="dot ${e ? 'ph-' + esc(e.phase) : ''}" aria-hidden="true"></span>
+        <span class="lane-name">${esc(e ? e.name : 'Sem epic')}</span>
+        ${e && e.ref ? `<span class="lane-ref">${esc(e.ref)}</span>` : ''}
+        <span class="lane-prog"><span class="bar" aria-hidden="true"><i style="width:${pct}%"></i></span><span>${done}/${all.length}</span><span class="sr">concluídas</span></span>
+      </button></h2>
+      <div class="lane-body" id="lb-${esc(L.id)}">${cellsHtml(list.slice().sort(byRank), true)}</div>
+    </section>`;
+  }
+
+  function cellsHtml(list, grouped){
+    return STATUSES.map(([s, l]) => `<div class="cell" data-status="${s}" role="group" aria-label="${l}">${list.filter(i => i.status === s).map(i => cardHtml(i, grouped)).join('')}</div>`).join('');
+  }
+
+  function cardHtml(it, grouped){
+    const e = epicById(it.epic), cl = Array.isArray(it.checklist) ? it.checklist : [];
+    const d = cl.filter(c => c.done).length;
+    const aria = `${it.key}, ${it.title}. Prioridade ${label(PRIOS, it.priority) || 'não definida'}${cl.length ? `, ${d} de ${cl.length} critérios` : ''}`;
+    return `<div class="card${it.status === 'done' ? ' is-done' : ''}" role="button" tabindex="0" draggable="${S.canWrite}" data-key="${esc(it.key)}" aria-label="${esc(aria)}">
+      <span class="card-title">${esc(it.title)}</span>
+      <span class="card-meta">
+        <span title="${esc(label(TYPES, it.type) || 'Tarefa')}">${ICON[it.type] || ICON.tarefa}</span>
+        <span class="key">${esc(it.key)}</span>
+        ${!grouped && e ? `<span class="chip"><span class="dot ph-${esc(e.phase)}"></span>${esc(e.short || e.name)}</span>` : ''}
+        <span class="meta-r">
+          ${cl.length ? `<span class="chk${d === cl.length ? ' full' : ''}" title="Critérios de aceite">${ICON.check}${d}/${cl.length}</span>` : ''}
+          ${ICON[it.priority] ? `<span title="Prioridade ${esc(label(PRIOS, it.priority))}">${ICON[it.priority]}</span>` : ''}
+          ${it.points ? `<span class="pts" title="Pontos">${Number(it.points)}</span>` : ''}
+        </span>
+      </span>
+    </div>`;
+  }
+
+  /* ---------- gravação ---------- */
+  const queues = {};
+  let toastTimer = null;
+  function toast(msg){
+    const t = $('toast'); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 3400);
+  }
+  function writeFail(err){
+    const code = err && err.code;
+    if (code === 'invalid_argument') { S.canWrite = false; renderAll(); fillDrawer(); toast('Você só pode visualizar este board.'); }
+    else if (code === 'quota_exceeded') toast('O armazenamento do board está cheio. Exclua issues que não servem mais.');
+    else toast('Não consegui salvar. Confira a conexão e tente de novo.');
+  }
+  function enqueue(key, fn){
+    S.pending++; renderSync();
+    const run = () => fn().catch(err => {
+      if (err && err.code === 'unavailable') return new Promise(r => setTimeout(r, 600 + Math.random() * 900)).then(fn);
+      throw err;
+    });
+    const p = (queues[key] || Promise.resolve()).then(run).catch(writeFail).finally(() => { S.pending--; renderSync(); });
+    queues[key] = p; return p;
+  }
+  function patch(key, data){
+    if (!S.db || !S.canWrite) return;
+    const it = S.issues.find(i => i.key === key); if (!it) return;
+    const body = Object.assign({}, data, {updatedAt: nowIso()});
+    if (data.status) body.doneAt = data.status === 'done' ? nowIso() : '';
+    Object.assign(it, body); // aplica já na tela; o snapshot confirma em seguida
+    renderAll(); fillDrawer();
+    enqueue(key, () => S.db.doc('issues/' + key).update(body));
+  }
+
+  /* ---------- painel da issue ---------- */
+  function openDrawer(key, from){
+    if (!S.issues.some(i => i.key === key)) return;
+    if (!$('createDlg').hidden) closeCreate();
+    S.openKey = key; S.returnFocus = from || document.activeElement;
+    $('scrim').hidden = false; $('drawer').hidden = false; $('dDanger').innerHTML = deleteIdle();
+    document.body.classList.add('locked');
+    fillDrawer(true);
+    $('drawer').focus();
+    try { if (location.hash !== '#' + key) location.hash = key; } catch (e) {}
+  }
+  function closeDrawer(){
+    if (!S.openKey) return;
+    commitText();
+    const key = S.openKey; S.openKey = null;
+    $('drawer').hidden = true; $('scrim').hidden = true; document.body.classList.remove('locked');
+    try { if (location.hash === '#' + key) history.replaceState(null, '', location.pathname + location.search); } catch (e) { try { location.hash = ''; } catch (e2) {} }
+    const back = S.returnFocus && document.contains(S.returnFocus) ? S.returnFocus : $('board').querySelector(`.card[data-key="${CSS.escape(key)}"]`);
+    if (back) back.focus({preventScroll:true});
+  }
+  const deleteIdle = () => '<button id="dDelete" class="linkish danger-link" type="button">Excluir issue</button>';
+
+  function setVal(id, v){ const el = $(id); if (document.activeElement !== el && el.value !== v) el.value = v; }
+  function fillSelect(id, opts, value){
+    const el = $(id);
+    const html = opts.map(o => `<option value="${esc(o[0])}">${esc(o[1])}</option>`).join('');
+    if (el.dataset.sig !== html) { el.innerHTML = html; el.dataset.sig = html; }
+    if (document.activeElement !== el) el.value = value;
+  }
+  function autosize(el){ el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+
+  function fillDrawer(){
+    if (!S.openKey) return;
+    const it = S.issues.find(i => i.key === S.openKey);
+    if (!it) { const k = S.openKey; closeDrawer(); toast(k + ' foi excluída.'); return; }
+    const ro = !S.canWrite, e = epicById(it.epic);
+    $('dKey').innerHTML = `${ICON[it.type] || ICON.tarefa}<span>${esc(it.key)}</span>`;
+    $('dEpicName').textContent = e ? `${e.name} · ${e.ref || ''}` : 'Sem epic';
+    setVal('dTitle', it.title || ''); autosize($('dTitle'));
+    $('dStatus').querySelectorAll('button').forEach(b => { b.setAttribute('aria-pressed', String(it.status === b.dataset.s)); b.disabled = ro; });
+    fillSelect('dType', TYPES, it.type || 'tarefa');
+    fillSelect('dPrio', PRIOS, it.priority || 'media');
+    fillSelect('dEpic', S.epics.map(x => [x.id, x.name]).concat([['', 'Sem epic']]), e ? it.epic : '');
+    fillSelect('dPts', POINTS.map(p => [String(p), p ? String(p) : 'Sem estimativa']), String(it.points || 0));
+    fillSelect('dRubric', RUBRIC, it.rubric || '');
+    setVal('dDesc', it.description || ''); setVal('dNotes', it.notes || '');
+
+    const cl = Array.isArray(it.checklist) ? it.checklist : [], d = cl.filter(c => c.done).length;
+    $('dCheckCount').textContent = cl.length ? `${d} de ${cl.length}` : '';
+    $('dCheckBar').style.width = (cl.length ? Math.round(d / cl.length * 100) : 0) + '%';
+    const act = document.activeElement, focusIdx = act && act.closest && act.closest('#dChecks') ? act.dataset.i + ':' + (act.dataset.del != null ? 'del' : 'box') : '';
+    $('dChecks').innerHTML = cl.map((c, i) => `<li class="${c.done ? 'done' : ''}"><label><input type="checkbox" data-i="${i}"${c.done ? ' checked' : ''}${ro ? ' disabled' : ''}><span>${esc(c.text)}</span></label>${ro ? '' : `<button class="x" type="button" data-i="${i}" data-del="1" aria-label="Remover critério: ${esc(c.text)}">×</button>`}</li>`).join('');
+    if (focusIdx) {
+      const [i, kind] = focusIdx.split(':');
+      const el = $('dChecks').querySelector(kind === 'del' ? `button[data-i="${i}"]` : `input[data-i="${i}"]`) || $('dNewCheck');
+      el.focus({preventScroll:true});
+    }
+    $('dMeta').textContent = `Criada em ${fmt(it.createdAt)} · Atualizada em ${fmt(it.updatedAt)}${it.status === 'done' && it.doneAt ? ` · Concluída em ${fmt(it.doneAt)}` : ''}`;
+    ['dTitle','dType','dPrio','dEpic','dPts','dRubric','dDesc','dNotes','dNewCheck'].forEach(id => { $(id).disabled = ro; });
+    $('dAddCheck').hidden = ro; $('dDanger').hidden = ro;
+  }
+
+  function current(){ return S.issues.find(i => i.key === S.openKey); }
+  function commitText(){
+    const it = current(); if (!it || !S.canWrite) return;
+    const data = {};
+    const t = $('dTitle').value.replace(/\s+/g, ' ').trim();
+    if (t && t !== it.title) data.title = t; else if (!t) $('dTitle').value = it.title || '';
+    if ($('dDesc').value !== (it.description || '')) data.description = $('dDesc').value;
+    if ($('dNotes').value !== (it.notes || '')) data.notes = $('dNotes').value;
+    if (Object.keys(data).length) patch(it.key, data);
+  }
+
+  /* ---------- criar issue ---------- */
+  function openCreate(){
+    if (!S.canWrite || S.mode !== 'ready') return;
+    S.returnFocus = document.activeElement;
+    fillSelect('cType', TYPES, 'tarefa'); fillSelect('cPrio', PRIOS, 'media');
+    const firstOpen = S.epics.find(e => S.issues.some(i => i.epic === e.id && i.status !== 'done'));
+    fillSelect('cEpic', S.epics.map(x => [x.id, x.name]).concat([['', 'Sem epic']]), (prefs.epic && prefs.epic !== '_none') ? prefs.epic : (firstOpen ? firstOpen.id : ''));
+    fillSelect('cPts', POINTS.map(p => [String(p), p ? String(p) : 'Sem estimativa']), '0');
+    $('cTitle').value = ''; $('cDesc').value = ''; $('cErr').hidden = true;
+    $('scrim').hidden = false; $('createDlg').hidden = false; document.body.classList.add('locked');
+    $('cTitle').focus();
+  }
+  function closeCreate(){
+    $('createDlg').hidden = true;
+    if (!S.openKey) { $('scrim').hidden = true; document.body.classList.remove('locked'); }
+    if (S.returnFocus && document.contains(S.returnFocus)) S.returnFocus.focus({preventScroll:true});
+  }
+  async function submitCreate(ev){
+    ev.preventDefault();
+    const title = $('cTitle').value.replace(/\s+/g, ' ').trim();
+    if (!title) { $('cErr').textContent = 'Escreva um título para a issue.'; $('cErr').hidden = false; $('cTitle').focus(); return; }
+    const num = S.issues.reduce((m, i) => Math.max(m, Number(i.num) || parseInt(String(i.key).split('-')[1], 10) || 0), 0) + 1;
+    const key = 'AVS-' + num, stamp = nowIso(), epic = $('cEpic').value;
+    const doc = {
+      num, rank: S.issues.reduce((m, i) => Math.max(m, Number(i.rank) || 0), 0) + 10,
+      title, type: $('cType').value, epic, status: 'todo', priority: $('cPrio').value,
+      points: Number($('cPts').value) || 0, rubric: '', description: $('cDesc').value.trim(),
+      checklist: [], notes: '', createdAt: stamp, updatedAt: stamp
+    };
+    $('cSubmit').disabled = true;
+    try {
+      await S.db.doc('issues/' + key).set(doc);
+      if (epic) { prefs.lanes[epic] = false; savePrefs(); }
+      closeCreate(); renderAll(); toast(key + ' criada em A fazer.');
+    } catch (err) {
+      $('cErr').textContent = err && err.code === 'quota_exceeded' ? 'O armazenamento do board está cheio. Exclua issues antigas e tente de novo.' : 'Não consegui criar a issue. Confira a conexão e tente de novo.';
+      $('cErr').hidden = false;
+    } finally { $('cSubmit').disabled = false; }
+  }
+
+  /* ---------- foco preso em diálogos ---------- */
+  function trap(ev, root){
+    const els = [...root.querySelectorAll('button,select,textarea,input,[tabindex]:not([tabindex="-1"])')].filter(x => !x.disabled && x.offsetParent !== null);
+    if (!els.length) return;
+    const first = els[0], last = els[els.length - 1];
+    if (ev.shiftKey && (document.activeElement === first || document.activeElement === root)) { ev.preventDefault(); last.focus(); }
+    else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+  }
+
+  /* ---------- eventos ---------- */
+  function bind(){
+    $('q').addEventListener('input', e => { S.q = e.target.value; renderToolbar(); renderTabs(); renderBoard(); });
+    $('fEpic').addEventListener('change', e => { prefs.epic = e.target.value; savePrefs(); renderAll(); });
+    $('fPrio').addEventListener('change', e => { prefs.prio = e.target.value; savePrefs(); renderAll(); });
+    $('groupBtn').addEventListener('click', () => { prefs.grouped = !prefs.grouped; savePrefs(); renderAll(); });
+    $('clearBtn').addEventListener('click', () => { S.q = ''; $('q').value = ''; prefs.epic = ''; prefs.prio = ''; savePrefs(); renderAll(); $('q').focus(); });
+    $('createBtn').addEventListener('click', openCreate);
+    $('nextBtn').addEventListener('click', e => { const k = e.currentTarget.dataset.key; if (k) openDrawer(k, e.currentTarget); });
+    $('tabs').addEventListener('click', e => { const t = e.target.closest('.tab'); if (!t) return; prefs.tab = t.dataset.tab; savePrefs(); renderTabs(); renderBoard(); });
+
+    const board = $('board');
+    board.addEventListener('click', e => {
+      const lh = e.target.closest('.lane-head');
+      if (lh) {
+        const lane = lh.closest('.lane'), now = lane.dataset.collapsed !== 'true';
+        lane.dataset.collapsed = String(now); lh.setAttribute('aria-expanded', String(!now));
+        if (!filtering()) { prefs.lanes[lh.dataset.lane] = now; savePrefs(); }
+        return;
+      }
+      const card = e.target.closest('.card'); if (card) openDrawer(card.dataset.key, card);
+    });
+    board.addEventListener('keydown', e => {
+      const card = e.target.closest('.card');
+      if (card && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openDrawer(card.dataset.key, card); }
+    });
+    board.addEventListener('dragstart', e => {
+      const card = e.target.closest('.card'); if (!card || !S.canWrite) return;
+      S.dragKey = card.dataset.key; card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', S.dragKey); } catch (err) {}
+    });
+    board.addEventListener('dragend', () => {
+      S.dragKey = null;
+      board.querySelectorAll('.dragging,.over').forEach(x => x.classList.remove('dragging', 'over'));
+      if (S.dirty) { S.dirty = false; renderBoard(); }
+    });
+    board.addEventListener('dragover', e => {
+      const cell = e.target.closest('.cell'); if (!cell || !S.dragKey) return;
+      e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+      if (!cell.classList.contains('over')) { board.querySelectorAll('.over').forEach(x => x.classList.remove('over')); cell.classList.add('over'); }
+    });
+    board.addEventListener('dragleave', e => {
+      const cell = e.target.closest('.cell'); if (cell && !cell.contains(e.relatedTarget)) cell.classList.remove('over');
+    });
+    board.addEventListener('drop', e => {
+      const cell = e.target.closest('.cell'); if (!cell || !S.dragKey) return;
+      e.preventDefault();
+      const key = S.dragKey, st = cell.dataset.status;
+      S.dragKey = null; S.dirty = false;
+      const it = S.issues.find(i => i.key === key);
+      if (it && it.status !== st) patch(key, {status: st}); else renderBoard();
+    });
+
+    // painel
+    $('dStatus').innerHTML = STATUSES.map(([s, l]) => `<button type="button" data-s="${s}" aria-pressed="false">${l}</button>`).join('');
+    $('dClose').addEventListener('click', closeDrawer);
+    $('scrim').addEventListener('click', () => { if (!$('createDlg').hidden) closeCreate(); else closeDrawer(); });
+    $('dStatus').addEventListener('click', e => { const b = e.target.closest('button[data-s]'); const it = current(); if (b && it && it.status !== b.dataset.s) patch(it.key, {status: b.dataset.s}); });
+    $('dTitle').addEventListener('input', e => autosize(e.target));
+    $('dTitle').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
+    ['dTitle','dDesc','dNotes'].forEach(id => $(id).addEventListener('blur', commitText));
+    const sel = (id, field, cast) => $(id).addEventListener('change', e => { const it = current(); if (!it) return; const v = cast ? cast(e.target.value) : e.target.value; if (it[field] !== v) patch(it.key, {[field]: v}); });
+    sel('dType', 'type'); sel('dPrio', 'priority'); sel('dEpic', 'epic'); sel('dPts', 'points', Number); sel('dRubric', 'rubric');
+    $('dChecks').addEventListener('change', e => {
+      const box = e.target.closest('input[type=checkbox]'); const it = current(); if (!box || !it) return;
+      const cl = (it.checklist || []).map((c, i) => i === Number(box.dataset.i) ? {text: c.text, done: box.checked} : {text: c.text, done: !!c.done});
+      patch(it.key, {checklist: cl});
+    });
+    $('dChecks').addEventListener('click', e => {
+      const del = e.target.closest('button[data-del]'); const it = current(); if (!del || !it) return;
+      const cl = (it.checklist || []).filter((c, i) => i !== Number(del.dataset.i)).map(c => ({text: c.text, done: !!c.done}));
+      patch(it.key, {checklist: cl});
+    });
+    $('dAddCheck').addEventListener('submit', e => {
+      e.preventDefault(); const it = current(); const t = $('dNewCheck').value.replace(/\s+/g, ' ').trim(); if (!it || !t) return;
+      patch(it.key, {checklist: (it.checklist || []).map(c => ({text: c.text, done: !!c.done})).concat([{text: t, done: false}])});
+      $('dNewCheck').value = ''; $('dNewCheck').focus();
+    });
+    $('dDanger').addEventListener('click', async e => {
+      const it = current(); if (!it) return;
+      if (e.target.id === 'dDelete') {
+        $('dDanger').innerHTML = `<p>Excluir ${esc(it.key)}? Não dá para desfazer.</p><button class="btn-danger" type="button" id="dDelYes">Excluir</button><button class="ghost" type="button" id="dDelNo">Cancelar</button>`;
+        $('dDelNo').focus();
+      } else if (e.target.id === 'dDelNo') {
+        $('dDanger').innerHTML = deleteIdle(); $('dDelete').focus();
+      } else if (e.target.id === 'dDelYes') {
+        const key = it.key; e.target.disabled = true;
+        try {
+          await S.db.doc('issues/' + key).delete();
+          S.issues = S.issues.filter(i => i.key !== key);
+          S.returnFocus = null; closeDrawer(); renderAll(); toast(key + ' excluída.');
+        } catch (err) { e.target.disabled = false; writeFail(err); }
+      }
+    });
+
+    // criar
+    $('createForm').addEventListener('submit', submitCreate);
+    $('cCancel').addEventListener('click', closeCreate);
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (!$('createDlg').hidden) { e.preventDefault(); closeCreate(); }
+        else if (S.openKey) { e.preventDefault(); closeDrawer(); }
+      } else if (e.key === 'Tab') {
+        if (!$('createDlg').hidden) trap(e, $('createDlg'));
+        else if (S.openKey) trap(e, $('drawer'));
+      }
+    });
+    window.addEventListener('hashchange', fromHash);
+  }
+
+  function fromHash(){
+    const m = /^#(AVS-\d+)$/.exec(location.hash || '');
+    if (m && S.mode === 'ready' && S.openKey !== m[1]) openDrawer(m[1]);
+    else if (!m && S.openKey) closeDrawer();
+  }
+
+  function computeDefaultOpen(){
+    const set = new Set();
+    S.issues.filter(i => i.status === 'doing' || i.status === 'review').forEach(i => set.add(epicById(i.epic) ? i.epic : '_none'));
+    const first = S.epics.find(e => S.issues.some(i => i.epic === e.id && i.status !== 'done'));
+    if (first) set.add(first.id);
+    set.add('_none');
+    return set;
+  }
+
+  /* ---------- dados ---------- */
+  async function init(){
+    bind(); renderAll();
+    const c = window.claude;
+    if (!c || typeof c.use !== 'function') { S.mode = 'nodb'; renderAll(); return; }
+    let db = null;
+    try { db = await c.use('db'); } catch (e) { db = null; }
+    if (!db) { S.mode = 'nodb'; renderAll(); return; }
+    S.db = db;
+    c.use('user').then(async u => {
+      if (!u) return;
+      try { if ((await u.can('data.write')) === false) { S.canWrite = false; renderAll(); fillDrawer(); } } catch (e) {}
+    }).catch(() => {});
+
+    const timer = setTimeout(() => { if (!(S.confirmedE && S.confirmedI)) { S.stale = true; renderAll(); } }, 10000);
+    const onErr = err => {
+      clearTimeout(timer); S.stale = true;
+      if (!(S.epicsReady && S.issuesReady)) S.mode = 'error';
+      if (err && err.code === 'revoked') S.canWrite = false;
+      renderAll();
+    };
+    const settle = () => {
+      if (S.epicsReady && S.issuesReady && S.mode !== 'ready') { S.mode = 'ready'; S.defaultOpen = computeDefaultOpen(); }
+      if (S.confirmedE && S.confirmedI) { clearTimeout(timer); S.stale = false; }
+      renderAll(); fillDrawer();
+      if (S.mode === 'ready' && !S.hashDone) { S.hashDone = true; fromHash(); }
+    };
+    db.collection('epics').onSnapshot(snap => {
+      S.epics = snap.docs.map(d => Object.assign({}, d.data(), {id: d.id})).sort((a, b) => (a.order || 0) - (b.order || 0));
+      S.epicsReady = true; if (!snap.metadata.fromCache) S.confirmedE = true; settle();
+    }, onErr);
+    db.collection('issues').onSnapshot(snap => {
+      S.issues = snap.docs.map(d => Object.assign({}, d.data(), {key: d.id}));
+      S.issuesReady = true; if (!snap.metadata.fromCache) S.confirmedI = true; settle();
+    }, onErr);
+  }
+
+  init();
+})();
+</script>
