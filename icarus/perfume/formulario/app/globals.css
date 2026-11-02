@@ -2,6 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body { background: #0D1B2A; color: #E0E0E0; }
-body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-:focus-visible { outline: 2px solid #E0E0E0; outline-offset: 2px; }
+@layer base {
+  html {
+    background: #eae6df;
+    color: #242421;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: #eae6df;
+    font-family: var(--font-archivo), system-ui, sans-serif;
+    font-stretch: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: #8eb1c7;
+    color: #0d1b2a;
+  }
+  :focus-visible {
+    outline: 2px solid #0d1b2a;
+    outline-offset: 3px;
+  }
+  .sobre-azul :focus-visible {
+    outline-color: #eae6df;
+  }
+}
+
+@layer components {
+  /* Voz de sistema: rótulos, números, botões (IBM Plex Mono, caixa alta, 0,14 em). */
+  .rotulo {
+    font-family: var(--font-plex), ui-monospace, monospace;
+    font-size: 11.5px;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  /* Voz alta: Archivo Condensed 800, só para títulos de impacto. */
+  .voz-alta {
+    font-family: var(--font-archivo), system-ui, sans-serif;
+    font-weight: 800;
+    font-stretch: 75%;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    line-height: 0.88;
+  }
+  /* Grão de filme da marca: uma textura por peça, só sobre cor chapada. */
+  .grao {
+    position: relative;
+    isolation: isolate;
+  }
+  .grao::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.32;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1.2 -0.1'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    z-index: 1;
+  }
+}
+
+@layer utilities {
+  .texto-equilibrado {
+    text-wrap: balance;
+  }
+  .texto-bonito {
+    text-wrap: pretty;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
