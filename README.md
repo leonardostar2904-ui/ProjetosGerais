@@ -10,6 +10,14 @@ Repositorio dos projetos de cliente. Um diretorio por cliente.
 | Pereira & Martins Contabilidade | Site + branding basico + 15 templates de post | Nao iniciado |
 | BiblioMaison | Site + 7 templates de post | Nao iniciado |
 
+## ICARUS (marca propria)
+
+| Projeto | Descricao | Status |
+|---|---|---|
+| `icarus/perfume/formulario` | Questionario da vertical de perfume (3a vertical) | v0 sem backend |
+
+Conceito e pontos em aberto: `icarus/perfume/CONCEITO.md`.
+
 ## Estrutura por cliente
 
 ```
