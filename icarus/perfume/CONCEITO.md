@@ -46,6 +46,8 @@ Revenda e exclusividade se contradizem: o cliente nao deve poder escolher as dua
    producao (seguranca, alergenos, limites de concentracao, harmonia olfativa).
 4. Regulatorio: perfume e cosmetico. Confirmar com ANVISA e o laboratorio parceiro
    requisitos de fabricacao, notificacao/registro e rotulagem para formulas unicas.
+   Atualizacao 02/11/2026: existe um regime artesanal novo (RDC 1.045/2026, vigente a partir
+   de ~04/12/2026). Ver `pesquisa/ANALISE-MANUAL.md`, secao 4.
 5. LGPD: vida sexual e orientacao sexual sao dados sensiveis. O questionario trata
    sexo, genero e momento afetivo como opcionais, com "prefiro nao informar" e
    consentimento explicito. Revisar com advogado antes de coletar dados reais.
