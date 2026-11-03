@@ -6,7 +6,7 @@ export function MarcadorSelecao({ tipo, marcado }: { tipo: "unica" | "multipla";
     <span
       aria-hidden="true"
       className={`mt-[3px] grid h-[15px] w-[15px] shrink-0 place-items-center border transition-colors duration-200 ${
-        marcado ? "border-azul bg-azul" : "border-azul/45 bg-branco"
+        marcado ? "border-azul bg-azul" : "border-azul/70 bg-branco"
       }`}
     >
       {marcado && tipo === "multipla" && (

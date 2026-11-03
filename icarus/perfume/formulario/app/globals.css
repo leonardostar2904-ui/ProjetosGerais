@@ -7,6 +7,21 @@
     background: #eae6df;
     color: #242421;
     -webkit-text-size-adjust: 100%;
+    /* O foco por teclado e as âncoras param fora do cabeçalho e do rodapé fixos. */
+    scroll-padding-top: 9.5rem;
+    scroll-padding-bottom: 9rem;
+  }
+  @media (min-width: 640px) {
+    html {
+      scroll-padding-bottom: 6.5rem;
+    }
+  }
+  /* Telas baixas (celular deitado): cabeçalho e rodapé deixam de ser fixos para liberar a leitura. */
+  @media (max-height: 500px) {
+    html {
+      scroll-padding-top: 1rem;
+      scroll-padding-bottom: 1rem;
+    }
   }
   body {
     background: #eae6df;

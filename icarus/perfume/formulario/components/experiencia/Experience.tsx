@@ -5,25 +5,30 @@ import * as A from "@/lib/armazenamento";
 import { capituloPorNumero } from "@/lib/questionario/capitulos";
 import { perguntaPorNumero, VERSAO_QUESTIONARIO } from "@/lib/questionario/perguntas";
 import { aplicavel, estadoCapitulo, perguntasDoCapitulo, progressoGeral, respondida } from "@/lib/questionario/progresso";
-import type { Valor } from "@/lib/questionario/tipos";
+import type { Respostas, Valor } from "@/lib/questionario/tipos";
 import Abertura from "./Abertura";
 import Cabecalho from "./Cabecalho";
 import ChapterHeader from "./ChapterHeader";
 import ChapterNavigation from "./ChapterNavigation";
 import CompletionScreen from "./CompletionScreen";
 import ConditionalQuestion from "./ConditionalQuestion";
+import LinhaDeVoo from "./LinhaDeVoo";
 import QuestionBlock from "./QuestionBlock";
 
 // Orquestra a experiência: carrega e salva a sessão, navega entre as 10 etapas (inclusive pelo botão
 // voltar do navegador), valida obrigatórias, registra opcionais puladas e conclui com consentimento.
 
 type Fase = "carregando" | "abertura" | "capitulo" | "convite" | "concluido";
-type EstadoHistorico = { fase: Fase; capitulo: number };
+type Destino = { fase: Fase; capitulo: number };
 
 const dois = (n: number) => String(n).padStart(2, "0");
 
-// Histórico do navegador por âncora (#etapa-3). Entradas novas usam estado nulo: o roteador do
-// Next.js ignora essas entradas e não recarrega a página; a âncora diz qual etapa mostrar.
+// ── Histórico do navegador ──
+// Cada etapa vira uma âncora (#etapa-3). Entradas novas usam estado nulo: o roteador do Next.js ignora
+// essas entradas e não recarrega a página. Uma pilha local acompanha a posição no histórico para que o
+// "Voltar" do app use o mesmo histórico do navegador (sem criar entradas que o voltar do celular desfaria).
+const pilha: { itens: string[]; pos: number } = { itens: [], pos: -1 };
+
 function ancora(fase: Fase, capitulo: number): string {
   if (fase === "abertura") return "#abertura";
   if (fase === "convite") return "#conclusao";
@@ -31,7 +36,7 @@ function ancora(fase: Fase, capitulo: number): string {
   return `#etapa-${capitulo}`;
 }
 
-function lerAncora(): EstadoHistorico | null {
+function lerAncora(): Destino | null {
   const h = window.location.hash;
   if (h === "#abertura") return { fase: "abertura", capitulo: 1 };
   if (h === "#conclusao") return { fase: "convite", capitulo: 10 };
@@ -42,9 +47,35 @@ function lerAncora(): EstadoHistorico | null {
 }
 
 function registrar(modo: "push" | "replace", fase: Fase, capitulo: number) {
-  const url = window.location.pathname + window.location.search + ancora(fase, capitulo);
-  if (modo === "push") window.history.pushState(null, "", url);
-  else window.history.replaceState(window.history.state, "", url);
+  const hash = ancora(fase, capitulo);
+  const url = window.location.pathname + window.location.search + hash;
+  if (modo === "push") {
+    window.history.pushState(null, "", url);
+    pilha.itens = [...pilha.itens.slice(0, pilha.pos + 1), hash];
+    pilha.pos = pilha.itens.length - 1;
+  } else {
+    window.history.replaceState(window.history.state, "", url);
+    if (pilha.pos < 0) {
+      pilha.itens = [hash];
+      pilha.pos = 0;
+    } else pilha.itens[pilha.pos] = hash;
+  }
+}
+
+function sincronizarPilha(hash: string) {
+  if (pilha.itens[pilha.pos - 1] === hash) pilha.pos -= 1;
+  else if (pilha.itens[pilha.pos + 1] === hash) pilha.pos += 1;
+  else {
+    pilha.itens = [hash];
+    pilha.pos = 0;
+  }
+}
+
+/** Primeira etapa com obrigatória em branco antes do destino (ninguém pula etapa pela URL ou pelo histórico). */
+function etapaBloqueante(destino: Destino, r: Respostas): number | null {
+  const limite = destino.fase === "convite" || destino.fase === "concluido" ? 11 : destino.fase === "abertura" ? 1 : destino.capitulo;
+  for (let n = 1; n < limite; n++) if (estadoCapitulo(n, r).obrigatoriasFaltando.length) return n;
+  return null;
 }
 
 function semMovimento() {
@@ -59,6 +90,8 @@ export default function Experience() {
   const [aviso, setAviso] = useState<string | null>(null);
   const [anuncio, setAnuncio] = useState("");
   const tituloRef = useRef<HTMLHeadingElement>(null);
+  const tituloAberturaRef = useRef<HTMLHeadingElement>(null);
+  const primeiraCarga = useRef(true);
 
   // Um único aviso falado por ação. Limpa antes para o leitor repetir a mensagem se ela for igual.
   const anunciar = useCallback((mensagem: string) => {
@@ -110,6 +143,7 @@ export default function Experience() {
       setFase(novaFase);
       setCapitulo(novoCapitulo);
       setErros([]);
+      setAnuncio("");
       if (sid && (novaFase === "capitulo" || novaFase === "abertura")) {
         setBanco((b) => (b ? A.atualizarSessao(b, sid, { capituloAtual: novaFase === "abertura" ? 1 : novoCapitulo }) : b));
       }
@@ -126,27 +160,93 @@ export default function Experience() {
     [aplicarFase],
   );
 
-  // Botão voltar do navegador e do celular: navega entre etapas sem sair da experiência.
+  // Botão voltar e avançar do navegador (e âncora digitada na URL): navega entre etapas sem sair da
+  // experiência e sem permitir pular etapa com obrigatória em branco.
   useEffect(() => {
-    function aoVoltar() {
+    function aoMudarHistorico() {
+      sincronizarPilha(window.location.hash);
       const destino = lerAncora();
       if (!destino) return;
       if (fase === "concluido") {
         registrar("push", "concluido", 10);
         return;
       }
-      if (destino.fase === "concluido") return;
+      if (destino.fase === "concluido") {
+        registrar("replace", fase, capitulo);
+        return;
+      }
+      const bloqueio = etapaBloqueante(destino, respostas);
+      if (bloqueio !== null) {
+        const faseBloqueio: Fase = bloqueio === 1 ? "abertura" : "capitulo";
+        aplicarFase(faseBloqueio, bloqueio);
+        registrar("replace", faseBloqueio, bloqueio);
+        setAviso(`Responda a etapa ${dois(bloqueio)} antes de seguir.`);
+        return;
+      }
       aplicarFase(destino.fase, destino.capitulo);
     }
-    window.addEventListener("popstate", aoVoltar);
-    return () => window.removeEventListener("popstate", aoVoltar);
-  }, [fase, aplicarFase]);
+    window.addEventListener("popstate", aoMudarHistorico);
+    return () => window.removeEventListener("popstate", aoMudarHistorico);
+  }, [fase, capitulo, respostas, aplicarFase]);
+
+  // Outra aba mudou os dados (ex.: "Apagar dados de teste" nos bastidores): recarrega em vez de sobrescrever.
+  useEffect(() => {
+    function aoMudarArmazenamento(e: StorageEvent) {
+      if (e.key !== A.CHAVE_ARMAZENAMENTO) return;
+      const novo = A.carregarBanco();
+      const s = A.sessaoAtual(novo);
+      if (!s || s.status !== "em_andamento") {
+        if (s?.status === "concluida") {
+          setBanco(novo);
+          setFase("concluido");
+          registrar("replace", "concluido", 10);
+          return;
+        }
+        setBanco(A.garantirSessao(novo));
+        setFase("abertura");
+        setCapitulo(1);
+        registrar("replace", "abertura", 1);
+        return;
+      }
+      setBanco(novo);
+    }
+    window.addEventListener("storage", aoMudarArmazenamento);
+    return () => window.removeEventListener("storage", aoMudarArmazenamento);
+  }, []);
+
+  // Foco por teclado nunca fica atrás do cabeçalho ou do rodapé fixos (complementa o scroll-padding do CSS).
+  useEffect(() => {
+    if (fase !== "capitulo") return;
+    function aoFocar(e: FocusEvent) {
+      const el = e.target as HTMLElement | null;
+      if (!el || !(el instanceof HTMLElement) || el.closest("header, footer")) return;
+      const alvo = (el.closest("label") ?? el) as HTMLElement;
+      const r = alvo.getBoundingClientRect();
+      const cab = document.querySelector("header");
+      const rod = document.querySelector("footer");
+      const topoLivre = cab && getComputedStyle(cab).position === "sticky" ? cab.getBoundingClientRect().bottom : 0;
+      const baseLivre = rod && getComputedStyle(rod).position === "sticky" ? rod.getBoundingClientRect().top : window.innerHeight;
+      if (r.top < topoLivre + 8) window.scrollBy({ top: r.top - topoLivre - 16 });
+      else if (r.bottom > baseLivre - 8) {
+        const cabe = r.height < baseLivre - topoLivre - 32;
+        window.scrollBy({ top: cabe ? r.bottom - baseLivre + 16 : r.top - topoLivre - 16 });
+      }
+    }
+    document.addEventListener("focusin", aoFocar);
+    return () => document.removeEventListener("focusin", aoFocar);
+  }, [fase]);
 
   // A cada troca de etapa: volta ao topo e leva o foco ao título (leitores de tela anunciam a etapa).
   useEffect(() => {
-    if (fase !== "capitulo") return;
+    if (fase !== "capitulo" && fase !== "abertura") return;
+    if (fase === "abertura" && primeiraCarga.current) {
+      primeiraCarga.current = false;
+      return;
+    }
+    primeiraCarga.current = false;
     window.scrollTo({ top: 0, behavior: "auto" });
-    const t = setTimeout(() => tituloRef.current?.focus({ preventScroll: true }), 30);
+    const alvo = fase === "capitulo" ? tituloRef : tituloAberturaRef;
+    const t = setTimeout(() => alvo.current?.focus({ preventScroll: true }), 30);
     return () => clearTimeout(t);
   }, [fase, capitulo]);
 
@@ -159,11 +259,16 @@ export default function Experience() {
     [sid],
   );
 
+  // Leva a pergunta para logo abaixo do cabeçalho fixo e põe o foco no primeiro controle dela.
   const focar = useCallback((id: string) => {
     const secao = document.getElementById(`p-${id}`);
-    secao?.scrollIntoView({ behavior: semMovimento() ? "auto" : "smooth", block: "center" });
-    const alvo = secao?.querySelector<HTMLElement>("input:not([aria-disabled='true']), textarea, button");
-    setTimeout(() => alvo?.focus({ preventScroll: true }), semMovimento() ? 0 : 380);
+    if (!secao) return;
+    const alturaCabecalho = document.querySelector("header")?.getBoundingClientRect().height ?? 0;
+    const cabecalhoFixo = document.querySelector("header") && getComputedStyle(document.querySelector("header")!).position === "sticky";
+    const topo = secao.getBoundingClientRect().top + window.scrollY - (cabecalhoFixo ? alturaCabecalho : 0) - 20;
+    window.scrollTo({ top: Math.max(0, topo), behavior: semMovimento() ? "auto" : "smooth" });
+    const alvo = secao.querySelector<HTMLElement>("input:not([aria-disabled='true']), textarea, button");
+    setTimeout(() => alvo?.focus({ preventScroll: true }), semMovimento() ? 0 : 420);
   }, []);
 
   const concluirCapitulo = useCallback(
@@ -204,25 +309,45 @@ export default function Experience() {
     }
     concluirCapitulo(capitulo);
     if (capitulo === 10) {
+      const bloqueio = etapaBloqueante({ fase: "convite", capitulo: 10 }, respostas);
+      if (bloqueio !== null) {
+        irPara(bloqueio === 1 ? "abertura" : "capitulo", bloqueio, `Responda a etapa ${dois(bloqueio)} antes de concluir.`);
+        return;
+      }
       setFase("convite");
+      setErros([]);
       registrar("push", "convite", 10);
     } else {
       irPara("capitulo", capitulo + 1, `Etapa ${dois(capitulo)} concluída.`);
     }
   }, [capitulo, respostas, focar, concluirCapitulo, irPara, anunciar]);
 
+  // "Voltar" do app: se a etapa anterior é a entrada anterior do histórico, usa o próprio histórico.
   const voltar = useCallback(() => {
-    if (fase === "convite") return irPara("capitulo", 10);
-    if (fase === "capitulo" && capitulo <= 2) return irPara("abertura", 1);
-    if (fase === "capitulo") return irPara("capitulo", capitulo - 1);
-  }, [fase, capitulo, irPara]);
+    let alvo: Destino | null = null;
+    if (fase === "convite") alvo = { fase: "capitulo", capitulo: 10 };
+    else if (fase === "capitulo" && capitulo <= 2) alvo = { fase: "abertura", capitulo: 1 };
+    else if (fase === "capitulo") alvo = { fase: "capitulo", capitulo: capitulo - 1 };
+    if (!alvo) return;
+    if (pilha.pos > 0 && pilha.itens[pilha.pos - 1] === ancora(alvo.fase, alvo.capitulo)) {
+      window.history.back();
+      return;
+    }
+    aplicarFase(alvo.fase, alvo.capitulo);
+    registrar("replace", alvo.fase, alvo.capitulo);
+  }, [fase, capitulo, aplicarFase]);
 
   const concluir = useCallback(() => {
     if (!sid) return;
+    const bloqueio = etapaBloqueante({ fase: "convite", capitulo: 10 }, respostas);
+    if (bloqueio !== null) {
+      irPara(bloqueio === 1 ? "abertura" : "capitulo", bloqueio, `Responda a etapa ${dois(bloqueio)} antes de concluir.`);
+      return;
+    }
     setBanco((b) => (b ? A.concluirSessao(b, sid) : b));
     setFase("concluido");
     registrar("replace", "concluido", 10);
-  }, [sid]);
+  }, [sid, respostas, irPara]);
 
   const recomecar = useCallback(() => {
     const ok = window.confirm("Recomeçar abre uma experiência nova, do início. As respostas anteriores continuam guardadas neste navegador. Recomeçar agora?");
@@ -232,21 +357,11 @@ export default function Experience() {
     setCapitulo(1);
     setErros([]);
     registrar("replace", "abertura", 1);
-    window.scrollTo({ top: 0 });
   }, []);
 
   const baixar = useCallback(() => {
     if (!banco || !sid || !sessao) return;
-    const dados = {
-      experiencia: "ICARUS Olfactory Experience",
-      questionario: VERSAO_QUESTIONARIO,
-      exportadoEm: new Date().toISOString(),
-      sessao,
-      contato: banco.contato.find((c) => c.consumidorId === sessao.consumidorId) ?? null,
-      respostas: Object.values(banco.respostas[sid] ?? {}),
-      dadosSensiveis: Object.values(banco.dadosSensiveis[sid] ?? {}),
-      consentimento: banco.consentimentos.find((c) => c.sessaoId === sid) ?? null,
-    };
+    const dados = { experiencia: "ICARUS Olfactory Experience", questionario: VERSAO_QUESTIONARIO, ...A.exportarSessao(banco, sid) };
     const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -264,9 +379,9 @@ export default function Experience() {
 
   if (fase === "carregando" || !banco) {
     return (
-      <div className="grid min-h-[100svh] place-items-center" aria-busy="true">
+      <main className="grid min-h-[100svh] place-items-center" aria-busy="true">
         <p className="rotulo text-[10.5px] text-grafite-suave">Preparando a sua experiência</p>
-      </div>
+      </main>
     );
   }
 
@@ -274,7 +389,14 @@ export default function Experience() {
     return (
       <>
         {avisoLeitor}
-        <Abertura valor={respostas.q01} onChange={(v) => responder("q01", v)} erro={erros.includes("q01")} onComecar={comecar} />
+        <Abertura
+          ref={tituloAberturaRef}
+          valor={respostas.q01}
+          onChange={(v) => responder("q01", v)}
+          erro={erros.includes("q01")}
+          onComecar={comecar}
+          concluidos={sessao?.capitulosConcluidos ?? []}
+        />
       </>
     );
   }
@@ -341,7 +463,7 @@ export default function Experience() {
       <main data-etapa={capitulo} className="mx-auto w-full max-w-[1280px] flex-1 px-4 pb-20 pt-10 sm:px-8 lg:px-12 lg:pt-14">
         <div key={capitulo} className="grid gap-12 animate-entrada lg:grid-cols-12 lg:gap-x-16">
           <div className="lg:col-span-5">
-            <div className="lg:sticky lg:top-[150px] lg:max-h-[calc(100svh-170px)] lg:overflow-y-auto lg:pb-4 lg:[scrollbar-width:thin]">
+            <div className="lg:sticky lg:top-[150px] lg:max-h-[calc(100svh-250px)] lg:overflow-y-auto lg:pb-4 lg:[scrollbar-width:thin]">
               <ChapterHeader ref={tituloRef} capitulo={cap} perguntas={est.aplicaveis} estados={estados} onIr={focar} />
             </div>
           </div>
@@ -360,10 +482,10 @@ export default function Experience() {
               if (!novoGrupo) return conteudo;
               return (
                 <div key={`g-${p.id}`} className="space-y-8">
-                  <div className="flex items-baseline gap-3 border-t border-azul/25 pt-3">
+                  <h2 className="flex items-baseline gap-3 border-t border-azul/25 pt-3">
                     <span className="rotulo text-[10.5px] font-medium text-azul">Grupo {grupo.id}</span>
                     <span className="rotulo text-[10.5px] text-grafite-suave">{grupo.rotulo}</span>
-                  </div>
+                  </h2>
                   {conteudo}
                 </div>
               );
@@ -372,7 +494,10 @@ export default function Experience() {
         </div>
 
         {final && (
-          <section className="sobre-azul grao relative -mx-4 mt-20 overflow-hidden bg-azul px-5 pb-40 pt-14 sm:mx-0 sm:px-10 lg:px-16 lg:pb-48 lg:pt-20">
+          <section
+            aria-label="Última pergunta"
+            className="sobre-azul grao relative -mx-4 mt-20 overflow-hidden bg-azul px-5 pb-40 pt-14 sm:mx-0 sm:px-10 lg:px-16 lg:pb-48 lg:pt-20"
+          >
             <div className="relative z-[2] max-w-[900px]">
               <p className="rotulo mb-8 text-[10.5px] text-aurora">Última pergunta</p>
               <QuestionBlock
@@ -383,16 +508,7 @@ export default function Experience() {
                 sobreAzul
               />
             </div>
-            <svg viewBox="0 0 1200 200" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[150px] w-full" aria-hidden="true">
-              <path
-                d="M -10 182 C 240 182, 360 160, 500 116 C 570 94, 628 84, 640 110 C 652 138, 600 154, 578 128 C 552 98, 668 64, 840 58 C 990 52, 1110 36, 1210 20"
-                fill="none"
-                stroke="#E7AE8E"
-                strokeWidth="5"
-                strokeLinecap="round"
-                vectorEffect="non-scaling-stroke"
-              />
-            </svg>
+            <LinhaDeVoo className="z-[2] h-[150px]" />
           </section>
         )}
       </main>

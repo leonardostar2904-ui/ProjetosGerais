@@ -113,14 +113,7 @@ export default function Bastidores() {
 
   const exportar = () => {
     if (!resultado || !sessao) return;
-    const dados = {
-      sessao,
-      contato: banco.contato.find((c) => c.consumidorId === sessao.consumidorId) ?? null,
-      respostas: Object.values(banco.respostas[sessao.id] ?? {}),
-      dadosSensiveis: Object.values(banco.dadosSensiveis[sessao.id] ?? {}),
-      consentimento: banco.consentimentos.find((c) => c.sessaoId === sessao.id) ?? null,
-      cruzamento: resultado,
-    };
+    const dados = { ...A.exportarSessao(banco, sessao.id), cruzamento: resultado };
     const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -141,7 +134,7 @@ export default function Bastidores() {
   const contato = sessao ? banco.contato.find((c) => c.consumidorId === sessao.consumidorId) : undefined;
 
   return (
-    <div className="mx-auto max-w-[1280px] px-4 pb-24 pt-8 sm:px-8 lg:px-12">
+    <main className="mx-auto max-w-[1280px] px-4 pb-24 pt-8 sm:px-8 lg:px-12">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-azul/20 pb-4">
         <p className="rotulo text-[11px] text-azul">
           <span className="tracking-[0.3em]">ICARUS</span> <span className="text-grafite-suave">· Bastidores do cruzamento</span>
@@ -232,7 +225,7 @@ export default function Bastidores() {
                 </dd>
               </div>
             </dl>
-            <div className="mt-6 overflow-x-auto">
+            <div className="mt-6 overflow-x-auto" tabIndex={0} role="region" aria-label="Respostas da sessão">
               <table className="w-full min-w-[720px] border-collapse text-left text-[13px]">
                 <thead>
                   <tr className="rotulo border-b border-azul/40 text-[9.5px] text-grafite-suave">
@@ -250,7 +243,7 @@ export default function Bastidores() {
                     const v = respostas[p.id];
                     const st = !ok ? "não se aplica" : respondida(p, v) ? "respondida" : A.statusDaPergunta(banco, sessao.id, p.id) === "pulada" ? "pulada" : "em branco";
                     return (
-                      <tr key={p.id} className={`border-b border-azul/10 align-top ${!ok ? "opacity-45" : ""}`}>
+                      <tr key={p.id} className={`border-b border-azul/10 align-top ${!ok ? "italic text-grafite-suave" : ""}`}>
                         <td className="py-2 pr-3 font-mono text-[12px] text-grafite-suave">{String(p.numero).padStart(2, "0")}</td>
                         <td className="py-2 pr-3 font-mono text-[12px] text-grafite-suave">{String(p.capitulo).padStart(2, "0")}</td>
                         <td className="max-w-[300px] py-2 pr-3 text-grafite">{p.enunciado}</td>
@@ -268,7 +261,7 @@ export default function Bastidores() {
           </Secao>
 
           <Secao numero="Banco 02" titulo="Perfil" nota="Indicadores de preferências declaradas. Não é diagnóstico psicológico. Pesos v0, a calibrar.">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Tabela com rolagem horizontal">
               <table className="w-full min-w-[680px] border-collapse text-left text-[13px]">
                 <tbody>
                   {resultado.perfil.map((t) => (
@@ -290,7 +283,7 @@ export default function Bastidores() {
           </Secao>
 
           <Secao numero="Regras" titulo="Tradução" nota={`${resultado.regras.length} regras disparadas nesta sessão. Cada uma registra gatilho, efeito e força da evidência.`}>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Tabela com rolagem horizontal">
               <table className="w-full min-w-[760px] border-collapse text-left text-[13px]">
                 <thead>
                   <tr className="rotulo border-b border-azul/40 text-[9.5px] text-grafite-suave">
@@ -343,7 +336,7 @@ export default function Bastidores() {
                   ["Base", `${resultado.direcao.base.tipo === "oleosa" ? "Oleosa" : "Alcoólica"}. ${resultado.direcao.base.motivo}`],
                   [
                     "Ajustes",
-                    `Fixação +${resultado.direcao.ajustes.fundo}; cítricos de saída −${resultado.direcao.ajustes.citricosSaida}; fundo pesado no calor −${resultado.direcao.ajustes.fundoPesadoCalor}`,
+                    `Fixação +${resultado.direcao.ajustes.fundo.toFixed(1)}; cítricos de saída −${resultado.direcao.ajustes.citricosSaida.toFixed(1)}; fundo pesado no calor −${resultado.direcao.ajustes.fundoPesadoCalor.toFixed(1)}`,
                   ],
                 ].map(([t, d]) => (
                   <div key={t} className="border-b border-azul/10 py-2.5">
@@ -449,7 +442,7 @@ export default function Bastidores() {
           </Secao>
 
           <Secao numero="Banco 06" titulo="Comercial" nota="Respostas da etapa 09 são pesquisa de preferência. Não autorizam nada e não são oferta.">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Tabela com rolagem horizontal">
               <table className="w-full min-w-[620px] border-collapse text-left text-[13px]">
                 <tbody>
                   {resultado.comercial.modalidades.map((m) => (
@@ -527,6 +520,6 @@ export default function Bastidores() {
           </Secao>
         </div>
       )}
-    </div>
+    </main>
   );
 }

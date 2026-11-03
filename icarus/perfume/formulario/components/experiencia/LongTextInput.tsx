@@ -13,9 +13,10 @@ type Props = {
   idCampo: string;
   descritoPor?: string;
   sobreAzul?: boolean;
+  invalido?: boolean;
 };
 
-export default function LongTextInput({ pergunta, valor, onChange, idCampo, descritoPor, sobreAzul }: Props) {
+export default function LongTextInput({ pergunta, valor, onChange, idCampo, descritoPor, sobreAzul, invalido }: Props) {
   const ref = useRef<HTMLTextAreaElement>(null);
   const [focado, setFocado] = useState(false);
   const texto = valor ?? "";
@@ -30,8 +31,8 @@ export default function LongTextInput({ pergunta, valor, onChange, idCampo, desc
   }, [texto, minimo]);
 
   const estilo = sobreAzul
-    ? "border-0 border-b border-papel/35 bg-transparent px-0 text-[20px] leading-relaxed text-papel placeholder:text-papel/55 focus:border-papel focus:shadow-[0_1px_0_0_#EAE6DF]"
-    : "border border-azul/15 bg-branco px-4 py-3.5 text-[17px] leading-relaxed text-grafite placeholder:text-grafite-suave/75 hover:border-azul/35 focus:border-azul focus:shadow-[inset_0_0_0_1px_#0D1B2A]";
+    ? "border-0 border-b border-papel/35 bg-transparent px-0 text-[20px] leading-relaxed text-papel placeholder:text-papel/75 focus:border-papel focus:shadow-[0_1px_0_0_#EAE6DF]"
+    : "border border-azul/40 bg-branco px-4 py-3.5 text-[17px] leading-relaxed text-grafite placeholder:text-grafite-suave hover:border-azul/60 focus:border-azul focus:shadow-[inset_0_0_0_1px_#0D1B2A]";
 
   return (
     <textarea
@@ -42,6 +43,7 @@ export default function LongTextInput({ pergunta, valor, onChange, idCampo, desc
       rows={3}
       placeholder={pergunta.placeholder}
       aria-describedby={descritoPor}
+      aria-invalid={invalido || undefined}
       onFocus={() => setFocado(true)}
       onBlur={() => setFocado(false)}
       onChange={(e) => onChange(e.target.value)}

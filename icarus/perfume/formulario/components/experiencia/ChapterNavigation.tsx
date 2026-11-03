@@ -32,7 +32,7 @@ export default function ChapterNavigation({
         : "Etapa completa";
 
   return (
-    <footer className="sticky bottom-0 z-30 border-t border-azul/15 bg-papel/95 pb-[env(safe-area-inset-bottom)] supports-[backdrop-filter]:bg-papel/90 supports-[backdrop-filter]:backdrop-blur-sm">
+    <footer className="sticky bottom-0 z-30 border-t [@media(max-height:500px)]:static border-azul/15 bg-papel/95 pb-[env(safe-area-inset-bottom)] supports-[backdrop-filter]:bg-papel/90 supports-[backdrop-filter]:backdrop-blur-sm">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-8 lg:px-12">
         <p className="rotulo order-1 text-center text-[10px] text-grafite-suave sm:order-2 sm:flex-1 sm:text-[10.5px]">
           <span className="text-azul">Etapa {String(capitulo).padStart(2, "0")}</span> · {respondidas} de {aplicaveis} respondidas ·{" "}

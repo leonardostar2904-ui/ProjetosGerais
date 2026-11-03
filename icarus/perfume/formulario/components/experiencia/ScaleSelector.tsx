@@ -89,8 +89,12 @@ export default function ScaleSelector({ pergunta, valor, onChange, descritoPor, 
       {!pergunta.obrigatoria && valor !== undefined && (
         <button
           type="button"
-          onClick={() => onChange(undefined)}
-          className="rotulo mt-3 text-[10.5px] text-grafite-suave underline decoration-nevoa underline-offset-4 hover:text-azul"
+          onClick={(e) => {
+            const grupo = e.currentTarget.parentElement;
+            onChange(undefined);
+            requestAnimationFrame(() => grupo?.querySelector<HTMLInputElement>("input")?.focus());
+          }}
+          className="rotulo -my-2 mt-1 py-3 text-[10.5px] text-grafite-suave underline decoration-nevoa underline-offset-4 hover:text-azul"
         >
           Limpar resposta
         </button>

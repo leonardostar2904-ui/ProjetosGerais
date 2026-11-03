@@ -11,7 +11,7 @@ type EstadoMarcador = "respondida" | "pendente" | "opcional" | "pulada";
 
 export function ContadorGeral({ progresso, compacto }: { progresso: ProgressoGeral; compacto?: boolean }) {
   return (
-    <p className="rotulo whitespace-nowrap text-[10.5px] text-grafite-suave" aria-live="polite" aria-atomic="true">
+    <p className="rotulo whitespace-nowrap text-[10.5px] text-grafite-suave">
       <span className="font-medium text-azul">{progresso.respondidas}</span>
       {compacto ? "/" : " de "}
       {progresso.aplicaveis}
@@ -55,7 +55,7 @@ export default function QuestionCounter({
               <button
                 type="button"
                 onClick={() => onIr(p.id)}
-                className={`grid h-8 min-w-[2.25rem] place-items-center px-1.5 font-mono text-[12px] transition-colors duration-200 ${
+                className={`grid h-11 min-w-[2.75rem] place-items-center px-1.5 font-mono text-[12px] sm:h-9 sm:min-w-[2.5rem] transition-colors duration-200 ${
                   e === "respondida"
                     ? "bg-azul text-papel"
                     : e === "pendente"

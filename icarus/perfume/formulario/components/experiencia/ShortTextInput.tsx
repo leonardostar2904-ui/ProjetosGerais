@@ -10,26 +10,30 @@ type Props = {
   onChange: (valor: string | string[]) => void;
   idCampo: string;
   descritoPor?: string;
+  invalido?: boolean;
 };
 
 const campo =
-  "w-full border-0 border-b border-azul/30 bg-transparent px-0 pb-2.5 pt-2 text-[19px] text-azul placeholder:text-grafite-suave/70 " +
+  "w-full border-0 border-b border-azul/60 bg-transparent px-0 pb-2.5 pt-2 text-[19px] text-azul placeholder:text-grafite-suave " +
   "transition-[border-color,box-shadow] duration-200 focus:border-azul focus:shadow-[0_1px_0_0_#0D1B2A] focus:outline-none focus:ring-0";
 
-export default function ShortTextInput({ pergunta, valor, onChange, idCampo, descritoPor }: Props) {
+export default function ShortTextInput({ pergunta, valor, onChange, idCampo, descritoPor, invalido }: Props) {
   if (pergunta.tipo === "tres-palavras") {
     const palavras = Array.isArray(valor) ? [...valor, "", "", ""].slice(0, 3) : ["", "", ""];
     return (
       <div className="grid gap-5 sm:grid-cols-3 sm:gap-4">
         {palavras.map((p, i) => (
           <label key={i} className="block">
-            <span className="rotulo mb-1 block text-[10px] text-grafite-suave">Palavra {i + 1}</span>
+            <span className="rotulo mb-1 block text-[10px] text-grafite-suave" aria-hidden="true">
+              Palavra {i + 1}
+            </span>
             <input
               id={i === 0 ? idCampo : undefined}
               type="text"
               value={p}
               maxLength={40}
               autoComplete="off"
+              aria-label={`Palavra ${i + 1} de 3`}
               aria-describedby={descritoPor}
               onChange={(e) => {
                 const novo = [...palavras];
@@ -54,6 +58,7 @@ export default function ShortTextInput({ pergunta, valor, onChange, idCampo, des
       placeholder={pergunta.placeholder}
       aria-describedby={descritoPor}
       aria-required={pergunta.obrigatoria || undefined}
+      aria-invalid={invalido || undefined}
       onChange={(e) => onChange(e.target.value)}
       className={`${campo} max-w-[460px]`}
     />

@@ -67,9 +67,11 @@ export function calcularTracos(r: Respostas): Traco[] {
   return [
     {
       codigo: "P001", nome: "Busca por reconhecimento", tipo: "escala-0-10", valor: um(p001),
-      status: estado(p001, true),
-      metodo: "Escala da #10 convertida para 0 a 10. Parcial: a #50 (como quer ser lembrado) aguarda IA.",
-      origens: [{ perguntaId: "q10", papel: "escala" }, { perguntaId: "q50", papel: "texto na fila da IA" }],
+      status: estado(p001, temTexto(r.q50)),
+      metodo: temTexto(r.q50)
+        ? "Escala da #10 convertida para 0 a 10. Parcial: a #50 (como quer ser lembrado) aguarda leitura da IA."
+        : "Escala da #10 convertida para 0 a 10. A #50 ficou em branco.",
+      origens: [{ perguntaId: "q10", papel: "escala" }, { perguntaId: "q50", papel: temTexto(r.q50) ? "texto na fila da IA" : "não respondida" }],
     },
     {
       codigo: "P002", nome: "Necessidade de individualidade", tipo: "escala-0-10", valor: um(p002),

@@ -7,7 +7,8 @@ import { perguntas, perguntaPorId, VERSAO_QUESTIONARIO } from "./questionario/pe
 import { aplicavel, respondida } from "./questionario/progresso";
 import type { Pergunta, Respostas, Valor } from "./questionario/tipos";
 
-const CHAVE = "icarus-olfactory-experience-v1";
+export const CHAVE_ARMAZENAMENTO = "icarus-olfactory-experience-v1";
+const CHAVE = CHAVE_ARMAZENAMENTO;
 const VERSAO_ESQUEMA = 1;
 
 export type StatusResposta = "respondida" | "pulada";
@@ -173,7 +174,45 @@ export function registrarResposta(b: Banco, sessaoId: string, perguntaId: string
     // Campo apagado ou escolha desmarcada: sem resposta. "Pulada" só é marcada ao sair do capítulo.
     delete atual[perguntaId];
   }
-  return { ...b, [tabela]: { ...b[tabela], [sessaoId]: atual } };
+  return limparCondicionaisInvalidas({ ...b, [tabela]: { ...b[tabela], [sessaoId]: atual } }, sessaoId);
+}
+
+/**
+ * Quando a condição de uma pergunta deixa de valer (ex.: a 31 muda para "Não"), a resposta dela é apagada.
+ * Assim nenhum dado escondido (alergia, gestação) fica guardado, exportado ou enviado para leitura.
+ */
+function limparCondicionaisInvalidas(b: Banco, sessaoId: string): Banco {
+  const r = respostasDaSessao(b, sessaoId);
+  let novo = b;
+  for (const p of perguntas) {
+    if (!p.condicao || aplicavel(p, r)) continue;
+    const tabela = tabelaDe(p);
+    if (tabela === "contato") continue;
+    if (!novo[tabela][sessaoId]?.[p.id]) continue;
+    const atual = { ...novo[tabela][sessaoId] };
+    delete atual[p.id];
+    novo = { ...novo, [tabela]: { ...novo[tabela], [sessaoId]: atual } };
+  }
+  return novo;
+}
+
+/** Dados de uma sessão no formato das tabelas, só com perguntas que se aplicam. Usado nos dois botões de baixar. */
+export function exportarSessao(b: Banco, sessaoId: string) {
+  const sessao = b.sessoes.find((s) => s.id === sessaoId) ?? null;
+  const r = respostasDaSessao(b, sessaoId);
+  const aplicaveis = (registros: RegistroResposta[]) =>
+    registros.filter((x) => {
+      const p = perguntas.find((q) => q.id === x.perguntaId);
+      return p ? aplicavel(p, r) : false;
+    });
+  return {
+    exportadoEm: agora(),
+    sessao,
+    contato: sessao ? b.contato.find((c) => c.consumidorId === sessao.consumidorId) ?? null : null,
+    respostas: aplicaveis(Object.values(b.respostas[sessaoId] ?? {})),
+    dadosSensiveis: aplicaveis(Object.values(b.dadosSensiveis[sessaoId] ?? {})),
+    consentimento: b.consentimentos.find((c) => c.sessaoId === sessaoId) ?? null,
+  };
 }
 
 /** Junta as três tabelas num mapa simples para a interface. */

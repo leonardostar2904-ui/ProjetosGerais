@@ -43,12 +43,28 @@ export function avaliarComercial(r: Respostas): Comercial {
   let hipotese = "Sem dados suficientes da etapa 09.";
   const q43 = typeof r.q43 === "string" ? r.q43 : null;
   const exclusividade = typeof r.q45 === "number" ? r.q45 : 0;
+  const compartilha = r.q46 === "sim-desconto";
+  const querExclusivo = r.q46 === "nao-exclusivo" || (exclusividade >= 4 && !compartilha);
   if (q43) {
-    if (semSinteticos) hipotese = "Linha Atelier (Essencial bloqueada pela #34).";
-    else if (q43 === "ate-150") hipotese = "Essencial é a única modalidade dentro do investimento habitual declarado.";
-    else if (q43 === "150-300") hipotese = "Essencial cabe no hábito. O Atelier compartilhável (R$ 420) fica acima: teste de disposição a pagar.";
-    else if (q43 === "300-600") hipotese = r.q46 === "nao-exclusivo" ? "Atelier (R$ 600) no limite do hábito declarado." : "Atelier compartilhável (R$ 420) ou Atelier (R$ 600).";
-    else hipotese = exclusividade >= 4 || r.q46 === "nao-exclusivo" ? "Atelier exclusivo (R$ 745) é candidato natural." : "Atelier (R$ 600).";
+    if (semSinteticos) {
+      hipotese = compartilha ? "Atelier compartilhável (R$ 420): a #34 bloqueia o Essencial e a pessoa aceitou compartilhar." : "Linha Atelier (a #34 bloqueia o Essencial).";
+    } else if (q43 === "ate-150") {
+      hipotese = "Nenhuma modalidade cabe no investimento habitual declarado: o Essencial custa R$ 180. Teste de disposição a pagar.";
+    } else if (q43 === "150-300") {
+      hipotese = "Essencial (R$ 180) cabe no hábito declarado. O Atelier compartilhável (R$ 420) fica acima: teste de disposição a pagar.";
+    } else if (q43 === "300-600") {
+      hipotese = compartilha
+        ? "Atelier compartilhável (R$ 420): cabe no hábito e a pessoa aceitou compartilhar."
+        : querExclusivo
+          ? "Atelier (R$ 600) no limite do hábito declarado. O exclusivo (R$ 745) fica acima."
+          : "Atelier compartilhável (R$ 420) ou Atelier (R$ 600).";
+    } else {
+      hipotese = compartilha
+        ? "Atelier compartilhável (R$ 420) ou Atelier (R$ 600): a pessoa aceitou compartilhar."
+        : querExclusivo
+          ? "Atelier exclusivo (R$ 745) é candidato natural."
+          : "Atelier (R$ 600).";
+    }
   }
 
   return { modalidades, sinais, hipotese: `${hipotese} Hipótese interna para teste de mercado, não é oferta ao cliente.` };

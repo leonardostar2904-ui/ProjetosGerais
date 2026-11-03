@@ -20,7 +20,7 @@ export type Termo = {
 export const TERMOS: Termo[] = [
   // expressões que não são cheiro
   { termo: "cor de rosa", ignorar: true },
-  { termo: "pau a pau", ignorar: true },
+  { termo: "cafe da manha", ignorar: true },
 
   // cítricos e frescos
   { termo: "bergamota", materias: [1] },
@@ -72,7 +72,6 @@ export const TERMOS: Termo[] = [
   { termo: "alfazema", materias: [18] },
   { termo: "jasmim", materias: [17] },
   { termo: "rosa", materias: [16] },
-  { termo: "rosas", materias: [16] },
   { termo: "geranio", materias: [19] },
   { termo: "ylang", materias: [20] },
   { termo: "neroli", materias: [21] },
@@ -172,6 +171,20 @@ export function normalizar(texto: string): string {
 
 export type Mencao = { termo: string; materias: number[]; grupo?: string; lacuna?: CodigoLacuna };
 
+/** Formas de plural da última palavra do termo (limao -> limoes, floral -> florais, jasmim -> jasmins). */
+function variantes(termo: string): string[] {
+  const partes = termo.split(" ");
+  const ultima = partes.pop()!;
+  const plurais = new Set<string>([ultima, `${ultima}s`, `${ultima}es`]);
+  if (ultima.endsWith("ao")) {
+    plurais.add(`${ultima.slice(0, -2)}oes`);
+    plurais.add(`${ultima.slice(0, -2)}aes`);
+  }
+  if (ultima.endsWith("l")) plurais.add(`${ultima.slice(0, -1)}is`);
+  if (ultima.endsWith("m")) plurais.add(`${ultima.slice(0, -1)}ns`);
+  return [...plurais].map((p) => [...partes, p].join(" "));
+}
+
 const ORDENADOS = [...TERMOS].sort((a, b) => b.termo.length - a.termo.length);
 
 /** Encontra menções no texto. Cada trecho é consumido uma vez, do termo mais longo ao mais curto. */
@@ -180,10 +193,15 @@ export function encontrarMencoes(texto: string | undefined): Mencao[] {
   let alvo = ` ${normalizar(texto)} `;
   const achados: Mencao[] = [];
   for (const t of ORDENADOS) {
-    const padrao = ` ${t.termo} `;
-    if (!alvo.includes(padrao)) continue;
-    while (alvo.includes(padrao)) alvo = alvo.replace(padrao, " ".repeat(padrao.length - 1) + " ");
-    if (t.ignorar) continue;
+    let achou = false;
+    for (const forma of variantes(t.termo)) {
+      const padrao = ` ${forma} `;
+      while (alvo.includes(padrao)) {
+        achou = true;
+        alvo = alvo.replace(padrao, " ".repeat(padrao.length));
+      }
+    }
+    if (!achou || t.ignorar) continue;
     if (!achados.some((a) => a.termo === t.termo)) {
       achados.push({ termo: t.termo, materias: t.materias ?? [], grupo: t.grupo, lacuna: t.lacuna });
     }

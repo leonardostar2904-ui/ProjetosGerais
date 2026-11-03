@@ -52,6 +52,7 @@ export function aplicarRegras(r: Respostas): SaidaRegras {
       efeito: "Peso 1 para cada família escolhida. É o eixo principal da direção olfativa.",
       tipo: "direcao", evidencia: "declarada", origens: ["q19"],
     });
+    if (q19.includes("frescos")) lacuna("mar", "#19 Frescos inclui notas de mar");
     if (q19.includes("quentes")) lacuna("couro", "#19 Quentes e intensos inclui couro e tabaco");
     if (q19.includes("quentes")) lacuna("tabaco", "#19 Quentes e intensos inclui couro e tabaco");
     if (q19.includes("doces")) lacuna("caramelo", "#19 Doces e gourmand inclui caramelo");
@@ -106,9 +107,13 @@ export function aplicarRegras(r: Respostas): SaidaRegras {
   // R05 · Memórias (#21, #22): menções diretas
   for (const id of ["q21", "q22"]) {
     const achados = encontrarMencoes(typeof r[id] === "string" ? (r[id] as string) : undefined);
+    const jaPontuadas = new Set<number>(); // sinônimos na mesma resposta contam uma vez
     achados.forEach((m) => {
       mencoes.push({ perguntaId: id, termo: m.termo, materias: m.materias, grupo: m.grupo, lacuna: m.lacuna, uso: "afinidade" });
-      m.materias.forEach((n) => bonus(n, 2.5, `#${id.slice(1)} menciona "${m.termo}"`));
+      m.materias.filter((n) => !jaPontuadas.has(n)).forEach((n) => {
+        jaPontuadas.add(n);
+        bonus(n, 2.5, `#${id.slice(1)} menciona "${m.termo}"`);
+      });
       if (m.grupo) pesos[m.grupo as Grupo] += 0.3;
       if (m.lacuna) lacuna(m.lacuna, `#${id.slice(1)} menciona "${m.termo}"`);
     });
@@ -153,7 +158,9 @@ export function aplicarRegras(r: Respostas): SaidaRegras {
     if (duracao >= 4 && intensidade <= 3) { conc = "extrait"; motivoConc = "Duração alta com projeção contida: o extrait fixa mais e projeta perto da pele."; }
     else if (duracao >= 4) { conc = "edp"; motivoConc = "Duração e intensidade altas: EDP com fixadores difusivos."; }
     else if (intensidade >= 4) { conc = "edt"; motivoConc = "Intensidade alta com duração moderada: o EDT projeta mais e evapora antes."; }
-    else { conc = "edt"; motivoConc = "Intensidade e duração moderadas: EDT leve."; }
+    else { conc = "edt"; motivoConc = "Intensidade e duração baixas ou moderadas: EDT leve."; }
+    if (arr(r.q34).includes("alcool")) motivoConc += " Em base oleosa, a concentração equivalente é definida com o perfumista.";
+    if (r.q33 === "dor-cabeca") motivoConc += " Projeção contida pela #33.";
     add({
       codigo: "R07", nome: "Concentração sugerida",
       gatilho: `#28 = ${intensidade}, #29 = ${num(r.q29)}${r.q27 === "dia-todo" ? ", #27 = dure o dia todo" : ""}`,
@@ -313,6 +320,7 @@ export function aplicarRegras(r: Respostas): SaidaRegras {
   }
 
   for (const g of GRUPOS) pesos[g] = Math.round(pesos[g] * 100) / 100;
+  ajustes.fundo = Math.round(ajustes.fundo * 10) / 10;
 
   const nomeConc = conc ? CONCENTRACOES[conc].nome : "Indefinida";
   return {

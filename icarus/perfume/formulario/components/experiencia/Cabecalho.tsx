@@ -19,7 +19,7 @@ type Props = {
 
 export default function Cabecalho({ capitulo, nomeCapitulo, concluidos, progressoCapitulo, progresso, aviso, onVoltar }: Props) {
   return (
-    <header className="sticky top-0 z-30 border-b border-azul/15 bg-papel/95 supports-[backdrop-filter]:bg-papel/90 supports-[backdrop-filter]:backdrop-blur-sm">
+    <header className="sticky top-0 z-30 border-b [@media(max-height:500px)]:static border-azul/15 bg-papel/95 supports-[backdrop-filter]:bg-papel/90 supports-[backdrop-filter]:backdrop-blur-sm">
       <div className="mx-auto max-w-[1280px] px-4 pb-3 pt-3 sm:px-8 lg:px-12 lg:pt-4">
         <div className="flex items-center justify-between gap-4">
           <p className="rotulo flex items-center gap-2 text-[11px] text-azul">
@@ -29,7 +29,7 @@ export default function Cabecalho({ capitulo, nomeCapitulo, concluidos, progress
           <button
             type="button"
             onClick={onVoltar}
-            className="rotulo -mr-2 h-9 px-2 text-[10.5px] text-grafite-suave underline decoration-nevoa underline-offset-4 hover:text-azul"
+            className="rotulo -mr-2 h-11 px-2 text-[10.5px] text-grafite-suave underline decoration-nevoa underline-offset-4 hover:text-azul"
           >
             Etapa anterior
           </button>

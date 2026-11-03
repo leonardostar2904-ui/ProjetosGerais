@@ -21,7 +21,6 @@ const ALIMENTA: Record<string, string> = {
   q21: "Memórias olfativas (R05 por palavra-chave; sentido completo pela IA)",
   q22: "Memórias olfativas (R05 por palavra-chave; sentido completo pela IA)",
   q30: "Perfumes de referência (Banco 03)",
-  q32: "Alergênicos a evitar (leitura humana obrigatória)",
   q47: "Embalagem e entrega (Banco 06)",
   q48: "P011 Como recebe afeto",
   q50: "P001 Busca por reconhecimento",
@@ -34,7 +33,7 @@ export function cruzar(respostasBrutas: Respostas): ResultadoCruzamento {
   const saida = aplicarRegras(r);
 
   const filaIA: ItemFilaIA[] = perguntas
-    .filter((p) => (p.tipo === "texto-longo" || p.tipo === "tres-palavras") && r[p.id] !== undefined)
+    .filter((p) => (p.tipo === "texto-longo" || p.tipo === "tres-palavras") && !p.sensivel && r[p.id] !== undefined)
     .map((p) => {
       const v = r[p.id];
       const texto = Array.isArray(v) ? v.join(" ") : String(v ?? "");
@@ -43,7 +42,7 @@ export function cruzar(respostasBrutas: Respostas): ResultadoCruzamento {
 
   const pendencias = [
     "Fórmula: depende da IA de formulação e da validação de um perfumista (ainda não implementadas).",
-    ...(r.q31 === "sim" || r.q31 === "nao-sei" ? ["Alergias: revisar a #32 com o perfumista antes de qualquer formulação."] : []),
+    ...(r.q31 === "sim" || r.q31 === "nao-sei" ? ["Alergias: a #32 é dado de saúde e vai para leitura humana (perfumista), nunca para a IA."] : []),
     ...(r.q41 === "sim" ? ["Gestação: revisão de segurança obrigatória; lista de cautelas por matéria-prima ainda é lacuna."] : []),
     ...(saida.direcao.conflitos.length ? ["Conflitos de preferência: conversar com a pessoa antes de formular."] : []),
     ...(filaIA.length ? [`Textos livres: ${filaIA.length} respostas aguardam leitura de sentido pela IA.`] : []),

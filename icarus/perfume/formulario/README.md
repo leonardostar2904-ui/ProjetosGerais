@@ -37,7 +37,7 @@ Abre em http://localhost:3000. A página da equipe fica em http://localhost:3000
 | Base de conhecimento: 100 matérias-primas do manual com alertas, concentrações, modalidades | `lib/conhecimento/` |
 | Interface: 11 componentes do spec, artes por etapa, abertura, pergunta final, encerramento | `components/experiencia/` |
 | Página da equipe com os 8 bancos | `/bastidores` |
-| Schema PostgreSQL dos 8 bancos | `db/` |
+| Schema PostgreSQL dos 8 bancos, seed gerado do código e gerador | `db/` |
 
 ## Decisões desta versão (podem ser trocadas)
 
@@ -46,6 +46,13 @@ Abre em http://localhost:3000. A página da equipe fica em http://localhost:3000
   trocar `obrigatoria` em `perguntas.ts`.
 - **Pergunta 41 (gestação)** aparece para quem não marcou "Masculino" na 4 (sugestão aprovada na
   definição das perguntas). **Pergunta 32** aparece só com "Sim" ou "Não sei" na 31.
+- **Pergunta 34** (restrição ética ou religiosa) é tratada como reservada: revela crença, que a LGPD
+  considera dado sensível. **Perguntas 39 e 40** (alimentação e estresse) são opcionais por terem peso
+  fraco na fórmula, não por serem dados de saúde.
+- **Respostas de condicionais** são apagadas quando a condição deixa de valer (ex.: a 31 muda para
+  "Não"): nada escondido fica guardado ou é exportado.
+- **Navegação:** o voltar do app e o do navegador andam juntos; nenhuma etapa à frente abre (por
+  histórico ou pela âncora da URL) enquanto houver obrigatória em branco antes dela.
 - **Consentimento** obrigatório antes de concluir, com texto versionado.
 - **Sem cadastro de perfil** nesta versão, como pedido. O nome da pergunta 2 fica numa tabela de
   contato separada das respostas.

@@ -66,7 +66,18 @@ export function selecionarCandidatas(saida: SaidaRegras): Candidatas {
     if (direcao.ajustes.citricosSaida && m.familia.startsWith("Cítrica") && m.camadas.includes("Topo")) {
       pts -= direcao.ajustes.citricosSaida; motivos.push(`cítrico de saída −${direcao.ajustes.citricosSaida}`);
     }
-    if (m.flags.praticamenteInviavel) { pts -= 5; motivos.push("praticamente inviável −5"); }
+    if (m.flags.praticamenteInviavel) {
+      observacoes.push(`#${m.n} ${m.nome.split(" (")[0]} fora da lista: praticamente inviável pelos limites de segurança.`);
+      continue;
+    }
+    if (m.flags.proibidaForma) { pts -= 1; motivos.push("só a forma permitida −1"); }
+    if (m.flags.fototoxica === "confirmada") {
+      const p = direcao.ajustes.fundoPesadoCalor ? 2.5 : 1.5;
+      pts -= p; motivos.push(`fototóxica −${p}`);
+    } else if (m.flags.fototoxica === "verificar") {
+      const p = direcao.ajustes.fundoPesadoCalor ? 1 : 0.5;
+      pts -= p; motivos.push(`fototóxica se prensada −${p}`);
+    }
     if (m.flags.cites === "confirmado") { pts -= 1; motivos.push("CITES −1"); }
     if (m.flags.custoAlto) { pts -= 0.5; motivos.push("custo alto −0,5"); }
     if (m.flags.disponibilidadeRara) { pts -= 0.5; motivos.push("natural raro −0,5"); }
@@ -97,11 +108,12 @@ export function selecionarCandidatas(saida: SaidaRegras): Candidatas {
   for (const [n, bonus] of bonusMaterias) {
     const m = materiasPrimas.find((x) => x.n === n);
     if (!m || m.flags.ehAcorde || exclusoes.has(n)) continue;
+    if (m.flags.praticamenteInviavel) continue;
     const ranqueada = pontuadas.find((p) => p.n === n);
     citadas.push({
       n, nome: m.nome, camada: camadaPrincipal(m),
       pontuacao: ranqueada?.pontuacao ?? Math.round(bonus.reduce((a, b) => a + b.pontos, 0) * 10) / 10,
-      motivos: bonus.map((b) => b.motivo),
+      motivos: ranqueada?.motivos ?? bonus.map((b) => b.motivo),
       sinais: sinais(m),
     });
   }

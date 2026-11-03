@@ -1,5 +1,6 @@
 "use client";
 
+import { forwardRef } from "react";
 import { capituloPorNumero, MINUTOS_ESTIMADOS, TOTAL_CAPITULOS } from "@/lib/questionario/capitulos";
 import { perguntaPorNumero, TOTAL_PERGUNTAS } from "@/lib/questionario/perguntas";
 import type { Valor } from "@/lib/questionario/tipos";
@@ -15,18 +16,19 @@ type Props = {
   onChange: (valor: Valor | undefined) => void;
   erro: boolean;
   onComecar: () => void;
+  concluidos: number[];
 };
 
-export default function Abertura({ valor, onChange, erro, onComecar }: Props) {
+const Abertura = forwardRef<HTMLHeadingElement, Props>(function Abertura({ valor, onChange, erro, onComecar, concluidos }, ref) {
   const cap = capituloPorNumero(1);
   const p = perguntaPorNumero(1);
   const escolhas = Array.isArray(valor) ? valor : [];
 
   return (
-    <div className="grid min-h-[100svh] lg:grid-cols-12">
+    <main className="grid min-h-[100svh] lg:grid-cols-12">
       {/* Composição visual: no celular vem primeiro, como faixa; no desktop ocupa a coluna direita. */}
-      <div className="relative order-1 h-[46svh] min-h-[300px] overflow-hidden bg-azul lg:order-2 lg:col-span-5 lg:h-auto lg:min-h-[100svh]">
-        <div className="lg:sticky lg:top-0 lg:h-[100svh]">
+      <div className="relative order-1 h-[46svh] min-h-[300px] overflow-hidden bg-azul lg:order-2 lg:col-span-5 lg:h-auto lg:min-h-[100svh] lg:overflow-visible">
+        <div className="relative h-full overflow-hidden lg:sticky lg:top-0 lg:h-[100svh]">
           <div className="grao absolute inset-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -37,12 +39,12 @@ export default function Abertura({ valor, onChange, erro, onComecar }: Props) {
             />
           </div>
           <div className="sobre-azul absolute inset-0 z-[2] flex flex-col justify-between p-5 sm:p-8 lg:p-10">
-            <p className="rotulo flex justify-between text-[10px] text-papel/80">
-              <span>ICARUS</span>
-              <span>Olfactory Experience</span>
+            <p className="rotulo flex justify-between text-[10px] text-papel">
+              <span className="bg-azul/75 px-1.5 py-1">ICARUS</span>
+              <span className="bg-azul/75 px-1.5 py-1">Olfactory Experience</span>
             </p>
             <div className="flex items-end justify-between gap-6">
-              <p className="rotulo max-w-[26ch] text-[10px] leading-relaxed text-papel/75">Luz de passagem · textura da marca</p>
+              <p className="rotulo max-w-[26ch] bg-azul/75 px-1.5 py-1 text-[10px] leading-relaxed text-papel">Luz de passagem · textura da marca</p>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/marca/assinatura-papel.png" alt="ICARUS" className="h-[104px] w-auto sm:h-[132px] lg:h-[168px]" />
             </div>
@@ -58,10 +60,10 @@ export default function Abertura({ valor, onChange, erro, onComecar }: Props) {
             </p>
             <p className="rotulo text-[10.5px] text-grafite-suave">ICARUS</p>
           </div>
-          <ProgressTracker atual={1} concluidos={[]} progressoAtual={escolhas.length ? 1 : 0} />
+          <ProgressTracker atual={1} concluidos={concluidos} progressoAtual={escolhas.length ? 1 : 0} />
         </div>
 
-        <h1 className="max-w-[12ch] font-serif text-[clamp(52px,7.6vw,112px)] leading-[0.92] text-azul texto-equilibrado animate-entrada">
+        <h1 ref={ref} tabIndex={-1} className="max-w-[12ch] font-serif outline-none text-[clamp(52px,7.6vw,112px)] leading-[0.92] text-azul texto-equilibrado animate-entrada">
           {cap.titulo} <em className="italic">{cap.tituloItalico}</em>
         </h1>
         <p className="mt-8 max-w-[52ch] text-[18px] leading-relaxed text-grafite texto-bonito animate-entrada [animation-delay:80ms]">
@@ -72,11 +74,14 @@ export default function Abertura({ valor, onChange, erro, onComecar }: Props) {
           {[
             { n: String(TOTAL_PERGUNTAS), t: "Perguntas possíveis" },
             { n: String(TOTAL_CAPITULOS), t: "Capítulos" },
-            { n: `~${MINUTOS_ESTIMADOS}`, t: "Minutos, aproximadamente" },
+            { n: `~${MINUTOS_ESTIMADOS}`, t: "Minutos" },
           ].map((item, i) => (
-            <div key={item.t} className={`flex flex-col-reverse justify-end gap-2 py-4 ${i > 0 ? "border-l border-azul/20 pl-4" : ""}`}>
-              <dt className="rotulo text-[9.5px] leading-snug text-grafite-suave sm:text-[10px]">{item.t}</dt>
-              <dd className="font-mono text-[28px] font-medium leading-none text-azul sm:text-[34px]">{item.n}</dd>
+            <div key={item.t} className={`flex min-w-0 flex-col-reverse justify-end gap-2 py-4 ${i > 0 ? "border-l border-azul/20 pl-3 sm:pl-4" : ""}`}>
+              <dt className="rotulo break-words text-[9.5px] leading-snug text-grafite-suave sm:text-[10px]">{item.t}</dt>
+              <dd className="font-mono text-[26px] font-medium leading-none text-azul sm:text-[34px]">
+                {item.n}
+                {item.t === "Minutos" && <span className="sr-only"> aproximadamente</span>}
+              </dd>
             </div>
           ))}
         </dl>
@@ -105,11 +110,13 @@ export default function Abertura({ valor, onChange, erro, onComecar }: Props) {
             Começar minha experiência
           </button>
           <p className="max-w-[60ch] text-[13.5px] leading-relaxed text-grafite-suave">
-            Perguntas pessoais e de saúde são opcionais e ficam identificadas. Nesta versão de teste, suas respostas ficam guardadas só
-            neste navegador.
+            Perguntas sobre sexo, gênero, relacionamento, crenças e saúde são opcionais e ficam identificadas. Nesta versão de teste, suas
+            respostas ficam guardadas só neste navegador.
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
-}
+});
+
+export default Abertura;

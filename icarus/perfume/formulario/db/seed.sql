@@ -14,9 +14,9 @@
 --   7ad4fb3d4ca1e260  lib/conhecimento/materias-primas.ts
 --   dcdc0dc9c4229f1a  lib/conhecimento/referencias.ts
 --   02d1125e3b0c8326  lib/motor/tipos.ts
---   1cedb6ad7436f6e6  lib/motor/tracos.ts
---   3e82d24e9162cbe3  lib/motor/regras.ts
---   f1fc14fade9f7da9  lib/armazenamento.ts
+--   edcd3d9ce504696b  lib/motor/tracos.ts
+--   726a0ff98c793cf6  lib/motor/regras.ts
+--   14c1262a7ee87e11  lib/armazenamento.ts
 --
 -- Conteúdo: 10 capítulos, 52 perguntas, 123 opções,
 -- 12 traços, 21 regras, 6 grupos olfativos (5 da pergunta 19 + 1 transversal),
@@ -267,7 +267,7 @@ on conflict (questionario_versao, pergunta_id, valor) do update set
 
 -- Banco 02 · Traços P001 a P012 (lib/motor/tracos.ts, motor-v0.1)
 insert into tracos (codigo, nome, tipo, metodo, perguntas_origem, depende_ia, versao_motor) values
-  ('P001', 'Busca por reconhecimento', 'escala-0-10', 'Escala da #10 convertida para 0 a 10. Parcial: a #50 (como quer ser lembrado) aguarda IA.', array['q10', 'q50']::text[], true, 'motor-v0.1'),
+  ('P001', 'Busca por reconhecimento', 'escala-0-10', 'Escala da #10 convertida para 0 a 10. Parcial: a #50 (como quer ser lembrado) aguarda leitura da IA.', array['q10', 'q50']::text[], true, 'motor-v0.1'),
   ('P002', 'Necessidade de individualidade', 'escala-0-10', '0,75 × escala da #45, mais 2,5 se a #1 inclui ''Ter um cheiro que ninguém mais tem''.', array['q45', 'q01']::text[], false, 'motor-v0.1'),
   ('P003', 'Preferência por discrição', 'escala-0-10', 'Média das escalas invertidas da #8 e da #10.', array['q08', 'q10']::text[], false, 'motor-v0.1'),
   ('P004', 'Busca por experiências novas', 'escala-0-10', 'Média das escalas da #9 (improviso) e da #11 (moderno e ousado).', array['q09', 'q11']::text[], false, 'motor-v0.1'),

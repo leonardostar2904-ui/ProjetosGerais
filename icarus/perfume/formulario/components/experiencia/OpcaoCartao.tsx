@@ -25,7 +25,7 @@ const base =
 function estado(marcado: boolean, bloqueado?: boolean) {
   if (marcado) return "border-mar bg-mar-claro shadow-[inset_0_0_0_1px_#8EB1C7]";
   if (bloqueado) return "border-azul/10 bg-branco/60 opacity-55";
-  return "border-azul/15 bg-branco hover:border-azul/45";
+  return "border-azul/25 bg-branco hover:border-azul/55";
 }
 
 export function GlifoClima({ valor }: { valor: string }) {
@@ -65,6 +65,10 @@ export function GlifoClima({ valor }: { valor: string }) {
 }
 
 export default function OpcaoCartao({ tipo, nome, opcao, indice, marcado, bloqueado, variante = "padrao", descritoPor, onAlternar }: Props) {
+  // O nome acessível é sempre o rótulo da opção; a descrição entra como descrição (não no nome).
+  const idRotulo = `${nome}-${opcao.valor}-rotulo`;
+  const idDescricao = opcao.descricao ? `${nome}-${opcao.valor}-descricao` : undefined;
+  const rotulo = variante === "investimento" ? opcao.rotulo.replace(/R\$ /g, "R$\u00a0") : opcao.rotulo;
   const input = (
     <input
       type={tipo === "unica" ? "radio" : "checkbox"}
@@ -72,8 +76,9 @@ export default function OpcaoCartao({ tipo, nome, opcao, indice, marcado, bloque
       value={opcao.valor}
       checked={marcado}
       onChange={onAlternar}
+      aria-labelledby={idRotulo}
       aria-disabled={bloqueado || undefined}
-      aria-describedby={descritoPor}
+      aria-describedby={[idDescricao, descritoPor].filter(Boolean).join(" ") || undefined}
       className="sr-only"
     />
   );
@@ -88,18 +93,18 @@ export default function OpcaoCartao({ tipo, nome, opcao, indice, marcado, bloque
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={opcao.imagem}
-              alt={opcao.imagemAlt ?? ""}
+              alt=""
               loading="lazy"
               className={`h-full w-full object-cover transition-[transform,filter] duration-500 group-hover:scale-[1.03] ${marcado ? "saturate-[0.85]" : ""}`}
             />
           )}
-          <span className="rotulo absolute left-3 top-3 bg-azul/85 px-1.5 py-[3px] text-[10px] text-papel">Nº {numero}</span>
+          <span aria-hidden="true" className="rotulo absolute left-3 top-3 bg-azul/85 px-1.5 py-[3px] text-[10px] text-papel">Nº {numero}</span>
         </span>
         <span className="flex items-start gap-3 px-4 pb-4 pt-3.5">
           <MarcadorSelecao tipo={tipo} marcado={marcado} />
           <span className="block">
-            <span className="block text-[17px] font-semibold leading-tight text-azul">{opcao.rotulo}</span>
-            {opcao.descricao && <span className="mt-1 block text-[14px] leading-snug text-grafite-suave">{opcao.descricao}</span>}
+            <span id={idRotulo} className="block text-[17px] font-semibold leading-tight text-azul">{rotulo}</span>
+            {opcao.descricao && <span id={idDescricao} className="mt-1 block text-[14px] leading-snug text-grafite-suave">{opcao.descricao}</span>}
           </span>
         </span>
       </label>
@@ -111,10 +116,10 @@ export default function OpcaoCartao({ tipo, nome, opcao, indice, marcado, bloque
       <label className={`${base} ${estado(marcado, bloqueado)} flex min-h-[132px] flex-col justify-between px-4 py-3.5`}>
         {input}
         <span className="flex items-start justify-between gap-2">
-          <span className="rotulo text-[10px] text-grafite-suave">{opcao.descricao}</span>
+          <span id={idDescricao} className="rotulo text-[10px] text-grafite-suave">{opcao.descricao}</span>
           <MarcadorSelecao tipo={tipo} marcado={marcado} />
         </span>
-        <span className="font-serif text-[30px] italic leading-none text-azul">{opcao.rotulo}</span>
+        <span id={idRotulo} className="font-serif text-[30px] italic leading-none text-azul">{rotulo}</span>
       </label>
     );
   }
@@ -125,8 +130,8 @@ export default function OpcaoCartao({ tipo, nome, opcao, indice, marcado, bloque
         {input}
         <MarcadorSelecao tipo={tipo} marcado={marcado} />
         <span className="flex flex-1 flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
-          <span className="font-serif text-[27px] leading-tight text-azul">{opcao.rotulo}</span>
-          {opcao.descricao && <span className="rotulo text-[10.5px] text-grafite-suave">{opcao.descricao}</span>}
+          <span id={idRotulo} className="font-serif text-[27px] leading-tight text-azul">{rotulo}</span>
+          {opcao.descricao && <span id={idDescricao} className="rotulo text-[10.5px] text-grafite-suave">{opcao.descricao}</span>}
         </span>
       </label>
     );
@@ -137,10 +142,10 @@ export default function OpcaoCartao({ tipo, nome, opcao, indice, marcado, bloque
       <label className={`${base} ${estado(marcado, bloqueado)} flex min-h-[96px] flex-col justify-between gap-3 px-4 py-3.5`}>
         {input}
         <span className="flex items-start justify-between">
-          <span className="rotulo text-[10px] text-grafite-suave">Faixa {numero}</span>
+          <span aria-hidden="true" className="rotulo text-[10px] text-grafite-suave">Faixa {numero}</span>
           <MarcadorSelecao tipo={tipo} marcado={marcado} />
         </span>
-        <span className="font-mono text-[16px] font-medium leading-tight text-azul">{opcao.rotulo}</span>
+        <span id={idRotulo} className="font-mono text-[16px] font-medium leading-tight text-azul">{rotulo}</span>
       </label>
     );
   }
@@ -155,10 +160,10 @@ export default function OpcaoCartao({ tipo, nome, opcao, indice, marcado, bloque
       {input}
       <MarcadorSelecao tipo={tipo} marcado={marcado} />
       <span className="block flex-1">
-        <span className={`block leading-snug ${marcado ? "text-azul" : "text-grafite"} ${variante === "reproducao" ? "text-[17px] font-semibold text-azul" : "text-[16px]"}`}>
-          {opcao.rotulo}
+        <span id={idRotulo} className={`block leading-snug ${marcado ? "text-azul" : "text-grafite"} ${variante === "reproducao" ? "text-[17px] font-semibold text-azul" : "text-[16px]"}`}>
+          {rotulo}
         </span>
-        {comDescricao && <span className="mt-1 block text-[14px] leading-snug text-grafite-suave">{opcao.descricao}</span>}
+        {comDescricao && <span id={idDescricao} className="mt-1 block text-[14px] leading-snug text-grafite-suave">{opcao.descricao}</span>}
       </span>
       {variante === "clima" && <GlifoClima valor={opcao.valor} />}
     </label>

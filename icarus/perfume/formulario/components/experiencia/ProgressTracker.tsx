@@ -15,7 +15,7 @@ type Props = {
 
 export default function ProgressTracker({ atual, concluidos, progressoAtual, sobreAzul }: Props) {
   return (
-    <nav aria-label="Progresso da experiência">
+    <div role="group" aria-label="Progresso da experiência">
       <ol className="grid grid-cols-10 items-end gap-[3px] sm:gap-1">
         {capitulos.map((c) => {
           const concluido = concluidos.includes(c.numero) && c.numero !== atual;
@@ -48,6 +48,6 @@ export default function ProgressTracker({ atual, concluidos, progressoAtual, sob
           );
         })}
       </ol>
-    </nav>
+    </div>
   );
 }

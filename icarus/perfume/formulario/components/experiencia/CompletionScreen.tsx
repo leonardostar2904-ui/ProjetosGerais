@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { TEXTO_CONSENTIMENTO } from "@/lib/armazenamento";
 import { CONFIG } from "@/lib/config";
 import type { ProgressoGeral } from "@/lib/questionario/progresso";
+import LinhaDeVoo from "./LinhaDeVoo";
 
 // Encerramento em duas partes:
 // "convite": depois da última pergunta, no azul (o voo acontece no azul), com consentimento e botão de concluir.
@@ -23,22 +24,6 @@ type Concluido = {
   onRecomecar: () => void;
 };
 
-function LinhaDeVoo() {
-  // Grafismo aprovado: um traço que sobe, dá uma volta e segue. Aurora sobre azul, 5 px, pontas arredondadas.
-  return (
-    <svg viewBox="0 0 1200 220" preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 bottom-0 h-[180px] w-full" aria-hidden="true">
-      <path
-        d="M -10 196 C 220 196, 330 176, 470 128 C 540 104, 600 92, 612 120 C 624 150, 572 168, 548 140 C 522 108, 640 70, 820 64 C 980 58, 1100 40, 1210 22"
-        fill="none"
-        stroke="#E7AE8E"
-        strokeWidth="5"
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
-  );
-}
-
 export default function CompletionScreen(props: Convite | Concluido) {
   const titulo = useRef<HTMLHeadingElement>(null);
   const [aceito, setAceito] = useState(false);
@@ -51,8 +36,8 @@ export default function CompletionScreen(props: Convite | Concluido) {
 
   if (props.fase === "convite") {
     return (
-      <div className="sobre-azul relative flex min-h-[100svh] flex-col overflow-hidden bg-azul text-papel">
-        <div className="relative z-[2] mx-auto flex w-full max-w-[1280px] flex-1 flex-col justify-center px-4 py-16 sm:px-8 lg:px-12">
+      <main className="sobre-azul relative flex min-h-[100svh] flex-col overflow-hidden bg-azul text-papel">
+        <div className="relative z-[2] mx-auto flex w-full max-w-[1280px] flex-1 flex-col justify-center px-4 pb-44 pt-16 sm:px-8 lg:px-12 lg:pb-48">
           <p className="rotulo text-[10.5px] text-papel/70">ICARUS · Olfactory Experience</p>
           <h1
             ref={titulo}
@@ -105,14 +90,14 @@ export default function CompletionScreen(props: Convite | Concluido) {
             </div>
           </div>
         </div>
-        <LinhaDeVoo />
-      </div>
+        <LinhaDeVoo className="h-[120px] sm:h-[170px]" />
+      </main>
     );
   }
 
   const { progresso, nome } = props;
   return (
-    <div className="flex min-h-[100svh] flex-col">
+    <main className="flex min-h-[100svh] flex-col">
       <div className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col px-4 py-12 sm:px-8 lg:px-12 lg:py-16">
         <p className="rotulo flex justify-between text-[10.5px] text-grafite-suave">
           <span>ICARUS · Olfactory Experience</span>
@@ -120,7 +105,7 @@ export default function CompletionScreen(props: Convite | Concluido) {
         </p>
         <div className="mt-16 grid flex-1 gap-12 lg:mt-24 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <h1 ref={titulo} tabIndex={-1} className="font-serif text-[clamp(48px,7vw,100px)] leading-[0.95] text-azul outline-none animate-entrada">
+            <h1 ref={titulo} tabIndex={-1} className="font-serif text-[clamp(48px,7vw,100px)] leading-[0.95] text-azul outline-none [overflow-wrap:anywhere] animate-entrada">
               {nome ? `${nome}, recebemos` : "Recebemos"} <em className="italic">a sua história.</em>
             </h1>
             <div className="mt-8 max-w-[56ch] space-y-4 text-[17.5px] leading-relaxed text-grafite animate-entrada [animation-delay:100ms]">
@@ -166,6 +151,6 @@ export default function CompletionScreen(props: Convite | Concluido) {
           <img src="/marca/simbolo-azul.png" alt="Símbolo ICARUS" className="h-12 w-auto" />
         </div>
       </div>
-    </div>
+    </main>
   );
 }

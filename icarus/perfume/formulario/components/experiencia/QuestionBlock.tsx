@@ -37,7 +37,7 @@ export default function QuestionBlock({ pergunta: p, valor, onChange, erro, pula
   const idErro = `${p.id}-erro`;
   const idCampo = `${p.id}-campo`;
   const descritoPor = [p.ajuda ? idAjuda : null, erro ? idErro : null].filter(Boolean).join(" ") || undefined;
-  const ehGrupo = p.tipo === "escolha-unica" || p.tipo === "escolha-multipla" || p.tipo === "escala";
+  const ehGrupo = p.tipo === "escolha-unica" || p.tipo === "escolha-multipla" || p.tipo === "escala" || p.tipo === "tres-palavras";
   const corTitulo = sobreAzul ? "text-papel" : "text-azul";
   const final = p.variante === "final";
 
@@ -65,14 +65,23 @@ export default function QuestionBlock({ pergunta: p, valor, onChange, erro, pula
   const controle = (() => {
     switch (p.tipo) {
       case "escolha-unica":
-        return <SingleChoiceCard pergunta={p} valor={typeof valor === "string" ? valor : undefined} onChange={onChange} descritoPor={descritoPor} />;
+        return <SingleChoiceCard pergunta={p} valor={typeof valor === "string" ? valor : undefined} onChange={onChange} />;
       case "escolha-multipla":
-        return <MultipleChoiceCard pergunta={p} valor={Array.isArray(valor) ? valor : []} onChange={onChange} descritoPor={descritoPor} />;
+        return <MultipleChoiceCard pergunta={p} valor={Array.isArray(valor) ? valor : []} onChange={onChange} />;
       case "escala":
-        return <ScaleSelector pergunta={p} valor={typeof valor === "number" ? valor : undefined} onChange={onChange} descritoPor={descritoPor} />;
+        return <ScaleSelector pergunta={p} valor={typeof valor === "number" ? valor : undefined} onChange={onChange} />;
       case "texto-curto":
       case "tres-palavras":
-        return <ShortTextInput pergunta={p} valor={valor as string | string[] | undefined} onChange={onChange} idCampo={idCampo} descritoPor={descritoPor} />;
+        return (
+          <ShortTextInput
+            pergunta={p}
+            valor={valor as string | string[] | undefined}
+            onChange={onChange}
+            idCampo={idCampo}
+            descritoPor={p.tipo === "tres-palavras" ? undefined : descritoPor}
+            invalido={erro}
+          />
+        );
       case "texto-longo":
         return (
           <LongTextInput
@@ -82,6 +91,7 @@ export default function QuestionBlock({ pergunta: p, valor, onChange, erro, pula
             idCampo={idCampo}
             descritoPor={descritoPor}
             sobreAzul={sobreAzul}
+            invalido={erro}
           />
         );
     }
@@ -94,7 +104,8 @@ export default function QuestionBlock({ pergunta: p, valor, onChange, erro, pula
           <legend className="sr-only">
             Pergunta {p.numero}
             {p.obrigatoria ? "" : ", opcional"}
-            {p.sensivel ? ", reservada" : ""}. {p.enunciado}
+            {p.sensivel ? ", reservada" : ""}
+            {pulada ? ", pulada" : ""}. {p.enunciado}
           </legend>
           <div aria-hidden="true">{cabecalho}</div>
           <p aria-hidden="true" className={enunciadoClasse}>
