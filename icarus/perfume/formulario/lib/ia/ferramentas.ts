@@ -6,6 +6,8 @@ import { consultarReferencias, registrarReferencia, type Banco } from "../banco/
 // Ferramentas da criação. Esquemas em zod: o SDK converte para JSON Schema e o mesmo esquema valida
 // a entrada antes de executar (com streaming de entrada, o servidor da API não valida por nós).
 // Sem números com mínimo ou máximo nos esquemas: o modo strict não aceita essas restrições.
+// Só a entrega usa strict: com as três em strict, a API recusa ("compiled grammar is too large").
+// As auxiliares continuam validadas pelo zod no laço de criar.ts, que devolve o erro ao modelo.
 
 const Camada = z.enum(["saida", "coracao", "fundo"]);
 const CamadaRef = z.enum(["topo", "coracao", "fundo"]);
@@ -78,7 +80,7 @@ export function criarFerramentas(ctx: Contexto) {
     inputSchema: z.strictObject({
       nomes: z.array(z.string()).describe('Nomes como a pessoa escreveu, com a marca quando houver. Ex.: ["Born in Roma Intense", "One Million"].'),
     }),
-    strict: true,
+    strict: false,
     eager_input_streaming: true,
     run: async ({ nomes }) => {
       if (!ctx.db) return JSON.stringify({ encontrados: [], aviso: "Banco indisponível nesta execução. Use a busca na web se precisar." });
@@ -114,7 +116,7 @@ export function criarFerramentas(ctx: Contexto) {
         }),
       ),
     }),
-    strict: true,
+    strict: false,
     eager_input_streaming: true,
     run: async (ref) => {
       if (!/^https?:\/\//.test(ref.fonte)) return JSON.stringify({ registrado: false, motivo: "A fonte precisa ser a URL da página consultada." });
