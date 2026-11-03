@@ -1,11 +1,12 @@
 // Armazenamento local do MVP. A estrutura espelha as tabelas do banco (db/schema.sql):
 // consumidores, consumidores_contato, sessoes, respostas, dados_sensiveis e consentimentos.
-// Nesta versão tudo fica no navegador (localStorage). Para trocar por um banco real,
-// substitua só as funções carregarBanco e salvarBanco: o resto do app não muda.
+// O navegador guarda o rascunho enquanto a pessoa responde (localStorage). Ao concluir, a sessão vai
+// para o servidor (/api/criacao), que grava no Supabase e devolve a leitura da IA.
 
 import { perguntas, perguntaPorId, VERSAO_QUESTIONARIO } from "./questionario/perguntas";
 import { aplicavel, respondida } from "./questionario/progresso";
 import type { Pergunta, Respostas, Valor } from "./questionario/tipos";
+import type { Criacao } from "./criacao/tipos";
 
 export const CHAVE_ARMAZENAMENTO = "icarus-olfactory-experience-v1";
 const CHAVE = CHAVE_ARMAZENAMENTO;
@@ -50,6 +51,8 @@ export type Banco = {
   /** Dados pessoais e de saúde ficam numa tabela à parte, com acesso restrito no banco real. */
   dadosSensiveis: Record<string, Record<string, RegistroResposta>>;
   consentimentos: Consentimento[];
+  /** Leitura feita pela IA, por sessão (cópia local do que o servidor devolveu). */
+  criacoes: Record<string, CriacaoLocal>;
   sessaoAtualId: string | null;
 };
 
@@ -80,6 +83,7 @@ export function bancoVazio(): Banco {
     respostas: {},
     dadosSensiveis: {},
     consentimentos: [],
+    criacoes: {},
     sessaoAtualId: null,
   };
 }
@@ -110,6 +114,17 @@ export function apagarBanco(): void {
   } catch {
     /* ignora */
   }
+}
+
+/** A leitura guardada no navegador, com a indicação de que o servidor também guardou. */
+export type CriacaoLocal = Criacao & { persistido?: boolean };
+
+export function guardarCriacao(b: Banco, sessaoId: string, criacao: Criacao, persistido: boolean): Banco {
+  return { ...b, criacoes: { ...b.criacoes, [sessaoId]: { ...criacao, persistido } } };
+}
+
+export function criacaoDaSessao(b: Banco, sessaoId: string | null): CriacaoLocal | null {
+  return sessaoId ? b.criacoes?.[sessaoId] ?? null : null;
 }
 
 export function sessaoAtual(b: Banco): Sessao | null {

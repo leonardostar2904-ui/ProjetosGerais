@@ -20,6 +20,9 @@ type Concluido = {
   fase: "concluido";
   nome?: string;
   progresso: ProgressoGeral;
+  /** Situação da leitura por IA quando ela não está na tela (ainda não pedida, indisponível ou com falha). */
+  leitura: { estado: "nao_pedida" | "indisponivel" | "falhou"; mensagem?: string; persistido: boolean };
+  onGerar: () => void;
   onBaixar: () => void;
   onRecomecar: () => void;
 };
@@ -95,7 +98,7 @@ export default function CompletionScreen(props: Convite | Concluido) {
     );
   }
 
-  const { progresso, nome } = props;
+  const { progresso, nome, leitura } = props;
   return (
     <main className="flex min-h-[100svh] flex-col">
       <div className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col px-4 py-12 sm:px-8 lg:px-12 lg:py-16">
@@ -110,11 +113,24 @@ export default function CompletionScreen(props: Convite | Concluido) {
             </h1>
             <div className="mt-8 max-w-[56ch] space-y-4 text-[17.5px] leading-relaxed text-grafite animate-entrada [animation-delay:100ms]">
               <p>Ela é o ponto de partida da sua fragrância.</p>
-              <p>
-                O próximo passo é a criação: um perfumista e a nossa inteligência de perfumaria vão trabalhar a partir do que você contou. Esta
-                etapa ainda está sendo construída. Nada foi gerado automaticamente agora.
+              {leitura.estado === "indisponivel" && (
+                <p>
+                  O próximo passo é a criação: um perfumista e a nossa inteligência de perfumaria vão trabalhar a partir do que você contou. A
+                  leitura automática ainda não está ligada nesta versão. Nada foi gerado agora.
+                </p>
+              )}
+              {leitura.estado === "nao_pedida" && <p>A primeira leitura da sua fragrância está pronta para ser composta.</p>}
+              {leitura.estado === "falhou" && (
+                <p role="status">
+                  Não conseguimos compor a sua leitura agora{leitura.mensagem ? ` (${leitura.mensagem})` : ""}. As suas respostas estão
+                  guardadas. Você pode tentar de novo em alguns instantes.
+                </p>
+              )}
+              <p className="text-[15px] text-grafite-suave">
+                {leitura.persistido
+                  ? "As suas respostas foram guardadas com segurança na ICARUS."
+                  : "Nesta versão de teste, as respostas ficam guardadas só neste navegador."}
               </p>
-              <p className="text-[15px] text-grafite-suave">Nesta versão de teste, as respostas ficam guardadas só neste navegador.</p>
             </div>
           </div>
           <div className="lg:col-span-5 lg:pl-8">
@@ -131,7 +147,16 @@ export default function CompletionScreen(props: Convite | Concluido) {
               ))}
             </dl>
             <div className="mt-8 flex flex-col gap-3">
-              <button type="button" onClick={props.onBaixar} className="rotulo h-12 bg-azul px-6 text-[11.5px] font-medium text-papel hover:bg-[#1b2c40]">
+              {leitura.estado !== "indisponivel" && (
+                <button type="button" onClick={props.onGerar} className="rotulo h-14 bg-azul px-6 text-[12px] font-medium text-papel hover:bg-[#1b2c40]">
+                  {leitura.estado === "falhou" ? "Tentar compor de novo" : "Ver a leitura da minha fragrância"}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={props.onBaixar}
+                className={`rotulo h-12 px-6 text-[11.5px] ${leitura.estado === "indisponivel" ? "bg-azul font-medium text-papel hover:bg-[#1b2c40]" : "border border-azul/25 text-azul hover:border-azul"}`}
+              >
                 Baixar minhas respostas
               </button>
               <button type="button" onClick={props.onRecomecar} className="rotulo h-12 border border-azul/25 px-6 text-[11.5px] text-azul hover:border-azul">

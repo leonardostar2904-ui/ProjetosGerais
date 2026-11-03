@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as A from "@/lib/armazenamento";
+import { pedirCriacao } from "@/lib/criacao/cliente";
+import type { CodigoErroCriacao } from "@/lib/criacao/tipos";
 import { capituloPorNumero } from "@/lib/questionario/capitulos";
 import { perguntaPorNumero, VERSAO_QUESTIONARIO } from "@/lib/questionario/perguntas";
 import { aplicavel, estadoCapitulo, perguntasDoCapitulo, progressoGeral, respondida } from "@/lib/questionario/progresso";
@@ -12,8 +14,10 @@ import ChapterHeader from "./ChapterHeader";
 import ChapterNavigation from "./ChapterNavigation";
 import CompletionScreen from "./CompletionScreen";
 import ConditionalQuestion from "./ConditionalQuestion";
+import CriandoScreen from "./CriandoScreen";
 import LinhaDeVoo from "./LinhaDeVoo";
 import QuestionBlock from "./QuestionBlock";
+import ResultadoScreen from "./ResultadoScreen";
 
 // Orquestra a experiência: carrega e salva a sessão, navega entre as 10 etapas (inclusive pelo botão
 // voltar do navegador), valida obrigatórias, registra opcionais puladas e conclui com consentimento.
@@ -22,6 +26,24 @@ type Fase = "carregando" | "abertura" | "capitulo" | "convite" | "concluido";
 type Destino = { fase: Fase; capitulo: number };
 
 const dois = (n: number) => String(n).padStart(2, "0");
+
+// Estado da leitura por IA depois de concluir.
+type Leitura =
+  | { estado: "nao_pedida"; persistido: boolean }
+  | { estado: "criando"; etapas: string[]; persistido: boolean }
+  | { estado: "pronta"; persistido: boolean }
+  | { estado: "indisponivel"; persistido: boolean }
+  | { estado: "falhou"; mensagem: string; persistido: boolean };
+
+const MENSAGEM_ERRO: Record<CodigoErroCriacao, string> = {
+  nao_configurado: "a leitura automática ainda não está ligada",
+  pedido_invalido: "as respostas não chegaram completas ao servidor",
+  limite_diario: "atingimos o limite de leituras de hoje",
+  recusa: "a leitura não pôde ser composta",
+  tempo_esgotado: "a composição demorou mais do que o esperado",
+  falha_ia: "a nossa inteligência de perfumaria não respondeu como devia",
+  falha_rede: "a conexão caiu no meio do caminho",
+};
 
 // ── Histórico do navegador ──
 // Cada etapa vira uma âncora (#etapa-3). Entradas novas usam estado nulo: o roteador do Next.js ignora
@@ -92,6 +114,10 @@ export default function Experience() {
   const tituloRef = useRef<HTMLHeadingElement>(null);
   const tituloAberturaRef = useRef<HTMLHeadingElement>(null);
   const primeiraCarga = useRef(true);
+  const [leitura, setLeitura] = useState<Leitura>({ estado: "nao_pedida", persistido: false });
+  const pedidoAtivo = useRef<AbortController | null>(null);
+
+  useEffect(() => () => pedidoAtivo.current?.abort(), []);
 
   // Um único aviso falado por ação. Limpa antes para o leitor repetir a mensagem se ela for igual.
   const anunciar = useCallback((mensagem: string) => {
@@ -337,21 +363,55 @@ export default function Experience() {
     registrar("replace", alvo.fase, alvo.capitulo);
   }, [fase, capitulo, aplicarFase]);
 
+  // Envia a sessão concluída ao servidor, acompanha as etapas e guarda a leitura que voltar.
+  const gerarLeitura = useCallback(async (b: A.Banco, sessaoId: string) => {
+    pedidoAtivo.current?.abort();
+    const controle = new AbortController();
+    pedidoAtivo.current = controle;
+    setLeitura({ estado: "criando", etapas: ["Enviando as suas respostas"], persistido: false });
+    const final = await pedirCriacao(
+      A.exportarSessao(b, sessaoId),
+      (e) => {
+        if (e.tipo === "etapa" || e.tipo === "busca") {
+          setLeitura((l) => (l.estado === "criando" && l.etapas.at(-1) !== e.texto ? { ...l, etapas: [...l.etapas, e.texto].slice(-8) } : l));
+        }
+      },
+      controle.signal,
+    );
+    if (controle.signal.aborted) return;
+    pedidoAtivo.current = null;
+    if (final.tipo === "resultado") {
+      setBanco((atual) => (atual ? A.guardarCriacao(atual, sessaoId, final.criacao, final.persistido) : atual));
+      setLeitura({ estado: "pronta", persistido: final.persistido });
+      return;
+    }
+    if (final.codigo === "nao_configurado") {
+      setLeitura({ estado: "indisponivel", persistido: false });
+      return;
+    }
+    setLeitura({ estado: "falhou", mensagem: MENSAGEM_ERRO[final.codigo], persistido: false });
+  }, []);
+
   const concluir = useCallback(() => {
-    if (!sid) return;
+    if (!sid || !banco) return;
     const bloqueio = etapaBloqueante({ fase: "convite", capitulo: 10 }, respostas);
     if (bloqueio !== null) {
       irPara(bloqueio === 1 ? "abertura" : "capitulo", bloqueio, `Responda a etapa ${dois(bloqueio)} antes de concluir.`);
       return;
     }
-    setBanco((b) => (b ? A.concluirSessao(b, sid) : b));
+    const concluido = A.concluirSessao(banco, sid);
+    setBanco(concluido);
     setFase("concluido");
     registrar("replace", "concluido", 10);
-  }, [sid, respostas, irPara]);
+    void gerarLeitura(concluido, sid);
+  }, [sid, banco, respostas, irPara, gerarLeitura]);
 
   const recomecar = useCallback(() => {
     const ok = window.confirm("Recomeçar abre uma experiência nova, do início. As respostas anteriores continuam guardadas neste navegador. Recomeçar agora?");
     if (!ok) return;
+    pedidoAtivo.current?.abort();
+    pedidoAtivo.current = null;
+    setLeitura({ estado: "nao_pedida", persistido: false });
     setBanco((b) => (b ? A.iniciarSessao(b) : b));
     setFase("abertura");
     setCapitulo(1);
@@ -406,11 +466,19 @@ export default function Experience() {
   }
 
   if (fase === "concluido") {
+    const nome = typeof respostas.q02 === "string" ? respostas.q02.trim() : undefined;
+    const criacao = A.criacaoDaSessao(banco, sid);
+    if (criacao) {
+      return <ResultadoScreen nome={nome} criacao={criacao} persistido={Boolean(criacao.persistido)} onBaixar={baixar} onRecomecar={recomecar} />;
+    }
+    if (leitura.estado === "criando") return <CriandoScreen nome={nome?.split(/\s+/)[0]} etapas={leitura.etapas} />;
     return (
       <CompletionScreen
         fase="concluido"
-        nome={typeof respostas.q02 === "string" ? respostas.q02.trim() : undefined}
+        nome={nome}
         progresso={progresso}
+        leitura={leitura.estado === "pronta" ? { estado: "nao_pedida", persistido: leitura.persistido } : leitura}
+        onGerar={() => sid && void gerarLeitura(banco, sid)}
         onBaixar={baixar}
         onRecomecar={recomecar}
       />

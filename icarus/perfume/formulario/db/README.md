@@ -145,3 +145,10 @@ uma sessão completa do app gravada e lida de volta igual ao TS, e cada regra ac
 - Coerência entre modalidade e direitos (compartilhável com autorização, exclusivo com exclusividade):
   fica para o fluxo de compra.
 - Migrações: `schema.sql` cria do zero. Mudar tabela que já existe pede migração (`alter table`).
+
+## Migrações do Supabase
+
+`supabase/migrations/` tem os mesmos dois arquivos (schema e seed) no formato da CLI do Supabase, sem
+`begin;` e `commit;` (o Supabase já roda cada migração numa transação). Depois de mudar o schema ou
+gerar o seed de novo, rode `node db/ferramentas/gerar-migracoes.mjs`. Mudança numa tabela que já tem
+dados em produção pede uma migração nova (alter table), com data posterior, em vez de reescrever estas.

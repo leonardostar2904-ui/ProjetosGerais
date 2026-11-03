@@ -1,0 +1,4 @@
+# Configuração mínima da CLI do Supabase para esta pasta.
+# As migrações em supabase/migrations criam os 8 bancos (esquema) e carregam os catálogos
+# (questionário, matérias-primas, regras, texto de consentimento). Ver README.md.
+project_id = "icarus-perfume"

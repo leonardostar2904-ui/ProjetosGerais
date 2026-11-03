@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import * as A from "@/lib/armazenamento";
+import type { Criacao } from "@/lib/criacao/tipos";
 import { materiasPrimas } from "@/lib/conhecimento/materias-primas";
 import { GRUPOS } from "@/lib/conhecimento/referencias";
 import { cruzar } from "@/lib/motor";
@@ -94,6 +95,130 @@ function ListaCandidatas({ titulo, itens }: { titulo: string; itens: Candidata[]
   );
 }
 
+const CAMADA_ROTULO = { saida: "Saída", coracao: "Coração", fundo: "Fundo" } as const;
+
+function PropostaIA({ criacao }: { criacao: Criacao }) {
+  const e = criacao.equipe;
+  const soma = e.componentes.reduce((t, c) => t + c.percentual, 0);
+  return (
+    <div className="space-y-8">
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-[14px] sm:grid-cols-3 lg:grid-cols-6">
+        {[
+          ["Nome interno", e.nomeInterno],
+          ["Linha", e.linha],
+          ["Concentração", e.concentracao.toUpperCase()],
+          ["Concentrado", `${e.percentualConcentrado}%`],
+          ["Base", e.base === "oleosa" ? "oleosa" : "alcoólica"],
+          ["Modalidade", e.modalidadeSugerida],
+        ].map(([t, v]) => (
+          <div key={t}>
+            <dt className="rotulo text-[9.5px] text-grafite-suave">{t}</dt>
+            <dd className="mt-1 text-azul">{v}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Componentes da proposta, com rolagem horizontal">
+        <table className="w-full min-w-[720px] text-left text-[13.5px]">
+          <caption className="sr-only">Componentes da proposta em percentual de massa dentro do concentrado</caption>
+          <thead>
+            <tr className="rotulo border-b border-azul/30 text-[9.5px] text-grafite-suave">
+              <th className="py-2 pr-3 font-normal">Camada</th>
+              <th className="py-2 pr-3 font-normal">#</th>
+              <th className="py-2 pr-3 font-normal">Matéria-prima</th>
+              <th className="py-2 pr-3 text-right font-normal">% massa</th>
+              <th className="py-2 font-normal">Por quê</th>
+            </tr>
+          </thead>
+          <tbody>
+            {e.componentes.map((c, i) => (
+              <tr key={i} className="border-b border-nevoa align-top">
+                <td className="py-2 pr-3 text-grafite-suave">{CAMADA_ROTULO[c.camada]}</td>
+                <td className="py-2 pr-3 font-mono text-azul">{c.materiaN ?? "fora"}</td>
+                <td className="py-2 pr-3 text-azul">{c.nome}</td>
+                <td className="py-2 pr-3 text-right font-mono">{c.percentual.toFixed(2)}</td>
+                <td className="py-2 text-grafite">{c.motivo}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colSpan={3} className="rotulo py-2 text-[9.5px] text-grafite-suave">Soma</td>
+              <td className="py-2 pr-3 text-right font-mono text-azul">{soma.toFixed(2)}</td>
+              <td />
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-2">
+        <div className="space-y-3 text-[14.5px] leading-relaxed text-grafite">
+          <h3 className="rotulo text-[10px] text-azul">Leitura dos textos</h3>
+          <p>{e.leituraTextos}</p>
+          {e.conflitos.length > 0 && (
+            <>
+              <h3 className="rotulo pt-2 text-[10px] text-azul">Conflitos</h3>
+              <ul className="list-disc space-y-1 pl-5">{e.conflitos.map((x) => <li key={x}>{x}</li>)}</ul>
+            </>
+          )}
+          {e.alternativaEssencial && (
+            <>
+              <h3 className="rotulo pt-2 text-[10px] text-azul">Na linha Essencial</h3>
+              <p>{e.alternativaEssencial}</p>
+            </>
+          )}
+        </div>
+        <div className="space-y-3 text-[14.5px] leading-relaxed text-grafite">
+          <h3 className="rotulo text-[10px] text-azul">Para o perfumista conferir</h3>
+          <ul className="list-disc space-y-1 pl-5">{e.pontosPerfumista.map((x) => <li key={x}>{x}</li>)}</ul>
+          {criacao.avisos.length > 0 && (
+            <>
+              <h3 className="rotulo pt-2 text-[10px] text-brasa">Avisos do servidor</h3>
+              <ul className="list-disc space-y-1 pl-5">{criacao.avisos.map((x) => <li key={x}>{x}</li>)}</ul>
+            </>
+          )}
+        </div>
+      </div>
+
+      {e.referencias.length > 0 && (
+        <div>
+          <h3 className="rotulo text-[10px] text-azul">Perfumes citados (pergunta 30)</h3>
+          <ul className="mt-3 grid gap-3 md:grid-cols-2">
+            {e.referencias.map((r) => (
+              <li key={r.perfume} className="border border-nevoa bg-branco/60 p-3 text-[14px] text-grafite">
+                <p className="flex flex-wrap items-center gap-2">
+                  <span className="font-medium text-azul">{r.perfume}</span>
+                  <Chip texto={r.relacao} forte={r.relacao === "rejeitou"} />
+                  <Chip texto={`fonte: ${r.fonte}`} />
+                </p>
+                <p className="mt-2 leading-relaxed">{r.leitura}</p>
+              </li>
+            ))}
+          </ul>
+          {criacao.referenciasRegistradas.length > 0 && (
+            <p className="mt-3 text-[13px] text-grafite-suave">Gravados no banco nesta criação: {criacao.referenciasRegistradas.join(", ")}.</p>
+          )}
+        </div>
+      )}
+
+      {criacao.fontes.length > 0 && (
+        <div>
+          <h3 className="rotulo text-[10px] text-azul">Páginas consultadas na web</h3>
+          <ul className="mt-2 space-y-1 text-[13px]">
+            {criacao.fontes.map((f) => (
+              <li key={f.url}>
+                <a href={f.url} target="_blank" rel="noreferrer noopener" className="text-azul underline decoration-nevoa underline-offset-4 [overflow-wrap:anywhere]">
+                  {f.titulo || f.url}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Bastidores() {
   const [banco, setBanco] = useState<A.Banco | null>(null);
   const [sessaoId, setSessaoId] = useState<string | null>(null);
@@ -108,12 +233,13 @@ export default function Bastidores() {
   const respostas = useMemo(() => (banco && sessaoId ? A.respostasDaSessao(banco, sessaoId) : {}), [banco, sessaoId]);
   const resultado: ResultadoCruzamento | null = useMemo(() => (sessao ? cruzar(respostas) : null), [sessao, respostas]);
   const progresso = progressoGeral(respostas);
+  const criacao = banco ? A.criacaoDaSessao(banco, sessaoId) : null;
 
   if (!banco) return null;
 
   const exportar = () => {
     if (!resultado || !sessao) return;
-    const dados = { ...A.exportarSessao(banco, sessao.id), cruzamento: resultado };
+    const dados = { ...A.exportarSessao(banco, sessao.id), cruzamento: resultado, criacao: A.criacaoDaSessao(banco, sessao.id) };
     const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -435,10 +561,19 @@ export default function Bastidores() {
             </div>
           </Secao>
 
-          <Secao numero="Banco 05" titulo="Formulação">
-            <p className="max-w-[70ch] text-[15px] leading-relaxed text-grafite">
-              <Chip texto="não gerada" forte /> <span className="ml-2">{resultado.formulacao.motivo}</span>
-            </p>
+          <Secao
+            numero="Banco 05"
+            titulo="Formulação"
+            nota={criacao ? `Proposta da IA (${criacao.modelo}, ${criacao.versaoPrompt}, ${data(criacao.geradaEm)}). Rascunho para o perfumista: nada vai para a pele sem revisão.` : undefined}
+          >
+            {!criacao ? (
+              <p className="max-w-[70ch] text-[15px] leading-relaxed text-grafite">
+                <Chip texto="não gerada" forte />{" "}
+                <span className="ml-2">A leitura por IA ainda não foi feita para esta sessão (ou a IA não está ligada neste ambiente).</span>
+              </p>
+            ) : (
+              <PropostaIA criacao={criacao} />
+            )}
           </Secao>
 
           <Secao numero="Banco 06" titulo="Comercial" nota="Respostas da etapa 09 são pesquisa de preferência. Não autorizam nada e não são oferta.">

@@ -110,8 +110,8 @@ const Abertura = forwardRef<HTMLHeadingElement, Props>(function Abertura({ valor
             Começar minha experiência
           </button>
           <p className="max-w-[60ch] text-[13.5px] leading-relaxed text-grafite-suave">
-            Perguntas sobre sexo, gênero, relacionamento, crenças e saúde são opcionais e ficam identificadas. Nesta versão de teste, suas
-            respostas ficam guardadas só neste navegador.
+            Perguntas sobre sexo, gênero, relacionamento, crenças e saúde são opcionais e ficam identificadas. Enquanto você responde, tudo
+            fica neste navegador. Ao concluir, com a sua autorização, as respostas vão para a ICARUS compor a sua fragrância.
           </p>
         </div>
       </div>
